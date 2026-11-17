@@ -212,6 +212,47 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 .tp.bad{fill:var(--bad)}
 .tu{font:500 12px -apple-system,system-ui,"Segoe UI",sans-serif;fill:#8e8e93}
 #log{margin:4px 0 0;font-size:14px;color:var(--warn)}
+.v.quiet{color:var(--dim);font-weight:600}
+/* 2024 Model 3 outline, iOS style: thin strokes, subtle fills */
+#car .body{fill:#151517;stroke:#505055;stroke-width:1.5}
+#car .part{fill:#1d1d20;stroke:#505055;stroke-width:1}
+#car .glass{fill:#0d1014;stroke:#34343a;stroke-width:1}
+#car .wind{fill:#1a232c;stroke:#34343a;stroke-width:1}
+#car .mirror{fill:#1d1d20;stroke:#505055;stroke-width:1}
+#car .wheels rect{fill:#2a2a2d;stroke:#505055;stroke-width:1}
+#car .lamp{fill:none;stroke:#9a9aa0;stroke-width:1.6;stroke-linecap:round}
+#car .lamp.tail{stroke:#7a3030}
+#car .seam{fill:none;stroke:#34343a;stroke-width:1}
+#car .win{fill:#34343a}
+#car .part.open,#car .win.open{fill:var(--warn);stroke:var(--warn)}
+#wheel-driver{fill:none;stroke:#505055;stroke-width:1.5}
+/* drive page: the dial never takes so much width that the side circles get cramped */
+#p-hud #gauge{height:auto;width:min(calc(100vh - var(--st) - var(--sb) - 36px),calc(100vw - var(--sl) - var(--sr) - 392px));aspect-ratio:1;align-self:center}
+#trk{line-height:1.25;margin-top:2px}
+@media (max-width:780px){
+  #tr>span:nth-child(2){display:none}
+  #chip{font-size:0}#chip::before{font-size:14px;margin-right:0}
+  #top{font-size:17px}
+  #p-hud #crt{flex-direction:column;align-items:center;gap:0}
+  #cru{display:none}
+}
+#p-hud #crt{width:100%}
+#p-hud #crt .v{overflow:visible;text-overflow:clip}
+#sheet .v{font-size:28px;line-height:1.2}
+#sheet #nav{font-size:17px;line-height:1.25}
+#sheet{padding:8px 16px}
+/* iOS-native scale: 8-pt grid, 16-pt margins, 12-pt gaps, type 34/28/22/17/13 */
+.pg{padding-left:calc(var(--sl) + 16px);padding-right:calc(var(--sr) + 16px);padding-top:calc(var(--st) + 8px);padding-bottom:calc(var(--sb) + 24px)}
+.t{padding:8px 16px;gap:4px}
+.hd{gap:4px}
+.hd .l{font-size:13px;font-weight:600;line-height:1.2}
+#ch,#inf{gap:12px}
+#carpg{gap:12px;grid-template-columns:176px 1fr 176px}
+.side3{gap:12px}
+#ch .v,#inf .v,.side3 .v{font-size:28px;line-height:1.2;font-weight:600}
+#inf .v#conn{font-size:17px}
+#carsum{font-size:17px;font-weight:600;line-height:1.25;min-height:44px;display:flex;align-items:center;justify-content:center}
+#log{font-size:13px}
 /* no data yet: quiet placeholders instead of a huge slanted dash */
 #speed.nd{font-weight:300;font-style:normal;letter-spacing:0;color:rgba(235,235,245,.22)}
 #gearv.nd{color:rgba(235,235,245,.3)!important;border-color:rgba(235,235,245,.2)}
@@ -243,10 +284,10 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
   <section class="pg" id="p-charge">
    <div id="ch">
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><rect x="2" y="7" width="17" height="10" rx="3"/><path d="M22 11v2"/></svg><span class="l">Charge level</span></div><div class="v"><span id="soc2">-</span> %</div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span class="l">Charging power</span></div><div class="v"><span id="chkw">-</span> kW</div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span class="l">Charging power</span></div><div class="v" id="chkw">-</div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="l">Time to full</span></div><div class="v" id="chtm">-</div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 12h4l2-6 4 12 2-6h8"/></svg><span class="l">Charge state</span></div><div class="v" id="chst">-</div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M4 17a8 8 0 1 1 16 0M12 17l4-5"/></svg><span class="l">Range</span></div><div class="v"><span id="rng2">-</span> km</div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M4 17a8 8 0 1 1 16 0M12 17l4-5"/></svg><span class="l">Range</span></div><div class="v"><span id="rng2">-</span> km</div><div class="u" id="rng2est" hidden>est. from battery level</div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span class="l">Pack voltage</span></div><div class="v"><span id="pv">-</span> V</div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span class="l">Pack current</span></div><div class="v"><span id="pa">-</span> A</div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M8 3 5 21M16 3l3 18M12 5v3M12 11v3M12 17v3"/></svg><span class="l">Efficiency now</span></div><div class="v"><span id="eff">-</span> <span class="u">Wh/km</span></div></div>
@@ -264,24 +305,32 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
     <div id="carbox">
      <svg id="car" viewBox="0 -16 320 356">
       <text class="tu" x="160" y="-4" text-anchor="middle" style="font-size:13px">▲ Front</text>
-      <ellipse id="sring" cx="160" cy="172" rx="92" ry="166"/>
-      <rect class="wheel" x="84" y="52" width="16" height="36" rx="5"/><rect class="wheel" x="220" y="52" width="16" height="36" rx="5"/>
-      <rect class="wheel" x="84" y="254" width="16" height="36" rx="5"/><rect class="wheel" x="220" y="254" width="16" height="36" rx="5"/>
-      <path class="body" d="M128 14Q160 4 192 14Q212 22 214 58L218 270Q216 322 192 330Q160 338 128 330Q104 322 102 270L106 58Q108 22 128 14Z"/>
-      <rect id="frunk" class="part" x="130" y="30" width="60" height="44" rx="12"/>
-      <rect id="trunk" class="part" x="130" y="248" width="60" height="62" rx="12"/>
-      <path class="wind" d="M131 78H189L195 90H125Z"/>
-      <rect class="glass" x="124" y="86" width="72" height="150" rx="14"/>
-      <rect id="d-fl" class="part" x="98" y="84" width="22" height="74" rx="8"/><rect id="d-rl" class="part" x="98" y="162" width="22" height="74" rx="8"/>
-      <rect id="d-fr" class="part" x="200" y="84" width="22" height="74" rx="8"/><rect id="d-rr" class="part" x="200" y="162" width="22" height="74" rx="8"/>
-      <rect id="w-fl" class="win" x="125" y="92" width="6" height="60" rx="3"/><rect id="w-rl" class="win" x="125" y="170" width="6" height="60" rx="3"/>
-      <rect id="w-fr" class="win" x="189" y="92" width="6" height="60" rx="3"/><rect id="w-rr" class="win" x="189" y="170" width="6" height="60" rx="3"/>
-      <circle id="cport" cx="110" cy="314" r="7"/>
-      <g id="padlock" transform="translate(160 164)"><path d="M-8 -3v-6a8 8 0 0 1 16 0v6" fill="none" stroke-width="4" stroke-linecap="round"/><rect x="-13" y="-3" width="26" height="21" rx="5"/></g>
+      <ellipse id="sring" cx="160" cy="170" rx="104" ry="172"/>
+      <g class="wheels">
+       <rect x="82" y="50" width="14" height="42" rx="6"/><rect x="224" y="50" width="14" height="42" rx="6"/>
+       <rect x="82" y="248" width="14" height="42" rx="6"/><rect x="224" y="248" width="14" height="42" rx="6"/>
+      </g>
+      <path class="mirror" d="M97 98L84 101Q79 105 84 110L97 108Z"/><path class="mirror" d="M223 98L236 101Q241 105 236 110L223 108Z"/>
+      <path class="body" d="M132 10Q160 3 188 10Q212 16 220 44L226 84L227 252Q225 302 213 322Q196 337 160 337Q124 337 107 322Q95 302 93 252L94 84L100 44Q108 16 132 10Z"/>
+      <path id="frunk" class="part" d="M128 22Q160 13 192 22Q205 27 207 54L206 86H114L113 54Q115 27 128 22Z"/>
+      <path class="lamp" d="M122 22Q136 18 150 20"/><path class="lamp" d="M198 22Q184 18 170 20"/>
+      <path class="wind" d="M117 88H203L196 115H124Z"/>
+      <path class="glass" d="M124 115H196Q200 115 200 120V250Q200 256 194 256H126Q120 256 120 250V120Q120 115 124 115Z"/>
+      <path class="seam" d="M120 176H200"/>
+      <path class="wind" d="M123 258H197L190 280H130Z"/>
+      <path id="trunk" class="part" d="M130 282H190Q203 284 205 298Q205 318 191 326H129Q115 318 115 298Q117 284 130 282Z"/>
+      <path class="lamp tail" d="M112 326Q160 334 208 326"/>
+      <rect id="d-fl" class="part" x="95" y="92" width="25" height="80" rx="9"/><rect id="d-rl" class="part" x="95" y="180" width="25" height="76" rx="9"/>
+      <rect id="d-fr" class="part" x="200" y="92" width="25" height="80" rx="9"/><rect id="d-rr" class="part" x="200" y="180" width="25" height="76" rx="9"/>
+      <rect id="w-fl" class="win" x="121" y="121" width="5" height="50" rx="2.5"/><rect id="w-rl" class="win" x="121" y="181" width="5" height="68" rx="2.5"/>
+      <rect id="w-fr" class="win" x="194" y="121" width="5" height="50" rx="2.5"/><rect id="w-rr" class="win" x="194" y="181" width="5" height="68" rx="2.5"/>
+      <circle id="cport" cx="108" cy="316" r="6"/>
+      <circle id="wheel-driver" cx="187" cy="140" r="7"/>
+      <g id="padlock" transform="translate(160 186)"><path d="M-8 -3v-6a8 8 0 0 1 16 0v6" fill="none" stroke-width="3.5" stroke-linecap="round"/><rect x="-12" y="-3" width="24" height="19" rx="5"/></g>
       <text id="t-fl" class="tp" x="74" y="76" text-anchor="end">-</text><text id="t-fr" class="tp" x="246" y="76">-</text>
-      <text id="t-rl" class="tp" x="74" y="278" text-anchor="end">-</text><text id="t-rr" class="tp" x="246" y="278">-</text>
-      <text class="tu" x="74" y="92" text-anchor="end">psi</text><text class="tu" x="246" y="92">psi</text>
-      <text class="tu" x="74" y="294" text-anchor="end">psi</text><text class="tu" x="246" y="294">psi</text>
+      <text id="t-rl" class="tp" x="74" y="274" text-anchor="end">-</text><text id="t-rr" class="tp" x="246" y="274">-</text>
+      <text class="tu" x="74" y="91" text-anchor="end">psi</text><text class="tu" x="246" y="91">psi</text>
+      <text class="tu" x="74" y="289" text-anchor="end">psi</text><text class="tu" x="246" y="289">psi</text>
      </svg>
      <div id="carsum">Waiting for the car</div>
     </div>
@@ -297,7 +346,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
   <section class="pg" id="p-hud">
    <div id="hud">
     <div id="top">
-      <div id="batt"><div class="glyph"><div id="socb"></div></div><b><span id="soc">-</span>%</b><span class="u"><span id="rng">-</span> km</span></div>
+      <div id="batt"><div class="glyph"><div id="socb"></div></div><b><span id="soc">-</span>%</b><span class="u"><span id="rng">-</span> km<span id="rngest" hidden> est.</span></span></div>
       <div id="tr"><span id="chip">Starting</span><span><span id="tout3">-</span> °C</span><b id="clock">-</b></div>
     </div>
     <div id="main">
@@ -315,7 +364,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
         </div>
       </div>
       <div id="rside">
-        <div class="t hx" id="lap"><div id="tm">0.0</div><div class="u">Last run <span id="tl">--</span><span id="tls" hidden> s</span> · <span id="ts">ready</span></div><div class="l" id="trk">0 to 100 · closed track only</div></div>
+        <div class="t hx" id="lap"><div id="tm">0.0</div><div class="u">Last run <span id="tl">--</span><span id="tls" hidden> s</span> · <span id="ts">ready</span></div><div class="l" id="trk">0 to 100<br>closed track only</div></div>
         <div class="t hx" id="crt"><div class="l">Cruise</div><div class="v"><span id="cruise">Off</span> <span class="u" id="cru" hidden>km/h</span></div></div>
       </div>
     </div>
@@ -397,6 +446,7 @@ const SIDE_NAME = { fl: "Front-left", fr: "Front-right", rl: "Rear-left", rr: "R
 function renderCar() {
   // Driver side: the car's own RightHandDrive flag if it has sent one; otherwise right-hand drive (Australia).
   const rhd = !(S.RightHandDrive === false || S.RightHandDrive === "false");
+  $("wheel-driver").setAttribute("cx", rhd ? 187 : 133); // steering wheel marker on the driver's side
   const where = { df: rhd ? "fr" : "fl", pf: rhd ? "fl" : "fr", dr: rhd ? "rr" : "rl", pr: rhd ? "rl" : "rr" };
   const ds = doorSet(S.DoorState), open = [], put = (id, on) => { const e = $(id); if (e) e.classList.toggle("open", !!on); };
   ["fl", "fr", "rl", "rr"].forEach(p => put("d-" + p, false));
@@ -406,7 +456,7 @@ function renderCar() {
   Object.keys(winOf).forEach(k => { const v = S[k + "Window"], unk = v == null || /unknown/i.test(String(v)), p = where[winOf[k]], on = !unk && !/closed/i.test(String(v)); if (!unk) wknown++; put("w-" + p, on); if (on) { wopen.push(p); open.push(SIDE_NAME[p] + " window open"); } });
   ["fl", "fr", "rl", "rr"].forEach(p => { if (!wopen.includes(p)) put("w-" + p, false); });
   const cp = S.ChargePortDoorOpen == null ? null : truthy(S.ChargePortDoorOpen); put("cport", cp === true); if (cp) open.push("Charge port open");
-  $("cport").classList.toggle("known", cp != null); if ($("cportv")) { $("cportv").textContent = cp == null ? "-" : cp ? "Open" : "Closed"; flag("cportv", cp ? "warn" : cp === false ? "ok" : ""); }
+  $("cport").classList.toggle("known", cp != null); if ($("cportv")) { $("cportv").textContent = cp == null ? "--" : cp ? "Open" : "Closed"; flag("cportv", cp ? "warn" : cp === false ? "ok" : ""); }
   const lk = S.Locked == null ? null : truthy(S.Locked), pl = $("padlock"); pl.classList.toggle("ok", lk === true); pl.classList.toggle("warn", lk === false);
   $("lock").textContent = lk == null ? "-" : lk ? "Locked" : "Unlocked"; flag("lock", lk == null ? "" : lk ? "ok" : "warn");
   const nd = ds == null ? null : [...ds].length; $("doors").textContent = ds == null ? "-" : nd === 0 ? "All closed" : nd === 1 ? "1 open" : nd + " open"; flag("doors", ds == null ? "" : nd ? "warn" : "ok"); // orange means open; red is kept for low tyres and alerts
@@ -419,7 +469,7 @@ function renderCar() {
   // one plain sentence: name a single open thing, count several
   const dL = open.filter(x => / door open$| open$/.test(x) && !/window|port/.test(x)), wL = open.filter(x => /window open$/.test(x)), tL = open.filter(x => /tyre low$/.test(x)), pL = open.filter(x => /port open$/.test(x));
   const bits = [dL.length > 1 ? dL.length + " doors and boot open" : dL[0], wL.length > 1 ? wL.length + " windows open" : wL[0], pL[0], tL.length > 1 ? tL.length + " tyres low" : tL[0]].filter(Boolean);
-  $("carsum").textContent = none ? "Waiting for the car" : open.length === 0 ? (lk === true ? "All closed and locked" : lk === false ? "All closed, unlocked" : "All closed") : bits.join(" · ");
+  $("carsum").textContent = none ? "Waiting for the car" : open.length === 0 ? (lk === true ? "All closed and locked" : lk === false ? "All closed, unlocked" : "All closed") : bits.length > 2 ? bits.slice(0, 2).join(" · ") + " · +" + (bits.length - 2) + " more" : bits.join(" · ");
   $("carsum").classList.toggle("warn", open.length > 0); $("carsum").classList.toggle("ok", !none && open.length === 0 && lk === true);
 }
 const GEAR_NAMES = { P: "P", R: "R", N: "N", D: "D" };
@@ -450,7 +500,9 @@ function render() {
   const sp = speedKmh(), pw = powerKw(), acc = num(S.PedalPosition);
   $("speed").textContent = sp == null ? "--" : fmt(sp, 0); $("speed").classList.toggle("nd", sp == null); $("gearv").classList.toggle("nd", S.Gear == null);
   $("gearv").textContent = S.Gear == null ? "P" : (GEAR_NAMES[String(S.Gear).replace(/^ShiftState/, "")] || "-"); $("gearv").dataset.g = $("gearv").textContent;
-  if (liveMode && lastEvt) { const old = Date.now() - lastEvt > 8000; if (old !== stale) { stale = old; setChip(old ? "No data from car" : "Live", old ? "var(--warn)" : "var(--ok)"); } }
+  // Status comes from the stream itself. A parked car only sends when something changes, so silence while parked is normal.
+  if (liveMode && streamOpen) { const quiet = Date.now() - lastEvt, parked = S.Gear == null || /P$/.test(String(S.Gear));
+    if (!parked && quiet > 30000) setChip("No data from car", "var(--warn)"); else if (parked && quiet > 8000) setChip("Live · parked", "var(--ok)"); else setChip("Live", "var(--ok)"); }
   $("pwr").textContent = fmt(pw, 0);
   $("regen").textContent = pw != null && pw < -1 ? " regen" : "";
   $("acc").textContent = fmt(acc, 0); { const a = Math.max(0, Math.min(100, acc || 0)); $("accb").setAttribute("stroke-dasharray", a + " 100"); $("accb").setAttribute("opacity", a > 0.5 ? 1 : 0); } // pedal ring: accelerator fills the right half
@@ -460,23 +512,30 @@ function render() {
     for (let i = 0; i < el.length; i++) el[i].style.stroke = ((i >= 12 && i < 12 + nd) ? (i >= 52 ? "#ff3b30" : "#ffc400") : (i < 12 && 11 - i < nr) ? "#0a84ff" : "#1e1e1e"); }
   { const b = num(S.BatteryLevel) || 0; $("socb").style.width = Math.max(0, Math.min(100, b)) + "%"; $("socb").style.background = b < 15 ? "var(--bad)" : b < 30 ? "var(--warn)" : "var(--ok)"; }
   { const b = (S.BrakePedal === true || S.BrakePedal === "true") ? 100 : Math.max(0, Math.min(100, num(S.BrakePedalPos) || 0)); $("brkb").setAttribute("stroke-dasharray", b + " 100"); $("brkb").setAttribute("opacity", b > 0.5 ? 1 : 0); } // brake fills the left half
-  const r = num(S.EstBatteryRange ?? S.RatedRange ?? S.IdealBatteryRange); $("rng").textContent = r == null ? "--" : (r * MI).toFixed(0); $("rng2").textContent = $("rng").textContent; $("rng").parentElement.style.opacity = r == null ? ".45" : "";
+  { // Range: the car's own figure when it has sent one; until then an estimate from the battery level (2024 Model 3 Long Range, 629 km WLTP).
+    const r = num(S.EstBatteryRange ?? S.RatedRange ?? S.IdealBatteryRange), bl = num(S.BatteryLevel), est = r == null && bl != null;
+    const km = r != null ? r * MI : est ? bl * 6.29 : null;
+    $("rng").textContent = km == null ? "--" : km.toFixed(0); $("rng2").textContent = $("rng").textContent;
+    $("rngest").hidden = !est; $("rng2est").hidden = !est; $("rng").parentElement.style.opacity = est || km == null ? ".55" : ""; $("rng2").parentElement.style.opacity = est || km == null ? ".6" : ""; }
   if (pw != null && sp != null) { effWin.push([pw, sp]); if (effWin.length > 10) effWin.shift(); }
   const effKm = effWin.reduce((a, x) => a + x[1], 0), effKw = effWin.reduce((a, x) => a + x[0], 0); // equal time steps, so sums give energy and distance
-  { const e = effKm >= 100 ? effKw * 1000 / effKm : null; $("eff").textContent = (sp != null && sp >= 10 && e != null && Math.abs(e) < 1000) ? e.toFixed(0) : "-"; }
+  { const e = effKm >= 100 ? effKw * 1000 / effKm : null; $("eff").textContent = (sp != null && sp >= 10 && e != null && Math.abs(e) < 1000) ? e.toFixed(0) : "--"; }
   // CruiseSetSpeed is only the last value the driver set (fields.json has no "cruise active" field), so cruise counts as on
   // only while the car is in drive and moving.
   const cr = num(S.CruiseSetSpeed), crOn = cr != null && cr > 0 && /D$/.test(String(S.Gear ?? "")) && sp != null && sp > 5; $("cruise").textContent = crOn ? (cr * MI).toFixed(0) : "Off"; $("cru").hidden = !crOn; $("cruise").style.color = crOn ? "var(--acc)" : "";
-  $("effh").textContent = $("eff").textContent; $("effw").hidden = $("eff").textContent === "-"; $("tout3").textContent = fmt(num(S.OutsideTemp), 0);
+  $("effh").textContent = $("eff").textContent; $("effw").hidden = $("eff").textContent === "--"; $("tout3").textContent = fmt(num(S.OutsideTemp), 0);
   $("tout").textContent = fmt(num(S.OutsideTemp), 0); $("tin").textContent = fmt(num(S.InsideTemp), 0);
-  const fsd = num(S.SelfDrivingMilesSinceReset); $("fsd").textContent = fsd == null ? "-" : (fsd * MI).toFixed(1);
+  const fsd = num(S.SelfDrivingMilesSinceReset); $("fsd").textContent = fsd == null ? "-" : (fsd * MI).toFixed(1); $("fsd").closest("#sheet>div").hidden = fsd == null; // hidden until the car reports it
   const cs = S.DetailedChargeState ?? S.ChargeState, ck = num(S.DCChargingPower) || num(S.ACChargingPower);
-  $("chkw").textContent = fmt(ck, 1); $("chst").textContent = cs == null ? "-" : String(cs).replace(/^DetailedChargeState/, "");
-  { const h = num(S.TimeToFullCharge ?? S.EstimatedHoursToChargeTermination), m = h == null ? null : Math.round(h * 60); $("chtm").textContent = m == null ? "-" : m >= 60 ? Math.floor(m / 60) + " h " + (m % 60) + " min" : m + " min"; } // reported in hours
-  { const c = /charging|starting/i.test(String(cs)), cok = c ? "ok" : ""; flag("chst", cok); flag("chkw", cok); }
-  $("pv").textContent = fmt(num(S.PackVoltage), 0); $("pa").textContent = fmt(num(S.PackCurrent), 0);
+  const csName = cs == null ? null : String(cs).replace(/^DetailedChargeState/, ""), CS = { Disconnected: "Not plugged in", NoPower: "No power", Starting: "Starting", Charging: "Charging", Complete: "Complete", Stopped: "Stopped", Calibrating: "Calibrating", Unknown: "-", Enabled: "Ready" };
+  const chargingNow = /^(charging|starting)$/i.test(String(csName));
+  $("chst").textContent = csName == null ? "--" : (CS[csName] || csName);
+  $("chkw").textContent = chargingNow ? (ck == null ? "--" : ck.toFixed(1) + " kW") : "Not charging"; $("chkw").classList.toggle("quiet", !chargingNow);
+  { const h = num(S.TimeToFullCharge ?? S.EstimatedHoursToChargeTermination), m = h == null ? null : Math.round(h * 60); $("chtm").textContent = !chargingNow || m == null ? "--" : m >= 60 ? Math.floor(m / 60) + " h " + (m % 60) + " min" : m + " min"; $("chtm").classList.toggle("quiet", !chargingNow || m == null); } // reported in hours
+  { const cok = chargingNow ? "ok" : ""; flag("chst", cok); flag("chkw", cok); }
+  $("pv").textContent = fmt(num(S.PackVoltage), 0); { const pa = num(S.PackCurrent); $("pa").textContent = pa == null ? "--" : (Math.abs(pa) < 2 ? 0 : pa).toFixed(0); } // under 2 A is idle noise
   renderCar();
-  { const lg = $("log"); if (!liveMode) { lg.textContent = "Sample mode"; lg.style.color = "var(--dim)"; } else lg.style.color = (lastEvt && !stale && /^(Connected|OK)/.test(lg.textContent)) ? "var(--ok)" : ""; } // green when live, dim in sample, orange for problems
+  { const lg = $("log"); if (!liveMode) { lg.textContent = "Sample mode"; lg.style.color = "var(--dim)"; } else lg.style.color = (streamOpen && /^(Connected|OK)/.test(lg.textContent)) ? "var(--ok)" : ""; } // green when live, dim in sample, orange for problems
   const od = num(S.Odometer); $("odo").textContent = od == null ? "-" : (od * MI).toFixed(0); $("sw").textContent = S.Version || "-";
   { const ago = lastEvt ? Math.round((Date.now() - lastEvt) / 1000) : null; $("conn").textContent = !liveMode ? "Sample data" : (DEFAULT_RELAY || store.get("base") ? "Via relay" : "Direct") + (ago == null ? " · no data yet" : " · data " + (ago < 2 ? "just now" : ago + " s ago")); }
   const mi = num(S.MilesToArrival), mn = num(S.MinutesToArrival), asoc = num(S.ExpectedEnergyPercentAtTripArrival);
@@ -514,7 +573,7 @@ function drawG() {
 const DEFAULT_RELAY = "https://fancy-shape-530a.3andfree-app.workers.dev"; // the relay Worker; it only allows this page's address and read-only requests
 let ctl = null, retry = 1000, timer = null, method = "query";
 function setChip(t, c) { $("chip").textContent = t; $("chip").style.color = c || ""; }
-let liveMode = false, lastEvt = 0, stale = false;
+let liveMode = false, lastEvt = 0, streamOpen = false, wasOpen = false;
 function onEvent(txt) {
   lastEvt = Date.now();
   let ev; try { ev = JSON.parse(txt); } catch (e) { return; }
@@ -546,7 +605,7 @@ async function connect() {
     if (!r) throw lastErr;
     if (r.status === 401 || r.status === 403) { setChip("Token not accepted", "var(--bad)"); $("log").textContent = "Token not accepted. Copy it again from Teslemetry."; return; }
     if (!r.ok) throw new Error("HTTP " + r.status);
-    setChip("Live", "var(--ok)"); retry = 1000; lastEvt = Date.now(); stale = false; $("log").textContent = "Connected";
+    streamOpen = true; wasOpen = true; setChip("Live", "var(--ok)"); retry = 1000; lastEvt = Date.now(); $("log").textContent = "Connected";
     const rd = r.body.getReader(), dec = new TextDecoder(); let buf = "";
     for (;;) {
       const { value, done } = await rd.read(); if (done) break;
@@ -561,7 +620,7 @@ async function connect() {
     if (e.name === "AbortError") return;
     $("log").textContent = "Can't reach Teslemetry (" + e.message + "). Retrying.";
   }
-  setChip("Can't connect, retrying", "var(--warn)"); retry = Math.min(retry * 2, 30000);
+  streamOpen = false; setChip(wasOpen ? "Reconnecting" : "Can't connect, retrying", "var(--warn)"); retry = Math.min(retry * 2, 30000);
   timer = setTimeout(connect, retry);
 }
 
