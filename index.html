@@ -123,6 +123,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #gf{flex:1;min-height:0;width:100%;height:auto;max-width:100%;aspect-ratio:auto;object-fit:contain}
 #gwrap>.l{display:none}
 #doors{font-size:22px}
+#p-hud *{transition:none!important} /* no animation lag on the drive screen; the other pages keep their soft transitions */
 /* main screen sized for a phone mounted further away; the dial takes the full height, the status bar floats over the corners */
 #p-hud.pg{padding-top:calc(var(--st) + 4px);padding-bottom:calc(var(--sb) + 20px)}
 #hud{grid-template-rows:1fr;gap:0;position:static}
@@ -385,7 +386,10 @@ function onEvent(txt) {
   let ev; try { ev = JSON.parse(txt); } catch (e) { return; }
   Object.assign(S, flatten(ev));
   if (ev && ev.vin && !S._vin) S._vin = ev.vin;
+  scheduleRender(); // show each reading as soon as it arrives instead of waiting for the 1 s tick
 }
+let rafPending = false;
+function scheduleRender() { if (rafPending) return; rafPending = true; requestAnimationFrame(() => { rafPending = false; render(); }); }
 async function connect() {
   if (ctl) ctl.abort(); ctl = new AbortController();
   const base = (store.get("base") || "https://api.teslemetry.com").replace(/\/+$/, "");
