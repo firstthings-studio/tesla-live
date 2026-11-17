@@ -278,6 +278,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #p-hud #crt[hidden]{display:none}
 #p-hud #crt .u,#p-hud #crt #cru{display:inline;color:var(--dim);font-weight:600}
 #chip{z-index:5}
+#offl{position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:50;background:#ff9f0a;color:#000;font-weight:700;font-size:13px;padding:3px 14px;border-radius:0 0 10px 10px}#offl[hidden]{display:none}
 #batt,#tr{background:rgba(0,0,0,.72);padding:3px 12px 3px 8px;border-radius:16px}
 /* charging page: a wide battery bar on top, then power, time, state, then the pack numbers */
 #ch{grid-template-columns:repeat(4,1fr);grid-template-rows:1.1fr 1fr 1fr}
@@ -350,7 +351,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
      </div>
     </div>
     <div class="t" style="grid-column:span 2"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span class="l">Charging power</span></div><div class="v" id="chkw">-</div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="l">Time to full</span></div><div class="v" id="chtm">-</div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="l">Time to full</span></div><div class="v" id="chtm">-</div><div class="u" id="chfull"></div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 12h4l2-6 4 12 2-6h8"/></svg><span class="l">Charge state</span></div><div class="v" id="chst" style="font-size:22px">-</div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span class="l">Pack voltage</span></div><div class="v"><span id="pv">-</span> V</div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span class="l">Pack current</span></div><div class="v"><span id="pa">-</span> A</div></div>
@@ -409,6 +410,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 
   <section class="pg" id="p-hud">
    <div id="hud">
+    <div id="offl" hidden>No internet connection</div>
     <div id="top">
       <div id="batt"><div class="glyph"><div id="socb"></div></div><b><span id="soc">-</span>%</b><span class="u"><span id="rng">-</span> km</span></div>
       <div id="tr"><span id="chip">Starting</span><span><span id="tout3">-</span> °C</span><b id="clock">-</b></div>
@@ -443,7 +445,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
     <div id="map"></div>
     <div id="nomap">Waiting for the car's location</div>
     <div id="sheet">
-      <div class="sw2"><div class="l">Navigation</div><div class="v" id="nav">-</div></div>
+      <div class="sw2"><div class="l" id="navl">Navigation</div><div class="v" id="nav">-</div></div>
       <div class="sh1"><div class="l">Outside</div><div class="v"><span id="tout">-</span> °C</div></div>
       <div class="sh1"><div class="l">Self-driving</div><div class="v"><span id="fsd">-</span> km</div></div>
       <div class="sw2"><a id="amap" href="#">Open in Maps</a></div>
@@ -452,7 +454,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 
   <section class="pg" id="p-info">
    <div id="inf">
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M8 3 5 21M16 3l3 18M12 5v3M12 11v3M12 17v3"/></svg><span class="l">Odometer</span></div><div class="v"><span id="odo">-</span> km</div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M8 3 5 21M16 3l3 18M12 5v3M12 11v3M12 17v3"/></svg><span class="l">Odometer</span></div><div class="v"><span id="odo">-</span> km</div><div class="u" id="best"></div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg><span class="l">Software</span></div><div class="v" id="sw">--</div><button id="ver" style="margin:0;padding:6px 12px;font-size:13px;font-weight:600;width:auto" hidden>Read version (up to 2 credits)</button></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M3 13l2-5a2 2 0 0 1 2-1.5h10a2 2 0 0 1 2 1.5l2 5v4H3zM6 17v2M18 17v2"/></svg><span class="l">Vehicle</span></div><div class="v" style="font-size:20px;white-space:normal;line-height:1.15">Model 3 Long Range</div><div class="u" id="vehsub">2024</div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg><span class="l">Connection</span></div><div class="v" id="conn" style="font-size:17px;white-space:normal">-</div><p id="log">OK</p></div>
@@ -552,6 +554,7 @@ const GEAR_NAMES = { P: "P", R: "R", N: "N", D: "D" };
 // Only an armed timer can start, so a parked car can never record a run. Armed: the first movement from a standstill starts it; it stops at 100 km/h
 // (interpolated between the 1-a-second readings) or on brake or regen. It disarms after one run or after 60 s, and a tap cancels it.
 // A run under 2.0 s is treated as noise and not saved. The start is accurate to about half a second.
+function saveRun(t) { try { const a = JSON.parse(store.get("runs") || "[]"); a.push(+t.toFixed(2)); store.set("runs", JSON.stringify(a.slice(-5))); } catch (e) {} }
 const T = { state: "idle", t0: 0, armedAt: 0, last: null, cur: null, prev: null, note: "" };
 function timerTick(now) {
   const sp = speedKmh(), pw = powerKw(), br = S.BrakePedal === true || S.BrakePedal === "true";
@@ -562,7 +565,7 @@ function timerTick(now) {
       else if (fresh && T.prev != null && T.prev < 1 && sp >= 1) { T.state = "run"; T.t0 = now - 500; }
     } else if (T.state === "run") {
       const el = (now - T.t0) / 1000;
-      if (sp >= 100) { const f = T.prev != null && sp > T.prev ? (sp - 100) / (sp - T.prev) : 0, t = (now - 1000 * f - T.t0) / 1000; if (t < 2.0) { T.state = "idle"; T.note = "Too quick to be real, not saved"; } else { T.last = t; T.state = "done"; } }
+      if (sp >= 100) { const f = T.prev != null && sp > T.prev ? (sp - 100) / (sp - T.prev) : 0, t = (now - 1000 * f - T.t0) / 1000; if (t < 2.0) { T.state = "idle"; T.note = "Too quick to be real, not saved"; } else { T.last = t; T.state = "done"; saveRun(t); } }
       else if (br || (pw != null && pw < -1)) { T.state = "idle"; T.note = el < 2.0 ? "Cancelled" : "Stopped at " + Math.round(sp) + " km/h"; }
       else if (sp < 1) { T.state = "idle"; T.note = "Cancelled"; }
     }
@@ -573,6 +576,7 @@ function timerTick(now) {
   else if (T.state === "armed") { tm.textContent = "Armed"; tm.classList.add("txt", "armed"); sub.textContent = "Ready"; sub.classList.add("armed"); note.textContent = "Tap to cancel"; }
   else if (T.state === "run") { tm.textContent = ((now - T.t0) / 1000).toFixed(1); sub.textContent = "Running"; note.textContent = ""; }
   else { tm.textContent = T.last.toFixed(1); sub.textContent = "Done"; note.textContent = "Tap to arm again"; tm.style.color = "#30d158"; }
+  { let a = []; try { a = JSON.parse(store.get("runs") || "[]"); } catch (e) {} $("best").textContent = a.length ? "Best 0–100: " + Math.min(...a).toFixed(1) + " s (last " + a.length + ")" : ""; }
   $("tl").textContent = T.last != null ? T.last.toFixed(1) : "--"; $("tls").hidden = T.last == null;
 }
 function toggleArm() { if (T.state === "idle" || T.state === "done") { T.state = "armed"; T.armedAt = performance.now(); T.note = ""; } else if (T.state === "armed") { T.state = "idle"; T.note = "Disarmed"; } }
@@ -621,12 +625,13 @@ function render() {
   const chargingNow = /^(charging|starting)$/i.test(String(csName));
   $("chst").textContent = csName == null ? "--" : (CS[csName] || csName);
   $("chkw").textContent = chargingNow ? (ck == null ? "--" : ck.toFixed(1) + " kW") : "Not charging"; $("chkw").classList.toggle("quiet", !chargingNow);
-  { const h = num(S.TimeToFullCharge ?? S.EstimatedHoursToChargeTermination), m = h == null ? null : Math.round(h * 60); $("chtm").textContent = !chargingNow || m == null ? "--" : m >= 60 ? Math.floor(m / 60) + " h " + (m % 60) + " min" : m + " min"; $("chtm").classList.toggle("quiet", !chargingNow || m == null); } // reported in hours
+  { const h = num(S.TimeToFullCharge ?? S.EstimatedHoursToChargeTermination), m = h == null ? null : Math.round(h * 60); $("chtm").textContent = !chargingNow || m == null ? "--" : m >= 60 ? Math.floor(m / 60) + " h " + (m % 60) + " min" : m + " min"; $("chtm").classList.toggle("quiet", !chargingNow || m == null); $("chfull").textContent = chargingNow && m != null ? "Full at " + new Date(Date.now() + m * 60000).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : ""; } // reported in hours
   { const cok = chargingNow ? "ok" : ""; flag("chst", cok); flag("chkw", cok); }
   $("pv").textContent = fmt(num(S.PackVoltage), 0); { const pa = num(S.PackCurrent); $("pa").textContent = pa == null ? "--" : (Math.abs(pa) < 2 ? 0 : pa).toFixed(0); } // under 2 A is idle noise
   renderCar();
   { const lg = $("log"); if (!liveMode) { lg.textContent = "Sample mode"; lg.style.color = "var(--dim)"; } else lg.style.color = (streamOpen && /^(Connected|OK)/.test(lg.textContent)) ? "var(--ok)" : ""; } // green when live, dim in sample, orange for problems
   $("vehsub").textContent = "2024 · " + (S.RightHandDrive === false || S.RightHandDrive === "false" ? "left-hand drive" : "right-hand drive");
+  { const qs = lastEvt ? Math.round((Date.now() - lastEvt) / 60000) : 0; $("navl").textContent = liveMode && qs >= 2 ? "Navigation · last seen " + qs + " min ago" : "Navigation"; }
   { const ago = lastEvt ? Math.round((Date.now() - lastEvt) / 1000) : null; $("lastdata").textContent = !liveMode ? "Sample" : ago == null ? "--" : ago < 2 ? "Just now" : ago < 90 ? ago + " s ago" : Math.round(ago / 60) + " min ago"; $("lastdata").classList.toggle("quiet", !liveMode || ago == null); }
   const od = num(S.Odometer); $("odo").textContent = od == null ? "-" : (od * MI).toFixed(0); $("sw").textContent = S.Version || "--"; $("ver").hidden = !!S.Version || !liveMode;
   { const ago = lastEvt ? Math.round((Date.now() - lastEvt) / 1000) : null; $("conn").textContent = !liveMode ? "Sample data" : (DEFAULT_RELAY || store.get("base") ? "Via relay" : "Direct") + (ago == null ? " · no data yet" : " · data " + (ago < 2 ? "just now" : ago + " s ago")); }
@@ -652,18 +657,23 @@ function render() {
   }
   drawG();
 }
+let gPeak = null; // peak-hold dot: the strongest recent G reading, fades over 2 s
 function drawG() {
   const c = $("gf"), g = c.getContext("2d"), w = c.width, h = c.height, cx = w / 2, cy = h / 2, R = h / 2 - 10, sc = R / 1.2; // 1.2 g edge
   g.clearRect(0, 0, w, h); g.strokeStyle = "rgba(235,235,245,.18)"; g.lineWidth = 2; g.fillStyle = "rgba(235,235,245,.6)"; g.font = "700 24px -apple-system, system-ui, sans-serif";
   [0.5, 1].forEach(r => { g.beginPath(); g.arc(cx, cy, r * sc, 0, 7); g.stroke(); });
   g.beginPath(); g.moveTo(cx - R, cy); g.lineTo(cx + R, cy); g.moveTo(cx, cy - R); g.lineTo(cx, cy + R); g.stroke();
   const tr = gfPts.slice(-6); tr.forEach((q, i) => { g.fillStyle = "rgba(255,255,255," + (0.12 + 0.88 * (i + 1) / tr.length) + ")"; g.beginPath(); g.arc(cx + q[0] * sc, cy - q[1] * sc, i === tr.length - 1 ? 15 : 5 + i, 0, 7); g.fill(); });
-  const q = gfPts[gfPts.length - 1] || [0, 0]; g.textAlign = "center"; g.fillStyle = "#fff"; g.fillText(Math.hypot(q[0], q[1]).toFixed(2) + " g", cx, h - 22); g.textAlign = "start";
+  const q = gfPts[gfPts.length - 1] || [0, 0], nowp = Date.now(), mg = Math.hypot(q[0], q[1]);
+  if (mg > 0.15 && (!gPeak || nowp - gPeak.t > 2000 || mg >= gPeak.m)) gPeak = { x: q[0], y: q[1], m: mg, t: nowp };
+  if (gPeak && nowp - gPeak.t <= 2000) { g.fillStyle = "rgba(255,212,0," + (1 - (nowp - gPeak.t) / 2000).toFixed(2) + ")"; g.beginPath(); g.arc(cx + gPeak.x * sc, cy - gPeak.y * sc, 9, 0, 7); g.fill(); }
+  g.textAlign = "center"; g.fillStyle = "#fff"; g.fillText(Math.hypot(q[0], q[1]).toFixed(2) + " g", cx, h - 22); g.textAlign = "start";
 }
 
 // ---- stream (fetch with a Bearer header, parses Server-Sent Events) ----
 const DEFAULT_RELAY = "https://fancy-shape-530a.3andfree-app.workers.dev"; // the relay Worker; it only allows this page's address and read-only requests
 let ctl = null, retry = 1000, timer = null, method = "query";
+function netBanner() { $("offl").hidden = navigator.onLine !== false; } addEventListener("online", netBanner); addEventListener("offline", netBanner); netBanner();
 function setChip(t, c) { $("chip").textContent = t; $("chip").style.color = c || ""; }
 let liveMode = false, lastEvt = 0, streamOpen = false, wasOpen = false;
 function onEvent(txt) {
@@ -755,11 +765,6 @@ function startDemo() {
     const mph = v / MI, acc = ph >= 5 && ph < 12 ? 80 : ph < 30 && ph >= 12 ? 20 : 0, brk = ph >= 30 && ph < 36;
     const pw = ph >= 5 && ph < 12 ? 120 : ph >= 12 && ph < 30 ? 18 : ph >= 30 && ph < 36 ? -35 : 1;
     Object.assign(S, { VehicleSpeed: mph, Gear: v > 0 ? "D" : "P", PedalPosition: acc, BrakePedal: brk, PackVoltage: 380, PackCurrent: pw * 1000 / 380, BatteryLevel: 72, EstBatteryRange: 190, CruiseSetSpeed: 0, OutsideTemp: 21, InsideTemp: 23, SelfDrivingMilesSinceReset: 3.4, LateralAcceleration: Math.sin(t / 4) * 0.4, LongitudinalAcceleration: brk ? -0.5 : acc > 50 ? 0.8 : 0, Location: { latitude: base[0] + t * 0.0001, longitude: base[1] + Math.sin(t / 10) * 0.0005 }, Locked: false, SentryMode: "Off", Odometer: 12345, Version: "demo", TpmsPressureFl: 2.9, TpmsPressureFr: 2.9, TpmsPressureRl: 2.8, TpmsPressureRr: 2.5, DetailedChargeState: "Disconnected", MinutesToArrival: 18, MilesToArrival: 7.2, DestinationName: "Demo", ExpectedEnergyPercentAtTripArrival: 65 });
-    { const ped = new URLSearchParams(location.search).get("ped"); // mock-up states: parked, accel (60%), regen (-35 kW), brake
-      if (ped === "parked") Object.assign(S, { VehicleSpeed: 0, Gear: "P", PedalPosition: 0, BrakePedal: false, PackCurrent: 0.2 });
-      if (ped === "accel") Object.assign(S, { VehicleSpeed: 60 / MI, Gear: "D", PedalPosition: 60, BrakePedal: false, PackCurrent: 110000 / 380 });
-      if (ped === "regen") Object.assign(S, { VehicleSpeed: 70 / MI, Gear: "D", PedalPosition: 0, BrakePedal: false, PackCurrent: -35000 / 380 });
-      if (ped === "brake") Object.assign(S, { VehicleSpeed: 45 / MI, Gear: "D", PedalPosition: 0, BrakePedal: true, PackCurrent: -22000 / 380 }); }
     // ?scn=1 all closed and locked, ?scn=2 some things open (and charging), ?scn=3 everything open (door list sent as an array)
     const scn = new URLSearchParams(location.search).get("scn") || "1", closed = "WindowStateClosed", wo = "WindowStateOpened";
     // ?scn=idle: what the real car showed parked: P, 0 km/h, a 0.19 g sensor offset, tiny battery current, old cruise setting, no range yet
@@ -794,7 +799,7 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "Build 18 Nov 2026 · 5 pages · v3b"; $("build").textContent = BUILD;
+const BUILD = "Build 18 Nov 2026 · 5 pages · v4"; $("build").textContent = BUILD;
 $("upd").onclick = () => { location.href = location.pathname + "?v=" + Date.now(); }; // reloads a fresh copy; the saved token stays in this browser
 $("rside").onclick = toggleArm;
 $("ver").onclick = () => { if (confirm("Read the software version from Teslemetry? This can use up to 2 credits (500 a month are included). It never wakes the car.")) readVersion(); };
