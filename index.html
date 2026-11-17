@@ -196,6 +196,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #carsum.ok{color:var(--ok)}#carsum.warn{color:var(--warn)}
 #car .body{fill:#1c1c1e;stroke:#3a3a3c;stroke-width:2}
 #car .glass{fill:#0c0d0f}
+#car .wind{fill:#23313d}
 #car .wheel{fill:#2c2c2e}
 #car .part{fill:#2c2c2e;stroke:#3a3a3c;stroke-width:1}
 #car .win{fill:#3a3a3c}
@@ -261,13 +262,15 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
      <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span class="l">Sentry</span></div><div class="v" id="sentry">-</div></div>
     </div>
     <div id="carbox">
-     <svg id="car" viewBox="0 0 320 340">
+     <svg id="car" viewBox="0 -16 320 356">
+      <text class="tu" x="160" y="-4" text-anchor="middle" style="font-size:13px">▲ Front</text>
       <ellipse id="sring" cx="160" cy="172" rx="92" ry="166"/>
       <rect class="wheel" x="84" y="52" width="16" height="36" rx="5"/><rect class="wheel" x="220" y="52" width="16" height="36" rx="5"/>
       <rect class="wheel" x="84" y="254" width="16" height="36" rx="5"/><rect class="wheel" x="220" y="254" width="16" height="36" rx="5"/>
       <path class="body" d="M128 14Q160 4 192 14Q212 22 214 58L218 270Q216 322 192 330Q160 338 128 330Q104 322 102 270L106 58Q108 22 128 14Z"/>
       <rect id="frunk" class="part" x="130" y="30" width="60" height="44" rx="12"/>
       <rect id="trunk" class="part" x="130" y="248" width="60" height="62" rx="12"/>
+      <path class="wind" d="M131 78H189L195 90H125Z"/>
       <rect class="glass" x="124" y="86" width="72" height="150" rx="14"/>
       <rect id="d-fl" class="part" x="98" y="84" width="22" height="74" rx="8"/><rect id="d-rl" class="part" x="98" y="162" width="22" height="74" rx="8"/>
       <rect id="d-fr" class="part" x="200" y="84" width="22" height="74" rx="8"/><rect id="d-rr" class="part" x="200" y="162" width="22" height="74" rx="8"/>
@@ -406,7 +409,7 @@ function renderCar() {
   $("cport").classList.toggle("known", cp != null); if ($("cportv")) { $("cportv").textContent = cp == null ? "-" : cp ? "Open" : "Closed"; flag("cportv", cp ? "warn" : cp === false ? "ok" : ""); }
   const lk = S.Locked == null ? null : truthy(S.Locked), pl = $("padlock"); pl.classList.toggle("ok", lk === true); pl.classList.toggle("warn", lk === false);
   $("lock").textContent = lk == null ? "-" : lk ? "Locked" : "Unlocked"; flag("lock", lk == null ? "" : lk ? "ok" : "warn");
-  const nd = ds == null ? null : [...ds].length; $("doors").textContent = ds == null ? "-" : nd === 0 ? "All closed" : nd === 1 ? "1 open" : nd + " open"; flag("doors", ds == null ? "" : nd ? "bad" : "ok");
+  const nd = ds == null ? null : [...ds].length; $("doors").textContent = ds == null ? "-" : nd === 0 ? "All closed" : nd === 1 ? "1 open" : nd + " open"; flag("doors", ds == null ? "" : nd ? "warn" : "ok"); // orange means open; red is kept for low tyres and alerts
   $("windows").textContent = wknown === 0 ? "-" : wopen.length ? wopen.length + " open" : "All closed"; flag("windows", wknown === 0 ? "" : wopen.length ? "warn" : "ok");
   { const m = String(S.SentryMode ?? "").replace(/^SentryModeState/, ""), off = m === "Off" || S.SentryMode === false, unk = S.SentryMode == null || m === "Unknown" || m === "";
     $("sentry").textContent = unk ? "-" : off ? "Off" : m === "Panic" ? "Alert" : "On"; flag("sentry", unk || off ? "" : m === "Panic" ? "bad" : "ok"); $("sring").classList.toggle("on", !unk && !off); }
@@ -473,6 +476,7 @@ function render() {
   { const c = /charging|starting/i.test(String(cs)), cok = c ? "ok" : ""; flag("chst", cok); flag("chkw", cok); }
   $("pv").textContent = fmt(num(S.PackVoltage), 0); $("pa").textContent = fmt(num(S.PackCurrent), 0);
   renderCar();
+  { const lg = $("log"); if (!liveMode) { lg.textContent = "Sample mode"; lg.style.color = "var(--dim)"; } else lg.style.color = (lastEvt && !stale && /^(Connected|OK)/.test(lg.textContent)) ? "var(--ok)" : ""; } // green when live, dim in sample, orange for problems
   const od = num(S.Odometer); $("odo").textContent = od == null ? "-" : (od * MI).toFixed(0); $("sw").textContent = S.Version || "-";
   { const ago = lastEvt ? Math.round((Date.now() - lastEvt) / 1000) : null; $("conn").textContent = !liveMode ? "Sample data" : (DEFAULT_RELAY || store.get("base") ? "Via relay" : "Direct") + (ago == null ? " · no data yet" : " · data " + (ago < 2 ? "just now" : ago + " s ago")); }
   const mi = num(S.MilesToArrival), mn = num(S.MinutesToArrival), asoc = num(S.ExpectedEnergyPercentAtTripArrival);
