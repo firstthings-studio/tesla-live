@@ -255,8 +255,8 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #gauge svg #zero text{display:inline}
 #gauge svg path{stroke-width:6px}
 #gauge svg path.pb{stroke-width:15px}#gauge svg path.f{transition:stroke-dasharray .12s ease-out,opacity .12s ease-out}
-#cstack{position:absolute;left:50%;transform:translateX(-50%);top:calc(var(--st) + 14px);bottom:calc(var(--sb) + 30px);z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;pointer-events:none}
-#speed{font-size:min(52vh,230px);line-height:.88;color:#fff}
+#cstack{position:absolute;left:50%;transform:translateX(-50%);top:calc(var(--st) + 30px);bottom:calc(var(--sb) + 30px);z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;pointer-events:none}
+#speed{font-size:min(49vh,218px);line-height:.88;color:#fff}
 #cstack .u{font-size:22px;line-height:1}
 #gearv{font-size:34px;padding:0 .8em;border:3px solid #ffd400;color:#ffd400;border-radius:10px;clip-path:none;line-height:1.2;margin:0}
 #gearv[data-g="R"]{color:#ff2d2d;border-color:#ff2d2d}
@@ -794,7 +794,7 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "Build 18 Nov 2026 · 5 pages · v3"; $("build").textContent = BUILD;
+const BUILD = "Build 18 Nov 2026 · 5 pages · v3b"; $("build").textContent = BUILD;
 $("upd").onclick = () => { location.href = location.pathname + "?v=" + Date.now(); }; // reloads a fresh copy; the saved token stays in this browser
 $("rside").onclick = toggleArm;
 $("ver").onclick = () => { if (confirm("Read the software version from Teslemetry? This can use up to 2 credits (500 a month are included). It never wakes the car.")) readVersion(); };
