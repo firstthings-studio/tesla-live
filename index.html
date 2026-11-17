@@ -182,6 +182,9 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #speed{font-weight:800;font-style:italic;letter-spacing:-5px;text-shadow:none}
 #p-hud #tm{font-weight:800;font-style:italic;text-shadow:none}
 #chip{color:var(--acc);text-shadow:none}
+/* no data yet: quiet placeholders instead of a huge slanted dash */
+#speed.nd{font-weight:300;font-style:normal;letter-spacing:0;color:rgba(235,235,245,.22)}
+#gearv.nd{color:rgba(235,235,245,.3)!important;border-color:rgba(235,235,245,.2)}
 /* fit the timer circle on a real phone: fewer lines, smaller type */
 #p-hud #tm{font-size:clamp(34px,11vh,50px)}
 #p-hud #crt{flex-direction:row;align-items:baseline;justify-content:center;gap:8px}
@@ -330,8 +333,8 @@ function timerTick(now) {
 // ---- drawing ----
 function render() {
   const sp = speedKmh(), pw = powerKw(), acc = num(S.PedalPosition);
-  $("speed").textContent = fmt(sp, 0);
-  $("gearv").textContent = S.Gear == null ? "-" : (GEAR_NAMES[String(S.Gear).replace(/^ShiftState/, "")] || "-"); $("gearv").dataset.g = $("gearv").textContent;
+  $("speed").textContent = sp == null ? "--" : fmt(sp, 0); $("speed").classList.toggle("nd", sp == null); $("gearv").classList.toggle("nd", S.Gear == null);
+  $("gearv").textContent = S.Gear == null ? "P" : (GEAR_NAMES[String(S.Gear).replace(/^ShiftState/, "")] || "-"); $("gearv").dataset.g = $("gearv").textContent;
   if (liveMode && lastEvt) { const old = Date.now() - lastEvt > 8000; if (old !== stale) { stale = old; setChip(old ? "No data from car" : "Live", old ? "var(--warn)" : "var(--ok)"); } }
   $("pwr").textContent = fmt(pw, 0);
   $("regen").textContent = pw != null && pw < 0 ? " regen" : "";
@@ -388,6 +391,7 @@ function drawG() {
 }
 
 // ---- stream (fetch with a Bearer header, parses Server-Sent Events) ----
+const DEFAULT_RELAY = "https://fancy-shape-530a.3andfree-app.workers.dev"; // the relay Worker; it only allows this page's address and read-only requests
 let ctl = null, retry = 1000, timer = null, method = "query";
 function setChip(t, c) { $("chip").textContent = t; $("chip").style.color = c || ""; }
 let liveMode = false, lastEvt = 0, stale = false;
@@ -402,12 +406,13 @@ let rafPending = false;
 function scheduleRender() { if (rafPending) return; rafPending = true; requestAnimationFrame(() => { rafPending = false; render(); }); }
 async function connect() {
   if (ctl) ctl.abort(); ctl = new AbortController();
-  const base = (store.get("base") || "https://api.teslemetry.com").replace(/\/+$/, "");
+  const relay = store.get("base") || DEFAULT_RELAY; // the relay (a small Cloudflare Worker) is how a browser is allowed to reach Teslemetry
+  const base = (relay || "https://api.teslemetry.com").replace(/\/+$/, "");
   setChip("Connecting", "var(--warn)");
   try {
     // Two ways to connect. "query" puts the token in the address, which is Teslemetry's documented browser method and avoids the browser's
     // permission pre-check; "header" sends it as a Bearer header (used with a relay). With no relay the page tries both and remembers the one that works.
-    const tok = store.get("tok"), direct = !store.get("base");
+    const tok = store.get("tok"), direct = !relay;
     const order = direct ? (method === "query" ? ["query", "header"] : ["header", "query"]) : ["header"];
     let r = null, lastErr = null;
     for (const how of order) {
