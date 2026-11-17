@@ -136,6 +136,12 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #p-hud #lap .l{font-size:14px}
 #p-hud #tm{font-size:64px}
 #lap .u{font-size:16px}
+/* colour review: amber only for power, gear and timer; quiet rings; one white dot for G-force */
+#gwrap,#rside{box-shadow:inset 0 0 0 2px #2a2a2a}
+#gauge svg path{stroke-width:8px}
+#gearv{clip-path:none;border-radius:10px;border:2px solid var(--acc);padding:0 28px;line-height:1.2}
+#p-hud #crt .v{color:rgba(235,235,245,.4)}
+#trk{font-size:13px!important}
 #p-hud #tm{font-size:clamp(40px,13.5vh,64px)}
 #p-hud #crt .v{font-size:clamp(20px,6.8vh,30px)}
 #rside{padding-top:10px}
@@ -366,8 +372,8 @@ function drawG() {
   g.clearRect(0, 0, w, h); g.strokeStyle = "rgba(235,235,245,.18)"; g.lineWidth = 2; g.fillStyle = "rgba(235,235,245,.6)"; g.font = "700 24px -apple-system, system-ui, sans-serif";
   [0.5, 1].forEach(r => { g.beginPath(); g.arc(cx, cy, r * sc, 0, 7); g.stroke(); });
   g.beginPath(); g.moveTo(cx - R, cy); g.lineTo(cx + R, cy); g.moveTo(cx, cy - R); g.lineTo(cx, cy + R); g.stroke();
-  const tr = gfPts.slice(-6); tr.forEach((q, i) => { g.fillStyle = "rgba(255,196,0," + (0.12 + 0.88 * (i + 1) / tr.length) + ")"; g.beginPath(); g.arc(cx + q[0] * sc, cy - q[1] * sc, i === tr.length - 1 ? 15 : 5 + i, 0, 7); g.fill(); });
-  const q = gfPts[gfPts.length - 1] || [0, 0]; g.fillStyle = "rgba(235,235,245,.75)"; g.textAlign = "center"; g.fillText("G-force", cx, 34); g.fillStyle = "#fff"; g.fillText(Math.hypot(q[0], q[1]).toFixed(2) + " g", cx, h - 22); g.textAlign = "start";
+  const tr = gfPts.slice(-6); tr.forEach((q, i) => { g.fillStyle = "rgba(255,255,255," + (0.12 + 0.88 * (i + 1) / tr.length) + ")"; g.beginPath(); g.arc(cx + q[0] * sc, cy - q[1] * sc, i === tr.length - 1 ? 15 : 5 + i, 0, 7); g.fill(); });
+  const q = gfPts[gfPts.length - 1] || [0, 0]; g.textAlign = "center"; g.fillStyle = "#fff"; g.fillText(Math.hypot(q[0], q[1]).toFixed(2) + " g", cx, h - 22); g.textAlign = "start";
 }
 
 // ---- stream (fetch with a Bearer header, parses Server-Sent Events) ----
@@ -409,7 +415,7 @@ async function connect() {
 
 // ---- sample stream (no car needed): a short drive with an acceleration run ----
 function startDemo() {
-  setChip("Sample data", "var(--acc)"); let t = 0;
+  setChip("Sample data", "var(--dim)"); let t = 0;
   const base = [-37.8136, 144.9631];
   setInterval(() => {
     t++; const ph = t % 60; let v = ph < 5 ? 0 : ph < 12 ? (ph - 5) * 15 : ph < 30 ? 105 : ph < 36 ? 105 - (ph - 30) * 17 : 0; // mph-ish converted below
