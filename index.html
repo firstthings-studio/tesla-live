@@ -182,6 +182,15 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #speed{font-weight:800;font-style:italic;letter-spacing:-5px;text-shadow:none}
 #p-hud #tm{font-weight:800;font-style:italic;text-shadow:none}
 #chip{color:var(--acc);text-shadow:none}
+/* fit the timer circle on a real phone: fewer lines, smaller type */
+#p-hud #tm{font-size:clamp(34px,11vh,50px)}
+#p-hud #crt{flex-direction:row;align-items:baseline;justify-content:center;gap:8px}
+#p-hud #crt .v{font-size:clamp(16px,5vh,22px)}
+#p-hud #crt .l{font-size:14px}
+#p-hud #lap .u{font-size:15px}
+#trk{font-size:12px!important}
+#nomap{position:absolute;left:0;right:calc(var(--sr) + 290px);top:50%;transform:translateY(-50%);text-align:center;color:var(--dim);font-size:20px;font-weight:600;z-index:2;padding:0 24px}
+#log{font-size:14px;line-height:1.25;max-height:4.8em;overflow:hidden;word-break:break-word}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -240,8 +249,8 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
         </div>
       </div>
       <div id="rside">
-        <div class="t hx" id="lap"><div class="l">0 to 100 km/h</div><div id="tm">0.0</div><div class="u">last <span id="tl">-</span> s · <span id="ts">ready</span></div><div class="l" id="trk">Closed track only</div></div>
-        <div class="t hx" id="crt"><div class="l">Cruise set</div><div class="v"><span id="cruise">Off</span> <span class="u" id="cru" hidden>km/h</span></div></div>
+        <div class="t hx" id="lap"><div id="tm">0.0</div><div class="u">last <span id="tl">-</span> s · <span id="ts">ready</span></div><div class="l" id="trk">0 to 100 · closed track only</div></div>
+        <div class="t hx" id="crt"><div class="l">Cruise</div><div class="v"><span id="cruise">Off</span> <span class="u" id="cru" hidden>km/h</span></div></div>
       </div>
     </div>
    </div>
@@ -249,6 +258,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 
   <section class="pg" id="p-map">
     <div id="map"></div>
+    <div id="nomap">Waiting for the car's location</div>
     <div id="sheet">
       <div><div class="l">Navigation</div><div class="v" id="nav">-</div></div>
       <div><div class="l">Outside</div><div class="v"><span id="tout">-</span> °C</div></div>
@@ -358,7 +368,7 @@ function render() {
   $("nav").textContent = (mn == null || /^invalid$/i.test(String(S.DestinationName))) ? "No route" : (S.DestinationName ? S.DestinationName + ": " : "") + (mi == null ? "" : (mi * MI).toFixed(0) + " km, ") + mn.toFixed(0) + " min" + (asoc == null ? "" : ", arrive " + asoc.toFixed(0) + "%");
   const p = loc(S.Location);
   if (p) {
-    if (!map) { map = L.map("map", { zoomControl: false }); map.attributionControl.setPosition("bottomleft"); L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "© OpenStreetMap contributors" }).addTo(map); marker = L.circleMarker(p, { radius: 9, color: "#fff", weight: 3, fillColor: "#0a84ff", fillOpacity: 1 }).addTo(map); trail = L.polyline([], { weight: 5, color: "#0a84ff" }).addTo(map); map.setView(p, 16); new ResizeObserver(() => map.invalidateSize()).observe($("map")); }
+    if (!map) { $("nomap").hidden = true; map = L.map("map", { zoomControl: false }); map.attributionControl.setPosition("bottomleft"); L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "© OpenStreetMap contributors" }).addTo(map); marker = L.circleMarker(p, { radius: 9, color: "#fff", weight: 3, fillColor: "#0a84ff", fillOpacity: 1 }).addTo(map); trail = L.polyline([], { weight: 5, color: "#0a84ff" }).addTo(map); map.setView(p, 16); new ResizeObserver(() => map.invalidateSize()).observe($("map")); }
     const last = trailPts[trailPts.length - 1];
     if (!last || last[0] !== p[0] || last[1] !== p[1]) { trailPts.push(p); if (trailPts.length > 1500) trailPts.shift(); trail.setLatLngs(trailPts); }
     marker.setLatLng(p); map.panTo(p, { animate: false });
@@ -378,7 +388,7 @@ function drawG() {
 }
 
 // ---- stream (fetch with a Bearer header, parses Server-Sent Events) ----
-let ctl = null, retry = 1000, timer = null;
+let ctl = null, retry = 1000, timer = null, method = "query";
 function setChip(t, c) { $("chip").textContent = t; $("chip").style.color = c || ""; }
 let liveMode = false, lastEvt = 0, stale = false;
 function onEvent(txt) {
@@ -395,10 +405,23 @@ async function connect() {
   const base = (store.get("base") || "https://api.teslemetry.com").replace(/\/+$/, "");
   setChip("Connecting", "var(--warn)");
   try {
-    const r = await fetch(base + "/sse?topics=data,connectivity", { headers: { Authorization: "Bearer " + store.get("tok"), Accept: "text/event-stream" }, signal: ctl.signal, cache: "no-store" });
-    if (r.status === 401 || r.status === 403) { setChip("Token not accepted", "var(--bad)"); return; }
+    // Two ways to connect. "query" puts the token in the address, which is Teslemetry's documented browser method and avoids the browser's
+    // permission pre-check; "header" sends it as a Bearer header (used with a relay). With no relay the page tries both and remembers the one that works.
+    const tok = store.get("tok"), direct = !store.get("base");
+    const order = direct ? (method === "query" ? ["query", "header"] : ["header", "query"]) : ["header"];
+    let r = null, lastErr = null;
+    for (const how of order) {
+      try {
+        const url = base + "/sse?topics=data,connectivity" + (how === "query" ? "&token=" + encodeURIComponent(tok) : "");
+        const o = { signal: ctl.signal, cache: "no-store" };
+        if (how === "header") o.headers = { Authorization: "Bearer " + tok, Accept: "text/event-stream" };
+        r = await fetch(url, o); method = how; lastErr = null; break;
+      } catch (e) { if (e.name === "AbortError") return; lastErr = e; }
+    }
+    if (!r) throw lastErr;
+    if (r.status === 401 || r.status === 403) { setChip("Token not accepted", "var(--bad)"); $("log").textContent = "Token not accepted. Copy it again from Teslemetry."; return; }
     if (!r.ok) throw new Error("HTTP " + r.status);
-    setChip("Live", "var(--ok)"); retry = 1000;
+    setChip("Live", "var(--ok)"); retry = 1000; lastEvt = Date.now(); stale = false; $("log").textContent = "Connected";
     const rd = r.body.getReader(), dec = new TextDecoder(); let buf = "";
     for (;;) {
       const { value, done } = await rd.read(); if (done) break;
@@ -411,9 +434,9 @@ async function connect() {
     }
   } catch (e) {
     if (e.name === "AbortError") return;
-    $("log").textContent = "Connection problem: " + e.message + ". If this says Failed to fetch, the relay address is wrong or missing.";
+    $("log").textContent = "Can't reach Teslemetry (" + e.message + "). Retrying.";
   }
-  setChip("Reconnecting", "var(--warn)"); retry = Math.min(retry * 2, 30000);
+  setChip("Can't connect, retrying", "var(--warn)"); retry = Math.min(retry * 2, 30000);
   timer = setTimeout(connect, retry);
 }
 
