@@ -278,6 +278,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #p-hud #crt[hidden]{display:none}
 #p-hud #crt .u,#p-hud #crt #cru{display:inline;color:var(--dim);font-weight:600}
 #chip{z-index:5}
+#gearv.pop{animation:gpop .35s ease-out}@keyframes gpop{0%{transform:scale(1.4)}100%{transform:scale(1)}}
 #offl{position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:50;background:#ff9f0a;color:#000;font-weight:700;font-size:13px;padding:3px 14px;border-radius:0 0 10px 10px}#offl[hidden]{display:none}
 #batt,#tr{background:rgba(0,0,0,.72);padding:3px 12px 3px 8px;border-radius:16px}
 /* charging page: a wide battery bar on top, then power, time, state, then the pack numbers */
@@ -584,7 +585,7 @@ function toggleArm() { if (T.state === "idle" || T.state === "done") { T.state =
 function render() {
   const sp = speedKmh(), pw = powerKw(), acc = num(S.PedalPosition);
   $("speed").textContent = sp == null ? "--" : fmt(sp, 0); $("speed").classList.toggle("nd", sp == null); $("gearv").classList.toggle("nd", S.Gear == null);
-  $("gearv").textContent = S.Gear == null ? "P" : (GEAR_NAMES[String(S.Gear).replace(/^ShiftState/, "")] || "-"); $("gearv").dataset.g = $("gearv").textContent;
+  $("gearv").textContent = S.Gear == null ? "P" : (GEAR_NAMES[String(S.Gear).replace(/^ShiftState/, "")] || "-"); { const g0 = $("gearv").dataset.g; $("gearv").dataset.g = $("gearv").textContent; if (g0 && g0 !== $("gearv").dataset.g) { $("gearv").classList.remove("pop"); void $("gearv").offsetWidth; $("gearv").classList.add("pop"); } } // short pop when the gear changes
   // Status comes from the stream itself. A parked car only sends when something changes, so silence while parked is normal.
   if (liveMode && streamOpen) { const quiet = Date.now() - lastEvt, parked = S.Gear == null || /P$/.test(String(S.Gear));
     if (!parked && quiet > 30000) setChip("No data from car", "var(--warn)"); else if (parked && quiet > 8000) setChip("Live · parked", "var(--ok)"); else setChip("Live", "var(--ok)"); }
@@ -672,6 +673,7 @@ function drawG() {
 // ---- stream (fetch with a Bearer header, parses Server-Sent Events) ----
 const DEFAULT_RELAY = "https://fancy-shape-530a.3andfree-app.workers.dev"; // the relay Worker; it only allows this page's address and read-only requests
 let ctl = null, retry = 1000, timer = null, method = "query";
+function nightDim() { const h = new Date().getHours(); document.documentElement.style.filter = h >= 19 || h < 6 ? "brightness(.75)" : ""; } nightDim(); setInterval(nightDim, 60000); // dimmer from 7 pm to 6 am
 function netBanner() { $("offl").hidden = navigator.onLine !== false; } addEventListener("online", netBanner); addEventListener("offline", netBanner); netBanner();
 function setChip(t, c) { $("chip").textContent = t; $("chip").style.color = c || ""; }
 let liveMode = false, lastEvt = 0, streamOpen = false, wasOpen = false;
@@ -798,7 +800,7 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "Build 18 Nov 2026 · 5 pages · v4b"; $("build").textContent = BUILD;
+const BUILD = "Build 18 Nov 2026 · 5 pages · v5"; $("build").textContent = BUILD;
 $("upd").onclick = () => { location.href = location.pathname + "?v=" + Date.now(); }; // reloads a fresh copy; the saved token stays in this browser
 $("rside").onclick = toggleArm;
 $("ver").onclick = () => { if (confirm("Read the software version from Teslemetry? This can use up to 2 credits (500 a month are included). It never wakes the car.")) readVersion(); };
