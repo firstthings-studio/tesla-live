@@ -244,32 +244,61 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 /* ===== drive page, variant B: an oversized dial (only its sides show), huge centred speed, circles in the bottom corners, racing palette ===== */
 #p-hud{--acc:#ffd400;--racey:#ffd400;background:#000}
 #p-hud #main{display:block;height:100%}
-#p-hud #gauge{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);height:auto;width:152vh;aspect-ratio:1;z-index:1;max-width:none}
-#p-hud #gwrap,#p-hud #rside{position:absolute;z-index:4;width:min(36vh,166px);height:auto;aspect-ratio:1;margin:0;bottom:calc(var(--sb) + 22px);box-shadow:inset 0 0 0 2px #2a2a2a}
-#p-hud #gwrap{left:calc(var(--sl) + 16px)}
-#p-hud #rside{right:calc(var(--sr) + 24px);cursor:pointer;-webkit-tap-highlight-color:transparent}
+/* the ring hugs the centre cluster: a little cropped top and bottom, and never wide enough to run under the two circles */
+#p-hud #gauge{--ring:min(112vh,calc(100vw - var(--sl) - var(--sr) - 2 * (min(34vh,150px) + 34px)));position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);height:auto;width:var(--ring);aspect-ratio:1;z-index:1;max-width:none}
+#gauge svg{overflow:visible}
+#p-hud #gwrap,#p-hud #rside{position:absolute;z-index:4;width:min(34vh,150px);height:auto;aspect-ratio:1;margin:0;bottom:calc(var(--sb) + 22px);box-shadow:inset 0 0 0 2px #2a2a2a}
+#p-hud #gwrap{left:calc(var(--sl) + 12px)}
+#p-hud #rside{right:calc(var(--sr) + 20px);cursor:pointer;-webkit-tap-highlight-color:transparent}
 #gauge svg text{display:none}
-#speed{font-size:min(46vh,206px);color:#fff}
-#spd{gap:0;padding-bottom:6vh}
-#spd .u{font-size:22px}
-#gearv{font-size:40px;padding:0 32px;border:3px solid #ffd400;color:#ffd400;border-radius:10px;clip-path:none;line-height:1.2}
+#gauge svg #zero text{display:inline}
+#ticks rect{stroke-width:.55}
+#gauge svg path{stroke-width:6px}
+#speed{font-size:calc(var(--ring) * .32);color:#fff}
+#spd{gap:0;padding-bottom:0}
+#spd .u{font-size:calc(var(--ring) * .045)}
+#gearv{font-size:calc(var(--ring) * .085);padding:0 .8em;border:3px solid #ffd400;color:#ffd400;border-radius:10px;clip-path:none;line-height:1.2;margin-top:.1em}
 #gearv[data-g="R"]{color:#ff2d2d;border-color:#ff2d2d}
-#kw{font-size:22px}
-#pedhtml{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(var(--sb) + 30px);z-index:5;display:flex;gap:28px;font-size:19px;font-weight:700;white-space:nowrap}
+#kw{font-size:calc(var(--ring) * .045);margin-top:.35em}
+#pedhtml{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(var(--sb) + 6px);z-index:5;display:grid;grid-template-columns:1fr 1fr;column-gap:96px;width:min(96vw,640px);font-size:16px;font-weight:700;white-space:nowrap}
+#pedhtml .pg2{text-align:right}#pedhtml .pr2{text-align:left}
 #pedhtml .pg2{color:#00e060}#pedhtml .pr2{color:#ff2d2d}
 #p-hud #tm{font-size:clamp(34px,10vh,44px)}
 #p-hud #tm.txt{font-size:clamp(17px,5.2vh,22px);font-style:normal;font-weight:700;line-height:1.1;letter-spacing:0}
 #p-hud #tm.armed{color:#ffd400}
 #tsub{font-size:12px;line-height:1.25;max-width:90%}
 #tsub.armed{color:#ffd400;font-weight:600}
-#tlast{font-size:12px}
+#tnote{font-size:11px;line-height:1.2;color:#ffd400;opacity:.85;max-width:90%}
+#tnote:empty{display:none}
+#tlast{font-size:11px}
 #p-hud #lap{gap:4px;width:100%}
 #p-hud #rside.armedring{box-shadow:inset 0 0 0 3px #ffd400}
-#p-hud #crt{position:absolute;z-index:5;right:calc(var(--sr) + 24px);bottom:calc(var(--sb) + 22px + min(36vh,166px) + 8px);width:min(36vh,166px);margin:0;padding:0;display:block;background:none;box-shadow:none;text-align:center;font-size:15px;font-weight:700;color:#ffd400;white-space:nowrap}
+#p-hud #crt{position:absolute;z-index:5;right:calc(var(--sr) + 20px);bottom:calc(var(--sb) + 22px + min(34vh,150px) + 8px);width:min(34vh,150px);margin:0;padding:0;display:block;background:none;box-shadow:none;text-align:center;font-size:15px;font-weight:700;color:#ffd400;white-space:nowrap}
 #p-hud #crt[hidden]{display:none}
 #p-hud #crt .u,#p-hud #crt #cru{display:inline;color:var(--dim);font-weight:600}
 #chip{z-index:5}
 #batt,#tr{background:rgba(0,0,0,.72);padding:3px 12px 3px 8px;border-radius:16px}
+/* charging page: a wide battery bar on top, then power, time, state, then the pack numbers */
+#ch{grid-template-columns:repeat(4,1fr);grid-template-rows:1.1fr 1fr 1fr}
+#ch .bat{grid-column:1/-1;justify-content:center}
+.batrow{display:flex;align-items:center;gap:24px;width:100%}
+.bl{text-align:center;flex:none;min-width:96px}
+.bl .big{font-size:40px;font-weight:700;line-height:1.1}
+.bl .big2{font-size:28px;font-weight:600;line-height:1.2}
+#bbar{flex:1;height:22px;border-radius:11px;background:#2c2c2e;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+#bfill{display:block;height:100%;width:0;border-radius:11px;background:var(--ok);transition:width .3s ease,background .3s ease}
+#ch .v{font-size:clamp(24px,7.4vh,32px)}
+#ch #chtm{font-size:clamp(19px,5.6vh,26px)}
+/* info page: six tiles */
+#inf{max-width:none;grid-template-columns:repeat(3,1fr);grid-template-rows:1fr 1fr}
+#inf .v{font-size:clamp(24px,7.4vh,32px)}
+/* map card: navigation on top, the two numbers side by side, then the link */
+#sheet{display:grid;grid-template-columns:1fr 1fr;align-content:space-between;justify-content:stretch;column-gap:12px}
+#sheet>div{padding:8px 0;border-bottom:.5px solid var(--sep);text-align:center}
+#sheet .sw2{grid-column:1/-1}
+#sheet .sh1 .v{font-size:24px}
+#sheet.nofsd .sh1:nth-of-type(2){grid-column:1/-1}
+#sheet>div:last-child{border-bottom:0}
 /* iOS-native scale: 8-pt grid, 16-pt margins, 12-pt gaps, type 34/28/22/17/13 */
 .pg{padding-left:calc(var(--sl) + 16px);padding-right:calc(var(--sr) + 16px);padding-top:calc(var(--st) + 8px);padding-bottom:calc(var(--sb) + 24px)}
 .t{padding:8px 16px;gap:4px}
@@ -312,11 +341,16 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 
   <section class="pg" id="p-charge">
    <div id="ch">
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><rect x="2" y="7" width="17" height="10" rx="3"/><path d="M22 11v2"/></svg><span class="l">Charge level</span></div><div class="v"><span id="soc2">-</span> %</div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span class="l">Charging power</span></div><div class="v" id="chkw">-</div></div>
+    <div class="t bat">
+     <div class="batrow">
+      <div class="bl"><div class="l">Battery</div><div class="big"><span id="soc2">-</span> %</div></div>
+      <div id="bbar"><i id="bfill"></i></div>
+      <div class="bl"><div class="l">Range</div><div class="big2"><span id="rng2">-</span> km</div></div>
+     </div>
+    </div>
+    <div class="t" style="grid-column:span 2"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span class="l">Charging power</span></div><div class="v" id="chkw">-</div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="l">Time to full</span></div><div class="v" id="chtm">-</div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 12h4l2-6 4 12 2-6h8"/></svg><span class="l">Charge state</span></div><div class="v" id="chst">-</div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M4 17a8 8 0 1 1 16 0M12 17l4-5"/></svg><span class="l">Range</span></div><div class="v"><span id="rng2">-</span> km</div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 12h4l2-6 4 12 2-6h8"/></svg><span class="l">Charge state</span></div><div class="v" id="chst" style="font-size:22px">-</div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span class="l">Pack voltage</span></div><div class="v"><span id="pv">-</span> V</div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span class="l">Pack current</span></div><div class="v"><span id="pa">-</span> A</div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M8 3 5 21M16 3l3 18M12 5v3M12 11v3M12 17v3"/></svg><span class="l">Efficiency now</span></div><div class="v"><span id="eff">-</span> <span class="u">Wh/km</span></div></div>
@@ -382,10 +416,11 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
     <div id="main">
       <div class="t hx" id="gwrap"><div class="l">G-force</div><canvas id="gf" width="260" height="260"></canvas></div>
       <div id="gauge">
-        <svg viewBox="0 0 200 200"><g id="ticks"></g>          <g fill="none" stroke-linecap="round" stroke-width="7">
-            <path d="M100 174A74 74 0 0 0 100 26" stroke="#161616"/><path d="M100 174A74 74 0 0 1 100 26" stroke="#161616"/>
-            <path id="accb" d="M100 174A74 74 0 0 1 100 26" pathLength="100" stroke="#30d158" stroke-dasharray="0 100" opacity="0"/>
-            <path id="brkb" d="M100 174A74 74 0 0 0 100 26" pathLength="100" stroke="#ff453a" stroke-dasharray="0 100" opacity="0"/></g>
+        <svg viewBox="0 0 200 200"><g id="ticks"></g>
+          <g id="zero"><line x1="100" y1="-1" x2="100" y2="21" stroke="#fff" stroke-width="1.1" transform="rotate(-80.1 100 100)"/><text x="31" y="90" text-anchor="middle" fill="#fff" font-size="7" font-weight="700">0</text></g>
+          <g fill="none" stroke-linecap="round" stroke-width="6">
+            <path id="accb" d="M100 176A76 76 0 0 1 100 24" pathLength="100" stroke="#00e060" stroke-dasharray="0 100" opacity="0"/>
+            <path id="brkb" d="M100 176A76 76 0 0 0 100 24" pathLength="100" stroke="#ff2d2d" stroke-dasharray="0 100" opacity="0"/></g>
           <text x="95" y="195" text-anchor="end" fill="#30d158" font-size="10.5" font-weight="700">Accelerator <tspan id="acc">-</tspan>%</text>
           <text x="105" y="195" fill="#ff453a" font-size="10.5" font-weight="700">Brake <tspan id="brk">-</tspan></text></svg>
         <div id="spd">
@@ -394,7 +429,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
         </div>
       </div>
       <div id="rside">
-        <div class="t hx" id="lap"><div id="tm">Tap to arm</div><div class="u" id="tsub">0 to 100 · closed track only</div><div class="u" id="tlast">Last run <span id="tl">--</span><span id="tls" hidden> s</span></div></div>
+        <div class="t hx" id="lap"><div id="tm">Tap to arm</div><div class="u" id="tsub">0–100 km/h</div><div class="u" id="tnote">Closed track only</div><div class="u" id="tlast">Last run <span id="tl">--</span><span id="tls" hidden> s</span></div></div>
         <div id="crt" hidden>Cruise <b id="cruise">--</b><span id="cru"> km/h</span></div>
       </div>
     </div>
@@ -405,10 +440,10 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
     <div id="map"></div>
     <div id="nomap">Waiting for the car's location</div>
     <div id="sheet">
-      <div><div class="l">Navigation</div><div class="v" id="nav">-</div></div>
-      <div><div class="l">Outside</div><div class="v"><span id="tout">-</span> °C</div></div>
-      <div><div class="l">Self-driving</div><div class="v"><span id="fsd">-</span> km</div></div>
-      <div><a id="amap" href="#">Open in Maps</a></div>
+      <div class="sw2"><div class="l">Navigation</div><div class="v" id="nav">-</div></div>
+      <div class="sh1"><div class="l">Outside</div><div class="v"><span id="tout">-</span> °C</div></div>
+      <div class="sh1"><div class="l">Self-driving</div><div class="v"><span id="fsd">-</span> km</div></div>
+      <div class="sw2"><a id="amap" href="#">Open in Maps</a></div>
     </div>
   </section>
 
@@ -416,7 +451,9 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
    <div id="inf">
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M8 3 5 21M16 3l3 18M12 5v3M12 11v3M12 17v3"/></svg><span class="l">Odometer</span></div><div class="v"><span id="odo">-</span> km</div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg><span class="l">Software</span></div><div class="v" id="sw">--</div><button id="ver" style="margin:0;padding:6px 12px;font-size:13px;font-weight:600;width:auto" hidden>Read version (up to 2 credits)</button></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg><span class="l">Connection</span></div><div class="v" id="conn" style="font-size:20px;white-space:normal">-</div><p id="log">OK</p></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M3 13l2-5a2 2 0 0 1 2-1.5h10a2 2 0 0 1 2 1.5l2 5v4H3zM6 17v2M18 17v2"/></svg><span class="l">Vehicle</span></div><div class="v" style="font-size:20px;white-space:normal;line-height:1.15">Model 3 Long Range</div><div class="u" id="vehsub">2024</div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg><span class="l">Connection</span></div><div class="v" id="conn" style="font-size:17px;white-space:normal">-</div><p id="log">OK</p></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="l">Last data</span></div><div class="v" id="lastdata">--</div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span class="l">Settings</span></div><div style="width:100%"><button id="upd" style="margin:0 0 8px;padding:10px;font-size:17px;font-weight:600;background:var(--acc)">Check for update</button><button id="gear" style="margin:0;padding:10px;font-size:17px;font-weight:600">Clear token</button><div class="u" id="build" style="margin-top:6px"></div></div></div>
    </div>
   </section>
@@ -527,12 +564,12 @@ function timerTick(now) {
       else if (sp < 1) { T.state = "idle"; T.note = "Cancelled"; }
     }
   }
-  const tm = $("tm"), sub = $("tsub"), ring = $("rside");
-  tm.classList.remove("txt", "armed"); sub.classList.remove("armed"); ring.classList.toggle("armedring", T.state === "armed"); tm.style.color = "";
-  if (T.state === "idle") { tm.textContent = "Tap to arm"; tm.classList.add("txt"); sub.textContent = T.note || "0 to 100 · closed track only"; }
-  else if (T.state === "armed") { tm.textContent = "Armed"; tm.classList.add("txt", "armed"); sub.textContent = "Launch from standstill · tap to cancel"; sub.classList.add("armed"); }
-  else if (T.state === "run") { tm.textContent = ((now - T.t0) / 1000).toFixed(1); sub.textContent = "Running"; }
-  else { tm.textContent = T.last.toFixed(1); sub.textContent = "Done · tap to arm again"; tm.style.color = "#30d158"; }
+  const tm = $("tm"), sub = $("tsub"), note = $("tnote"), ring = $("rside");
+  tm.classList.remove("txt", "armed"); sub.classList.remove("armed"); note.classList.remove("armed"); ring.classList.toggle("armedring", T.state === "armed"); tm.style.color = "";
+  if (T.state === "idle") { tm.textContent = "Tap to arm"; tm.classList.add("txt"); sub.textContent = "0–100 km/h"; note.textContent = T.note || "Closed track only"; }
+  else if (T.state === "armed") { tm.textContent = "Armed"; tm.classList.add("txt", "armed"); sub.textContent = "Launch from standstill"; sub.classList.add("armed"); note.textContent = "Tap to cancel"; }
+  else if (T.state === "run") { tm.textContent = ((now - T.t0) / 1000).toFixed(1); sub.textContent = "Running"; note.textContent = ""; }
+  else { tm.textContent = T.last.toFixed(1); sub.textContent = "Done"; note.textContent = "Tap to arm again"; tm.style.color = "#30d158"; }
   $("tl").textContent = T.last != null ? T.last.toFixed(1) : "--"; $("tls").hidden = T.last == null;
 }
 function toggleArm() { if (T.state === "idle" || T.state === "done") { T.state = "armed"; T.armedAt = performance.now(); T.note = ""; } else if (T.state === "armed") { T.state = "idle"; T.note = "Disarmed"; } }
@@ -552,7 +589,14 @@ function render() {
   $("acc2").textContent = $("acc").textContent; $("brk2").textContent = $("brk").textContent;
   $("soc").textContent = fmt(num(S.BatteryLevel), 0); $("soc2").textContent = $("soc").textContent; $("tout2").textContent = fmt(num(S.OutsideTemp), 0);
   { const el = $("ticks").children, nd = pw != null && pw > 0 ? Math.round(Math.min(1, pw / 250) * 48) : 0, nr = pw != null && pw < 0 ? Math.round(Math.min(1, -pw / 80) * 12) : 0; // 60 ticks: 12 regen (blue) then 48 drive (amber, red at the top)
-    for (let i = 0; i < el.length; i++) el[i].style.stroke = ((i >= 12 && i < 12 + nd) ? (i < 38 ? "#00e060" : i < 52 ? "#ffd400" : "#ff2d2d") : (i < 12 && 11 - i < nr) ? "#1e9bff" : i === 12 ? "#8e8e93" : i < 12 ? "#10233d" : "#1e1e1e"); } // shift-light colours: green, then yellow, red only near the top; regen in electric blue; dark blue shows the regen zone when unlit
+    for (let i = 0; i < el.length; i++) {
+      const dl = i >= 12 && i < 12 + nd, rl = i < 12 && 11 - i < nr, s = el[i].style;
+      if (dl) { s.fill = i < 38 ? "#00e060" : i < 52 ? "#ffd400" : "#ff2d2d"; s.stroke = "rgba(255,255,255,.85)"; }  // lit: solid shift-light colour (green, yellow, red only near the top) with a bright outline
+      else if (rl) { s.fill = "#1e9bff"; s.stroke = "rgba(200,230,255,.95)"; }                                        // regen in electric blue
+      else if (i < 12) { s.fill = "#0a1a30"; s.stroke = "rgba(30,155,255,.85)"; }                                     // regen zone, unlit: blue outline
+      else { s.fill = "#101010"; s.stroke = "rgba(255,255,255,.38)"; }                                               // drive zone, unlit: thin light outline
+    } }
+  { const b = num(S.BatteryLevel) || 0, f = $("bfill"); f.style.width = Math.max(0, Math.min(100, b)) + "%"; f.style.background = b < 15 ? "var(--bad)" : b < 30 ? "var(--warn)" : "var(--ok)"; } // the wide battery bar on the charging page
   { const b = num(S.BatteryLevel) || 0; $("socb").style.width = Math.max(0, Math.min(100, b)) + "%"; $("socb").style.background = b < 15 ? "var(--bad)" : b < 30 ? "var(--warn)" : "var(--ok)"; }
   { const b = (S.BrakePedal === true || S.BrakePedal === "true") ? 100 : Math.max(0, Math.min(100, num(S.BrakePedalPos) || 0)); $("brkb").setAttribute("stroke-dasharray", b + " 100"); $("brkb").setAttribute("opacity", b > 0.5 ? 1 : 0); } // brake fills the left half
   { // Range: the car's own figure when it has sent one; until then an estimate from the battery level (2024 Model 3 Long Range, 629 km WLTP).
@@ -568,7 +612,7 @@ function render() {
   const cr = num(S.CruiseSetSpeed), crOn = cr != null && cr > 0 && /D$/.test(String(S.Gear ?? "")) && sp != null && sp > 5; $("cruise").textContent = crOn ? (cr * MI).toFixed(0) : "Off"; $("crt").hidden = !crOn;
   $("effh").textContent = $("eff").textContent; $("effw").hidden = $("eff").textContent === "--"; $("tout3").textContent = fmt(num(S.OutsideTemp), 0);
   $("tout").textContent = fmt(num(S.OutsideTemp), 0); $("tin").textContent = fmt(num(S.InsideTemp), 0);
-  const fsd = num(S.SelfDrivingMilesSinceReset); $("fsd").textContent = fsd == null ? "-" : (fsd * MI).toFixed(1); $("fsd").closest("#sheet>div").hidden = fsd == null; // hidden until the car reports it
+  const fsd = num(S.SelfDrivingMilesSinceReset); $("fsd").textContent = fsd == null ? "-" : (fsd * MI).toFixed(1); $("fsd").closest("#sheet>div").hidden = fsd == null; $("sheet").classList.toggle("nofsd", fsd == null); // hidden until the car reports it
   const cs = S.DetailedChargeState ?? S.ChargeState, ck = num(S.DCChargingPower) || num(S.ACChargingPower);
   const csName = cs == null ? null : String(cs).replace(/^DetailedChargeState/, ""), CS = { Disconnected: "Not plugged in", NoPower: "No power", Starting: "Starting", Charging: "Charging", Complete: "Complete", Stopped: "Stopped", Calibrating: "Calibrating", Unknown: "-", Enabled: "Ready" };
   const chargingNow = /^(charging|starting)$/i.test(String(csName));
@@ -579,6 +623,8 @@ function render() {
   $("pv").textContent = fmt(num(S.PackVoltage), 0); { const pa = num(S.PackCurrent); $("pa").textContent = pa == null ? "--" : (Math.abs(pa) < 2 ? 0 : pa).toFixed(0); } // under 2 A is idle noise
   renderCar();
   { const lg = $("log"); if (!liveMode) { lg.textContent = "Sample mode"; lg.style.color = "var(--dim)"; } else lg.style.color = (streamOpen && /^(Connected|OK)/.test(lg.textContent)) ? "var(--ok)" : ""; } // green when live, dim in sample, orange for problems
+  $("vehsub").textContent = "2024 · " + (S.RightHandDrive === false || S.RightHandDrive === "false" ? "left-hand drive" : "right-hand drive");
+  { const ago = lastEvt ? Math.round((Date.now() - lastEvt) / 1000) : null; $("lastdata").textContent = !liveMode ? "Sample" : ago == null ? "--" : ago < 2 ? "Just now" : ago < 90 ? ago + " s ago" : Math.round(ago / 60) + " min ago"; $("lastdata").classList.toggle("quiet", !liveMode || ago == null); }
   const od = num(S.Odometer); $("odo").textContent = od == null ? "-" : (od * MI).toFixed(0); $("sw").textContent = S.Version || "--"; $("ver").hidden = !!S.Version || !liveMode;
   { const ago = lastEvt ? Math.round((Date.now() - lastEvt) / 1000) : null; $("conn").textContent = !liveMode ? "Sample data" : (DEFAULT_RELAY || store.get("base") ? "Via relay" : "Direct") + (ago == null ? " · no data yet" : " · data " + (ago < 2 ? "just now" : ago + " s ago")); }
   const mi = num(S.MilesToArrival), mn = num(S.MinutesToArrival), asoc = num(S.ExpectedEnergyPercentAtTripArrival);
@@ -721,7 +767,8 @@ async function keepAwake() { try { if ("wakeLock" in navigator) wake = await nav
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") { keepAwake(); if (store.get("tok") && !location.search.includes("sample")) { clearTimeout(timer); connect(); } } });
 function show(app) { $("setup").hidden = app; $("app").hidden = !app; }
 function flag(id, lvl) { const t = $(id).closest(".t"); if (t) { t.classList.remove("ok", "warn", "bad"); if (lvl) t.classList.add(lvl); } }
-function buildTicks() { const g = $("ticks"); if (g.children.length) return; for (let i = 0; i < 60; i++) { const l = document.createElementNS("http://www.w3.org/2000/svg", "line"), major = i % 5 === 0; l.setAttribute("x1", 100); l.setAttribute("x2", 100); l.setAttribute("y1", 3); l.setAttribute("y2", major ? 19 : 14); l.setAttribute("transform", "rotate(" + (-135 + i * 270 / 59).toFixed(2) + " 100 100)"); l.setAttribute("stroke", "#1e1e1e"); g.appendChild(l); } }
+// Each tick is a small rounded block with its own thin outline, so unlit ticks stay crisp and the regen zone stays readable.
+function buildTicks() { const g = $("ticks"); if (g.children.length) return; for (let i = 0; i < 60; i++) { const r = document.createElementNS("http://www.w3.org/2000/svg", "rect"), major = i % 5 === 0; r.setAttribute("x", 98.2); r.setAttribute("y", 2); r.setAttribute("width", 3.6); r.setAttribute("height", major ? 17 : 13); r.setAttribute("rx", 0.8); r.setAttribute("transform", "rotate(" + (-135 + i * 270 / 59).toFixed(2) + " 100 100)"); r.style.fill = i < 12 ? "#0a1a30" : "#101010"; r.style.stroke = i < 12 ? "rgba(30,155,255,.85)" : "rgba(255,255,255,.38)"; g.appendChild(r); } }
 let curPage = null; // the page being shown, so a resize (for example Safari's toolbar) never throws you back to the middle
 function home() { const p = $("pages"); p.style.scrollBehavior = "auto"; if (curPage == null) { const q = new URLSearchParams(location.search).get("page"); curPage = q == null ? 2 : +q; /* five pages: charging, car, drive (the middle one, opened first), map, info */ } p.scrollLeft = p.clientWidth * curPage; }
 function startApp(demo) {
