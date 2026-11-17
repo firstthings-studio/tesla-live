@@ -254,6 +254,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #gauge svg text{display:none}
 #gauge svg #zero text{display:inline}
 #gauge svg path{stroke-width:6px}
+#gauge svg path.pb{stroke-width:15px}#gauge svg path.f{transition:stroke-dasharray .12s ease-out,opacity .12s ease-out}
 #cstack{position:absolute;left:50%;transform:translateX(-50%);top:calc(var(--st) + 14px);bottom:calc(var(--sb) + 30px);z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;pointer-events:none}
 #speed{font-size:min(52vh,230px);line-height:.88;color:#fff}
 #cstack .u{font-size:22px;line-height:1}
@@ -417,16 +418,18 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
       <div id="gauge">
         <svg viewBox="0 0 200 200"><g id="ticks"></g>
           <g id="zero"><line x1="100" y1="-1" x2="100" y2="21" stroke="#fff" stroke-width="1.1" transform="rotate(-80.1 100 100)"/><text x="31" y="90" text-anchor="middle" fill="#fff" font-size="7" font-weight="700">0</text></g>
-          <g fill="none" stroke-linecap="round" stroke-width="6">
-            <path id="accb" d="M100 176A76 76 0 0 1 100 24" pathLength="100" stroke="#00e060" stroke-dasharray="0 100" opacity="0"/>
-            <path id="brkb" d="M100 176A76 76 0 0 0 100 24" pathLength="100" stroke="#ff2d2d" stroke-dasharray="0 100" opacity="0"/></g>
-          <text x="95" y="195" text-anchor="end" fill="#30d158" font-size="10.5" font-weight="700">Accelerator <tspan id="acc">-</tspan>%</text>
-          <text x="105" y="195" fill="#ff453a" font-size="10.5" font-weight="700">Brake <tspan id="brk">-</tspan></text></svg>
+          <circle cx="100" cy="100" r="71.5" fill="none" stroke="#0b0b0d" stroke-width="21"/>
+          <circle cx="100" cy="100" r="82" fill="none" stroke="#1a1a1e" stroke-width=".8"/><circle cx="100" cy="100" r="61" fill="none" stroke="#1a1a1e" stroke-width=".8"/>
+          <g fill="none" stroke-linecap="round">
+            <path class="pb" d="M100 171.5A71.5 71.5 0 0 0 100 28.5" pathLength="100" stroke="#0d2a17" stroke-dasharray="100 100"/>
+            <path class="pb" d="M100 171.5A71.5 71.5 0 0 1 100 28.5" pathLength="100" stroke="#16202e" stroke-dasharray="100 100"/>
+            <path id="accb" class="pb f" d="M100 171.5A71.5 71.5 0 0 0 100 28.5" pathLength="100" stroke="#00e060" stroke-dasharray="0 100" opacity="0"/>
+            <path id="regb" class="pb f" d="M100 171.5A71.5 71.5 0 0 1 100 28.5" pathLength="100" stroke="#1e9bff" stroke-dasharray="0 100" opacity="0"/>
+            <path id="brkb" class="pb f" d="M100 171.5A71.5 71.5 0 0 1 100 28.5" pathLength="100" stroke="#ff2d2d" stroke-dasharray="0 100" opacity="0"/></g></svg>
       </div>
       <div id="cstack">
         <div id="speed">-</div><div class="u" id="kmh">km/h</div><div id="gearv">-</div>
         <div id="kw"><span id="pwr">-</span> kW<span id="regen"></span><span id="effw"> · <span id="effh">-</span> Wh/km</span></div>
-        <div id="pedhtml"><span class="pg2">Accelerator <b id="acc2">-</b>%</span><span class="pr2">Brake <b id="brk2">-</b></span></div>
       </div>
       <div id="rside">
         <div class="t hx" id="lap"><div id="tm">Tap to arm</div><div class="u" id="tsub">0–100 km/h</div><div class="u" id="tnote">Closed track only</div><div class="u" id="tlast">Last run <span id="tl">--</span><span id="tls" hidden> s</span></div></div>
@@ -584,9 +587,8 @@ function render() {
     if (!parked && quiet > 30000) setChip("No data from car", "var(--warn)"); else if (parked && quiet > 8000) setChip("Live · parked", "var(--ok)"); else setChip("Live", "var(--ok)"); }
   $("pwr").textContent = fmt(pw, 0);
   $("regen").textContent = pw != null && pw < -1 ? " regen" : "";
-  $("acc").textContent = fmt(acc, 0); { const a = Math.max(0, Math.min(100, acc || 0)); $("accb").setAttribute("stroke-dasharray", a + " 100"); $("accb").setAttribute("opacity", a > 0.5 ? 1 : 0); } // pedal ring: accelerator fills the right half
-  $("brk").textContent = S.BrakePedal == null ? "-" : (S.BrakePedal === true || S.BrakePedal === "true" ? "On" : "Off");
-  $("acc2").textContent = $("acc").textContent; $("brk2").textContent = $("brk").textContent;
+  { const a = Math.max(0, Math.min(100, acc || 0)); $("accb").setAttribute("stroke-dasharray", a + " 100"); $("accb").setAttribute("opacity", a > 0.5 ? 1 : 0); } // inner band, right half: accelerator fills from the bottom up
+  { const r = pw != null && pw < 0 ? Math.min(100, -pw / 60 * 100) : 0; $("regb").setAttribute("stroke-dasharray", r + " 100"); $("regb").setAttribute("opacity", r > 0.5 ? 1 : 0); } // left half: regen in blue, about 60 kW at full
   $("soc").textContent = fmt(num(S.BatteryLevel), 0); $("soc2").textContent = $("soc").textContent; $("tout2").textContent = fmt(num(S.OutsideTemp), 0);
   { const el = $("ticks").children, nd = pw != null && pw > 0 ? Math.round(Math.min(1, pw / 250) * 48) : 0, nr = pw != null && pw < 0 ? Math.round(Math.min(1, -pw / 80) * 12) : 0; // 60 ticks: 12 regen (blue) then 48 drive (amber, red at the top)
     for (let i = 0; i < el.length; i++) {
@@ -753,6 +755,11 @@ function startDemo() {
     const mph = v / MI, acc = ph >= 5 && ph < 12 ? 80 : ph < 30 && ph >= 12 ? 20 : 0, brk = ph >= 30 && ph < 36;
     const pw = ph >= 5 && ph < 12 ? 120 : ph >= 12 && ph < 30 ? 18 : ph >= 30 && ph < 36 ? -35 : 1;
     Object.assign(S, { VehicleSpeed: mph, Gear: v > 0 ? "D" : "P", PedalPosition: acc, BrakePedal: brk, PackVoltage: 380, PackCurrent: pw * 1000 / 380, BatteryLevel: 72, EstBatteryRange: 190, CruiseSetSpeed: 0, OutsideTemp: 21, InsideTemp: 23, SelfDrivingMilesSinceReset: 3.4, LateralAcceleration: Math.sin(t / 4) * 0.4, LongitudinalAcceleration: brk ? -0.5 : acc > 50 ? 0.8 : 0, Location: { latitude: base[0] + t * 0.0001, longitude: base[1] + Math.sin(t / 10) * 0.0005 }, Locked: false, SentryMode: "Off", Odometer: 12345, Version: "demo", TpmsPressureFl: 2.9, TpmsPressureFr: 2.9, TpmsPressureRl: 2.8, TpmsPressureRr: 2.5, DetailedChargeState: "Disconnected", MinutesToArrival: 18, MilesToArrival: 7.2, DestinationName: "Demo", ExpectedEnergyPercentAtTripArrival: 65 });
+    { const ped = new URLSearchParams(location.search).get("ped"); // mock-up states: parked, accel (60%), regen (-35 kW), brake
+      if (ped === "parked") Object.assign(S, { VehicleSpeed: 0, Gear: "P", PedalPosition: 0, BrakePedal: false, PackCurrent: 0.2 });
+      if (ped === "accel") Object.assign(S, { VehicleSpeed: 60 / MI, Gear: "D", PedalPosition: 60, BrakePedal: false, PackCurrent: 110000 / 380 });
+      if (ped === "regen") Object.assign(S, { VehicleSpeed: 70 / MI, Gear: "D", PedalPosition: 0, BrakePedal: false, PackCurrent: -35000 / 380 });
+      if (ped === "brake") Object.assign(S, { VehicleSpeed: 45 / MI, Gear: "D", PedalPosition: 0, BrakePedal: true, PackCurrent: -22000 / 380 }); }
     // ?scn=1 all closed and locked, ?scn=2 some things open (and charging), ?scn=3 everything open (door list sent as an array)
     const scn = new URLSearchParams(location.search).get("scn") || "1", closed = "WindowStateClosed", wo = "WindowStateOpened";
     // ?scn=idle: what the real car showed parked: P, 0 km/h, a 0.19 g sensor offset, tiny battery current, old cruise setting, no range yet
@@ -787,7 +794,7 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "Build 18 Nov 2026 · 5 pages · v2"; $("build").textContent = BUILD;
+const BUILD = "Build 18 Nov 2026 · 5 pages · v3"; $("build").textContent = BUILD;
 $("upd").onclick = () => { location.href = location.pathname + "?v=" + Date.now(); }; // reloads a fresh copy; the saved token stays in this browser
 $("rside").onclick = toggleArm;
 $("ver").onclick = () => { if (confirm("Read the software version from Teslemetry? This can use up to 2 credits (500 a month are included). It never wakes the car.")) readVersion(); };
