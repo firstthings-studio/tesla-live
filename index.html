@@ -248,7 +248,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 /* ring size B: oversized, only its sides visible. The centre stack (speed, km/h, gear, kW, pedals) is spread evenly top to bottom, clear of the page dots. */
 #p-hud #gauge{--ring:152vh;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);height:auto;width:var(--ring);aspect-ratio:1;z-index:1;max-width:none}
 #gauge svg{overflow:visible}
-#p-hud #gwrap,#p-hud #rside{position:absolute;z-index:4;width:min(31vh,140px);height:auto;aspect-ratio:1;margin:0;bottom:calc(var(--sb) + 22px);box-shadow:inset 0 0 0 2px #2a2a2a}
+#p-hud #gwrap,#p-hud #rside{position:absolute;z-index:4;width:min(40vh,172px);height:auto;aspect-ratio:1;margin:0;bottom:calc(var(--sb) + 22px);box-shadow:inset 0 0 0 2px #2a2a2a}
 #p-hud #gwrap{left:calc(var(--sl) + 12px)}
 #p-hud #rside{right:calc(var(--sr) + 20px);cursor:pointer;-webkit-tap-highlight-color:transparent}
 #gauge svg text{display:none}
@@ -260,7 +260,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #gearv{font-size:34px;padding:0 .8em;border:3px solid #ffd400;color:#ffd400;border-radius:10px;clip-path:none;line-height:1.2;margin:0}
 #gearv[data-g="R"]{color:#ff2d2d;border-color:#ff2d2d}
 #kw{font-size:22px;line-height:1;margin:0}
-#pedhtml{display:grid;grid-template-columns:1fr 1fr;column-gap:56px;width:min(56vw,440px);font-size:16px;font-weight:700;white-space:nowrap;line-height:1}
+#pedhtml{display:grid;grid-template-columns:1fr 1fr;column-gap:40px;width:min(440px,calc(100vw - 2*min(40vh,172px) - 64px));font-size:clamp(13px,3.6vh,16px);font-weight:700;white-space:nowrap;line-height:1}
 #pedhtml .pg2{text-align:right}#pedhtml .pr2{text-align:left}
 #pedhtml .pg2{color:#00e060}#pedhtml .pr2{color:#ff2d2d}
 #p-hud #tm{font-size:clamp(34px,10vh,44px)}
@@ -268,12 +268,12 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #p-hud #tm.armed{color:#ffd400}
 #tsub{font-size:clamp(9px,2.9vh,12px);line-height:1.25;max-width:80%}
 #tsub.armed{color:#ffd400;font-weight:600}
-#tnote{font-size:clamp(8px,2.6vh,11px);line-height:1.2;color:#ffd400;opacity:.85;max-width:80%}
+#tnote{white-space:nowrap;font-size:clamp(8px,2.4vh,11px);line-height:1.2;color:#ffd400;opacity:.85;max-width:80%}
 #tnote:empty{display:none}
 #tlast{font-size:clamp(8px,2.6vh,11px)}
 #p-hud #lap{gap:4px;width:100%}
 #p-hud #rside.armedring{box-shadow:inset 0 0 0 3px #ffd400}
-#p-hud #crt{position:absolute;z-index:5;right:calc(var(--sr) + 20px);bottom:calc(var(--sb) + 22px + min(31vh,140px) + 8px);width:min(31vh,140px);margin:0;padding:0;display:block;background:none;box-shadow:none;text-align:center;font-size:15px;font-weight:700;color:#ffd400;white-space:nowrap}
+#p-hud #crt{position:absolute;z-index:5;right:calc(var(--sr) + 20px);bottom:calc(var(--sb) + 22px + min(40vh,172px) + 8px);width:min(40vh,172px);margin:0;padding:0;display:block;background:none;box-shadow:none;text-align:center;font-size:15px;font-weight:700;color:#ffd400;white-space:nowrap}
 #p-hud #crt[hidden]{display:none}
 #p-hud #crt .u,#p-hud #crt #cru{display:inline;color:var(--dim);font-weight:600}
 #chip{z-index:5}
