@@ -454,7 +454,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 
   <section class="pg" id="p-info">
    <div id="inf">
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M8 3 5 21M16 3l3 18M12 5v3M12 11v3M12 17v3"/></svg><span class="l">Odometer</span></div><div class="v"><span id="odo">-</span> km</div><div class="u" id="best"></div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M8 3 5 21M16 3l3 18M12 5v3M12 11v3M12 17v3"/></svg><span class="l">Odometer</span></div><div class="v"><span id="odo">-</span> km</div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg><span class="l">Software</span></div><div class="v" id="sw">--</div><button id="ver" style="margin:0;padding:6px 12px;font-size:13px;font-weight:600;width:auto" hidden>Read version (up to 2 credits)</button></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M3 13l2-5a2 2 0 0 1 2-1.5h10a2 2 0 0 1 2 1.5l2 5v4H3zM6 17v2M18 17v2"/></svg><span class="l">Vehicle</span></div><div class="v" style="font-size:20px;white-space:normal;line-height:1.15">Model 3 Long Range</div><div class="u" id="vehsub">2024</div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg><span class="l">Connection</span></div><div class="v" id="conn" style="font-size:17px;white-space:normal">-</div><p id="log">OK</p></div>
@@ -554,7 +554,7 @@ const GEAR_NAMES = { P: "P", R: "R", N: "N", D: "D" };
 // Only an armed timer can start, so a parked car can never record a run. Armed: the first movement from a standstill starts it; it stops at 100 km/h
 // (interpolated between the 1-a-second readings) or on brake or regen. It disarms after one run or after 60 s, and a tap cancels it.
 // A run under 2.0 s is treated as noise and not saved. The start is accurate to about half a second.
-function saveRun(t) { try { const a = JSON.parse(store.get("runs") || "[]"); a.push(+t.toFixed(2)); store.set("runs", JSON.stringify(a.slice(-5))); } catch (e) {} }
+try { localStorage.removeItem("runs"); } catch (e) {} // old saved timer runs are no longer kept
 const T = { state: "idle", t0: 0, armedAt: 0, last: null, cur: null, prev: null, note: "" };
 function timerTick(now) {
   const sp = speedKmh(), pw = powerKw(), br = S.BrakePedal === true || S.BrakePedal === "true";
@@ -565,7 +565,7 @@ function timerTick(now) {
       else if (fresh && T.prev != null && T.prev < 1 && sp >= 1) { T.state = "run"; T.t0 = now - 500; }
     } else if (T.state === "run") {
       const el = (now - T.t0) / 1000;
-      if (sp >= 100) { const f = T.prev != null && sp > T.prev ? (sp - 100) / (sp - T.prev) : 0, t = (now - 1000 * f - T.t0) / 1000; if (t < 2.0) { T.state = "idle"; T.note = "Too quick to be real, not saved"; } else { T.last = t; T.state = "done"; saveRun(t); } }
+      if (sp >= 100) { const f = T.prev != null && sp > T.prev ? (sp - 100) / (sp - T.prev) : 0, t = (now - 1000 * f - T.t0) / 1000; if (t < 2.0) { T.state = "idle"; T.note = "Too quick to be real, not saved"; } else { T.last = t; T.state = "done"; } }
       else if (br || (pw != null && pw < -1)) { T.state = "idle"; T.note = el < 2.0 ? "Cancelled" : "Stopped at " + Math.round(sp) + " km/h"; }
       else if (sp < 1) { T.state = "idle"; T.note = "Cancelled"; }
     }
@@ -576,7 +576,6 @@ function timerTick(now) {
   else if (T.state === "armed") { tm.textContent = "Armed"; tm.classList.add("txt", "armed"); sub.textContent = "Ready"; sub.classList.add("armed"); note.textContent = "Tap to cancel"; }
   else if (T.state === "run") { tm.textContent = ((now - T.t0) / 1000).toFixed(1); sub.textContent = "Running"; note.textContent = ""; }
   else { tm.textContent = T.last.toFixed(1); sub.textContent = "Done"; note.textContent = "Tap to arm again"; tm.style.color = "#30d158"; }
-  { let a = []; try { a = JSON.parse(store.get("runs") || "[]"); } catch (e) {} $("best").textContent = a.length ? "Best 0–100: " + Math.min(...a).toFixed(1) + " s (last " + a.length + ")" : ""; }
   $("tl").textContent = T.last != null ? T.last.toFixed(1) : "--"; $("tls").hidden = T.last == null;
 }
 function toggleArm() { if (T.state === "idle" || T.state === "done") { T.state = "armed"; T.armedAt = performance.now(); T.note = ""; } else if (T.state === "armed") { T.state = "idle"; T.note = "Disarmed"; } }
@@ -799,7 +798,7 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "Build 18 Nov 2026 · 5 pages · v4"; $("build").textContent = BUILD;
+const BUILD = "Build 18 Nov 2026 · 5 pages · v4b"; $("build").textContent = BUILD;
 $("upd").onclick = () => { location.href = location.pathname + "?v=" + Date.now(); }; // reloads a fresh copy; the saved token stays in this browser
 $("rside").onclick = toggleArm;
 $("ver").onclick = () => { if (confirm("Read the software version from Teslemetry? This can use up to 2 credits (500 a month are included). It never wakes the car.")) readVersion(); };
