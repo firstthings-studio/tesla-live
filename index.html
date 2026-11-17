@@ -182,6 +182,35 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #speed{font-weight:800;font-style:italic;letter-spacing:-5px;text-shadow:none}
 #p-hud #tm{font-weight:800;font-style:italic;text-shadow:none}
 #chip{color:var(--acc);text-shadow:none}
+/* charging page, car page, info page */
+#ch{height:100%;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:12px}
+#ch .v,#inf .v{font-size:clamp(28px,8.6vh,38px)}
+#ch .v,#inf .v,.side3 .v{line-height:1.2;padding-bottom:2px}
+#inf{height:100%;max-width:780px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:12px}
+#carpg{height:100%;display:grid;grid-template-columns:200px 1fr 200px;gap:14px}
+.side3{display:grid;grid-template-rows:repeat(3,1fr);gap:12px;min-height:0}
+.side3 .v{font-size:clamp(26px,7.6vh,34px)}
+#carbox{display:flex;flex-direction:column;align-items:center;min-height:0;min-width:0}
+#car{flex:1;min-height:0;width:100%}
+#carsum{font-size:clamp(17px,5vh,22px);font-weight:700;text-align:center;padding:4px 0 2px;min-height:30px;color:var(--dim)}
+#carsum.ok{color:var(--ok)}#carsum.warn{color:var(--warn)}
+#car .body{fill:#1c1c1e;stroke:#3a3a3c;stroke-width:2}
+#car .glass{fill:#0c0d0f}
+#car .wheel{fill:#2c2c2e}
+#car .part{fill:#2c2c2e;stroke:#3a3a3c;stroke-width:1}
+#car .win{fill:#3a3a3c}
+#car .part.open,#car .win.open{fill:var(--warn);stroke:var(--warn)}
+#cport{fill:#2c2c2e;stroke:#48484a;stroke-width:2}
+#cport.open{fill:var(--warn);stroke:var(--warn)}
+#padlock{color:#636366;fill:currentColor;stroke:currentColor}
+#padlock path{fill:none}
+#padlock.ok{color:var(--ok)}#padlock.warn{color:var(--warn)}
+#sring{fill:none;stroke:var(--warn);stroke-width:2;stroke-dasharray:4 7;opacity:0}
+#sring.on{opacity:.9}
+.tp{font:700 24px -apple-system,"SF Pro Text",system-ui,"Segoe UI",sans-serif;fill:#fff}
+.tp.bad{fill:var(--bad)}
+.tu{font:500 12px -apple-system,system-ui,"Segoe UI",sans-serif;fill:#8e8e93}
+#log{margin:4px 0 0;font-size:14px;color:var(--warn)}
 /* no data yet: quiet placeholders instead of a huge slanted dash */
 #speed.nd{font-weight:300;font-style:normal;letter-spacing:0;color:rgba(235,235,245,.22)}
 #gearv.nd{color:rgba(235,235,245,.3)!important;border-color:rgba(235,235,245,.2)}
@@ -210,26 +239,57 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 <div id="app" hidden>
  <div id="pages">
 
-  <section class="pg" id="p-status">
-   <div id="st">
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span class="l">Charging</span></div><div><div class="v"><span id="chkw">-</span> kW</div><div class="u" id="chst">-</div></div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><rect x="2" y="7" width="17" height="10" rx="3"/><path d="M22 11v2"/></svg><span class="l">Charge level</span></div><div><div class="v"><span id="soc2">-</span> %</div><div class="u">full in <span id="chtm">-</span> min</div></div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span class="l">Pack</span></div><div><div class="v"><span id="pv">-</span> V</div><div class="u"><span id="pa">-</span> A</div></div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M4 17a8 8 0 1 1 16 0M12 17l4-5"/></svg><span class="l">Efficiency now</span></div><div><div class="v"><span id="eff">-</span></div><div class="u">Wh/km</div></div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M10 14V5a2 2 0 0 1 4 0v9a4 4 0 1 1-4 0z"/></svg><span class="l">Temperature</span></div><div><div class="v"><span id="tin">-</span> / <span id="tout2">-</span></div><div class="u">inside / outside, °C</div></div></div>
-
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="l">Locks</span></div><div class="v" id="lock">-</div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M5 20V6a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v14M5 20h14M9 12h6"/></svg><span class="l">Doors and boot</span></div><div class="v" id="doors">-</div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 12h16M12 5v14"/></svg><span class="l">Windows</span></div><div class="v" id="windows">-</div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span class="l">Sentry</span></div><div class="v" id="sentry">-</div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M8 3 5 21M16 3l3 18M12 5v3M12 11v3M12 17v3"/></svg><span class="l">Odometer</span></div><div class="v"><span id="odo">-</span> km</div></div>
-
-    <div class="t" style="grid-column:span 2"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg><span class="l">Tyres, psi (front left, front right, rear left, rear right)</span></div><div id="tyre"><b>-</b></div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg><span class="l">Software</span></div><div class="v" id="sw">-</div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span class="l">Settings</span></div><button id="gear" style="margin:0;padding:8px;font-size:14px">Clear token</button></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg><span class="l">Connection</span></div><p id="log">OK</p></div>
+  <section class="pg" id="p-charge">
+   <div id="ch">
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><rect x="2" y="7" width="17" height="10" rx="3"/><path d="M22 11v2"/></svg><span class="l">Charge level</span></div><div class="v"><span id="soc2">-</span> %</div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span class="l">Charging power</span></div><div class="v"><span id="chkw">-</span> kW</div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="l">Time to full</span></div><div class="v" id="chtm">-</div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 12h4l2-6 4 12 2-6h8"/></svg><span class="l">Charge state</span></div><div class="v" id="chst">-</div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M4 17a8 8 0 1 1 16 0M12 17l4-5"/></svg><span class="l">Range</span></div><div class="v"><span id="rng2">-</span> km</div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span class="l">Pack voltage</span></div><div class="v"><span id="pv">-</span> V</div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span class="l">Pack current</span></div><div class="v"><span id="pa">-</span> A</div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M8 3 5 21M16 3l3 18M12 5v3M12 11v3M12 17v3"/></svg><span class="l">Efficiency now</span></div><div class="v"><span id="eff">-</span> <span class="u">Wh/km</span></div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg><span class="l">Charge port</span></div><div class="v" id="cportv">-</div></div>
    </div>
   </section>
+
+  <section class="pg" id="p-car">
+   <div id="carpg">
+    <div class="side3">
+     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M10 14V5a2 2 0 0 1 4 0v9a4 4 0 1 1-4 0z"/></svg><span class="l">Inside</span></div><div class="v"><span id="tin">-</span> °C</div></div>
+     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg><span class="l">Outside</span></div><div class="v"><span id="tout2">-</span> °C</div></div>
+     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span class="l">Sentry</span></div><div class="v" id="sentry">-</div></div>
+    </div>
+    <div id="carbox">
+     <svg id="car" viewBox="0 0 320 340">
+      <ellipse id="sring" cx="160" cy="172" rx="92" ry="166"/>
+      <rect class="wheel" x="84" y="52" width="16" height="36" rx="5"/><rect class="wheel" x="220" y="52" width="16" height="36" rx="5"/>
+      <rect class="wheel" x="84" y="254" width="16" height="36" rx="5"/><rect class="wheel" x="220" y="254" width="16" height="36" rx="5"/>
+      <path class="body" d="M128 14Q160 4 192 14Q212 22 214 58L218 270Q216 322 192 330Q160 338 128 330Q104 322 102 270L106 58Q108 22 128 14Z"/>
+      <rect id="frunk" class="part" x="130" y="30" width="60" height="44" rx="12"/>
+      <rect id="trunk" class="part" x="130" y="248" width="60" height="62" rx="12"/>
+      <rect class="glass" x="124" y="86" width="72" height="150" rx="14"/>
+      <rect id="d-fl" class="part" x="98" y="84" width="22" height="74" rx="8"/><rect id="d-rl" class="part" x="98" y="162" width="22" height="74" rx="8"/>
+      <rect id="d-fr" class="part" x="200" y="84" width="22" height="74" rx="8"/><rect id="d-rr" class="part" x="200" y="162" width="22" height="74" rx="8"/>
+      <rect id="w-fl" class="win" x="125" y="92" width="6" height="60" rx="3"/><rect id="w-rl" class="win" x="125" y="170" width="6" height="60" rx="3"/>
+      <rect id="w-fr" class="win" x="189" y="92" width="6" height="60" rx="3"/><rect id="w-rr" class="win" x="189" y="170" width="6" height="60" rx="3"/>
+      <circle id="cport" cx="110" cy="314" r="7"/>
+      <g id="padlock" transform="translate(160 164)"><path d="M-8 -3v-6a8 8 0 0 1 16 0v6" fill="none" stroke-width="4" stroke-linecap="round"/><rect x="-13" y="-3" width="26" height="21" rx="5"/></g>
+      <text id="t-fl" class="tp" x="74" y="76" text-anchor="end">-</text><text id="t-fr" class="tp" x="246" y="76">-</text>
+      <text id="t-rl" class="tp" x="74" y="278" text-anchor="end">-</text><text id="t-rr" class="tp" x="246" y="278">-</text>
+      <text class="tu" x="74" y="92" text-anchor="end">psi</text><text class="tu" x="246" y="92">psi</text>
+      <text class="tu" x="74" y="294" text-anchor="end">psi</text><text class="tu" x="246" y="294">psi</text>
+     </svg>
+     <div id="carsum">Waiting for the car</div>
+    </div>
+    <div class="side3">
+     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="l">Locks</span></div><div class="v" id="lock">-</div></div>
+     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M5 20V6a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v14M5 20h14M9 12h6"/></svg><span class="l">Doors and boot</span></div><div class="v" id="doors">-</div></div>
+     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 12h16M12 5v14"/></svg><span class="l">Windows</span></div><div class="v" id="windows">-</div></div>
+    </div>
+   </div>
+  </section>
+
 
   <section class="pg" id="p-hud">
    <div id="hud">
@@ -252,7 +312,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
         </div>
       </div>
       <div id="rside">
-        <div class="t hx" id="lap"><div id="tm">0.0</div><div class="u">last <span id="tl">-</span> s · <span id="ts">ready</span></div><div class="l" id="trk">0 to 100 · closed track only</div></div>
+        <div class="t hx" id="lap"><div id="tm">0.0</div><div class="u">Last run <span id="tl">--</span><span id="tls" hidden> s</span> · <span id="ts">ready</span></div><div class="l" id="trk">0 to 100 · closed track only</div></div>
         <div class="t hx" id="crt"><div class="l">Cruise</div><div class="v"><span id="cruise">Off</span> <span class="u" id="cru" hidden>km/h</span></div></div>
       </div>
     </div>
@@ -270,8 +330,17 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
     </div>
   </section>
 
+  <section class="pg" id="p-info">
+   <div id="inf">
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M8 3 5 21M16 3l3 18M12 5v3M12 11v3M12 17v3"/></svg><span class="l">Odometer</span></div><div class="v"><span id="odo">-</span> km</div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg><span class="l">Software</span></div><div class="v" id="sw">-</div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg><span class="l">Connection</span></div><div class="v" id="conn" style="font-size:20px;white-space:normal">-</div><p id="log">OK</p></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span class="l">Settings</span></div><div style="width:100%"><button id="upd" style="margin:0 0 8px;padding:10px;font-size:17px;font-weight:600;background:var(--acc)">Check for update</button><button id="gear" style="margin:0;padding:10px;font-size:17px;font-weight:600">Clear token</button><div class="u" id="build" style="margin-top:6px"></div></div></div>
+   </div>
+  </section>
+
  </div>
- <div id="dots"><i></i><i class="on"></i><i></i></div>
+ <div id="dots"><i></i><i></i><i class="on"></i><i></i><i></i></div>
 </div>
 <div id="rot"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M20 8c1.5 1.2 2 2.4 2 4s-.5 2.8-2 4M3 12H2"/></svg><div>Turn your phone sideways</div></div>
 
@@ -283,7 +352,7 @@ const MI = 1.609344, $ = id => document.getElementById(id);
 const mem = {}; // fallback when the browser blocks storage (private mode), so the token still works until the page closes
 const store = { get(k){try{return localStorage.getItem(k)||mem[k]||""}catch(e){return mem[k]||""}}, set(k,v){mem[k]=v;try{localStorage.setItem(k,v)}catch(e){}} };
 const S = {};                 // latest field values by name
-let effWin = [], map, marker, trail, trailPts = [], wake = null, gfPts = [];
+let gBase = [0, 0], gbN = 0, effWin = [], map, marker, trail, trailPts = [], wake = null, gfPts = [];
 
 // ---- pure helpers (kept simple so they can be tested in the console) ----
 const num = v => (typeof v === "number" && isFinite(v)) ? v : (typeof v === "string" && v.trim() !== "" && isFinite(+v) ? +v : null);
@@ -298,15 +367,58 @@ function loc(v) { if (!v) return null; const la = num(v.latitude ?? v.lat), lo =
 const speedKmh = () => { const s = num(S.VehicleSpeed); return s == null ? null : s * MI; };
 // Power = pack voltage x pack current. Teslemetry doesn't say which sign means driving, so the page learns it: while the accelerator is pressed
 // and the car is moving, the current's sign is "driving". Until then it assumes positive = driving.
-let pcSign = 1;
+let pcSign = 1, pcVotes = 0, pcLast = 0;
 const powerKw = () => {
   const v = num(S.PackVoltage), a = num(S.PackCurrent); if (v == null || a == null) return null;
   const acc = num(S.PedalPosition), sp = speedKmh();
-  if (acc != null && acc > 20 && sp != null && sp > 5 && Math.abs(a) > 5) pcSign = a > 0 ? 1 : -1;
-  return pcSign * v * a / 1000;
+  // Votes, not a single reading: the pedal value can be a few seconds old, so one stray reading must not flip the sign.
+  if (acc != null && acc > 20 && sp != null && sp > 5 && Math.abs(a) > 20 && Date.now() - pcLast > 500) { pcLast = Date.now(); pcVotes = Math.max(-8, Math.min(8, pcVotes + (a > 0 ? 1 : -1))); pcSign = pcVotes < 0 ? -1 : 1; }
+  const kw = pcSign * v * a / 1000;
+  return Math.abs(kw) < 1 ? 0 : kw; // under 1 kW is idle noise: show 0, never "-0" or a regen label
 };
 const PSI_PER_ATM = 14.696; // Teslemetry reports tyre pressure in atmospheres
-const openDoors = ds => Array.isArray(ds) ? ds.map(String) : typeof ds === "string" ? ds.split(/[\s,]+/).filter(x => x && !/^(none|closed|invalid|unknown)$/i.test(x)) : ds && typeof ds === "object" ? Object.keys(ds).filter(k => ds[k] === true) : null;
+// ---- car page: which door, boot, window or charge port is open, shown on a top-down outline ----
+const truthy = v => v === true || v === "true" || v === 1 || v === "1";
+// Teslemetry's DoorState lists the open doors. Its exact shape isn't documented, so every likely one is accepted:
+// {DriverFront:true,...}, ["DriverFront"], "DriverFront, TrunkRear", [{key:"DriverFront",value:true}], and short names like df/dr/pf/pr/ft/rt.
+const DOOR_NAMES = { driverfront: "df", df: "df", passengerfront: "pf", pf: "pf", driverrear: "dr", dr: "dr", passengerrear: "pr", pr: "pr", trunkfront: "ft", ft: "ft", frunk: "ft", fronttrunk: "ft", hood: "ft", trunkrear: "rt", rt: "rt", trunk: "rt", reartrunk: "rt", boot: "rt", liftgate: "rt" };
+function doorSet(ds) {
+  if (ds == null) return null;
+  const s = new Set(), add = k => { const c = DOOR_NAMES[String(k).toLowerCase().replace(/[^a-z]/g, "")]; if (c) s.add(c); };
+  if (Array.isArray(ds)) ds.forEach(x => { if (typeof x === "string") add(x); else if (x && typeof x === "object") { if (x.key !== undefined) { if (truthy(x.value)) add(x.key); } else Object.keys(x).forEach(k => truthy(x[k]) && add(k)); } });
+  else if (typeof ds === "string") ds.split(/[\s,;|]+/).forEach(add);
+  else if (typeof ds === "object") Object.keys(ds).forEach(k => truthy(ds[k]) && add(k));
+  return s;
+}
+const SIDE_NAME = { fl: "Front-left", fr: "Front-right", rl: "Rear-left", rr: "Rear-right" };
+function renderCar() {
+  // Driver side: the car's own RightHandDrive flag if it has sent one; otherwise right-hand drive (Australia).
+  const rhd = !(S.RightHandDrive === false || S.RightHandDrive === "false");
+  const where = { df: rhd ? "fr" : "fl", pf: rhd ? "fl" : "fr", dr: rhd ? "rr" : "rl", pr: rhd ? "rl" : "rr" };
+  const ds = doorSet(S.DoorState), open = [], put = (id, on) => { const e = $(id); if (e) e.classList.toggle("open", !!on); };
+  ["fl", "fr", "rl", "rr"].forEach(p => put("d-" + p, false));
+  put("frunk", false); put("trunk", false);
+  if (ds) ds.forEach(c => { if (c === "ft") { put("frunk", true); open.push("Frunk open"); } else if (c === "rt") { put("trunk", true); open.push("Boot open"); } else { const p = where[c]; put("d-" + p, true); open.push(SIDE_NAME[p] + " door open"); } });
+  const winOf = { Fd: "df", Fp: "pf", Rd: "dr", Rp: "pr" }, wopen = []; let wknown = 0;
+  Object.keys(winOf).forEach(k => { const v = S[k + "Window"], unk = v == null || /unknown/i.test(String(v)), p = where[winOf[k]], on = !unk && !/closed/i.test(String(v)); if (!unk) wknown++; put("w-" + p, on); if (on) { wopen.push(p); open.push(SIDE_NAME[p] + " window open"); } });
+  ["fl", "fr", "rl", "rr"].forEach(p => { if (!wopen.includes(p)) put("w-" + p, false); });
+  const cp = S.ChargePortDoorOpen == null ? null : truthy(S.ChargePortDoorOpen); put("cport", cp === true); if (cp) open.push("Charge port open");
+  $("cport").classList.toggle("known", cp != null); if ($("cportv")) { $("cportv").textContent = cp == null ? "-" : cp ? "Open" : "Closed"; flag("cportv", cp ? "warn" : cp === false ? "ok" : ""); }
+  const lk = S.Locked == null ? null : truthy(S.Locked), pl = $("padlock"); pl.classList.toggle("ok", lk === true); pl.classList.toggle("warn", lk === false);
+  $("lock").textContent = lk == null ? "-" : lk ? "Locked" : "Unlocked"; flag("lock", lk == null ? "" : lk ? "ok" : "warn");
+  const nd = ds == null ? null : [...ds].length; $("doors").textContent = ds == null ? "-" : nd === 0 ? "All closed" : nd === 1 ? "1 open" : nd + " open"; flag("doors", ds == null ? "" : nd ? "bad" : "ok");
+  $("windows").textContent = wknown === 0 ? "-" : wopen.length ? wopen.length + " open" : "All closed"; flag("windows", wknown === 0 ? "" : wopen.length ? "warn" : "ok");
+  { const m = String(S.SentryMode ?? "").replace(/^SentryModeState/, ""), off = m === "Off" || S.SentryMode === false, unk = S.SentryMode == null || m === "Unknown" || m === "";
+    $("sentry").textContent = unk ? "-" : off ? "Off" : m === "Panic" ? "Alert" : "On"; flag("sentry", unk || off ? "" : m === "Panic" ? "bad" : "ok"); $("sring").classList.toggle("on", !unk && !off); }
+  let low = 0;
+  [["fl", "Fl"], ["fr", "Fr"], ["rl", "Rl"], ["rr", "Rr"]].forEach(([p, k]) => { const x = num(S["TpmsPressure" + k]), psi = x == null ? null : x * PSI_PER_ATM, e = $("t-" + p), bad = psi != null && psi < 38; e.textContent = psi == null ? "-" : psi.toFixed(0); e.classList.toggle("bad", bad); if (bad) { low++; open.push(SIDE_NAME[p] + " tyre low"); } });
+  const none = ds == null && wknown === 0 && lk == null;
+  // one plain sentence: name a single open thing, count several
+  const dL = open.filter(x => / door open$| open$/.test(x) && !/window|port/.test(x)), wL = open.filter(x => /window open$/.test(x)), tL = open.filter(x => /tyre low$/.test(x)), pL = open.filter(x => /port open$/.test(x));
+  const bits = [dL.length > 1 ? dL.length + " doors and boot open" : dL[0], wL.length > 1 ? wL.length + " windows open" : wL[0], pL[0], tL.length > 1 ? tL.length + " tyres low" : tL[0]].filter(Boolean);
+  $("carsum").textContent = none ? "Waiting for the car" : open.length === 0 ? (lk === true ? "All closed and locked" : lk === false ? "All closed, unlocked" : "All closed") : bits.join(" · ");
+  $("carsum").classList.toggle("warn", open.length > 0); $("carsum").classList.toggle("ok", !none && open.length === 0 && lk === true);
+}
 const GEAR_NAMES = { P: "P", R: "R", N: "N", D: "D" };
 
 // ---- 0 to 100 timer ----
@@ -325,7 +437,7 @@ function timerTick(now) {
     else if (sp < 1) T.state = "ready";
   }
   $("tm").textContent = T.state === "run" ? ((now - T.t0) / 1000).toFixed(1) : (T.last != null ? T.last.toFixed(1) : "0.0");
-  $("tl").textContent = T.last != null ? T.last.toFixed(1) : "-";
+  $("tl").textContent = T.last != null ? T.last.toFixed(1) : "--"; $("tls").hidden = T.last == null;
   $("ts").textContent = T.state === "run" ? "running" : T.state === "done" ? "stopped" : "ready";
   $("tm").style.color = T.state === "run" ? "#ffc400" : T.state === "done" ? "#30d158" : "";
 }
@@ -337,7 +449,7 @@ function render() {
   $("gearv").textContent = S.Gear == null ? "P" : (GEAR_NAMES[String(S.Gear).replace(/^ShiftState/, "")] || "-"); $("gearv").dataset.g = $("gearv").textContent;
   if (liveMode && lastEvt) { const old = Date.now() - lastEvt > 8000; if (old !== stale) { stale = old; setChip(old ? "No data from car" : "Live", old ? "var(--warn)" : "var(--ok)"); } }
   $("pwr").textContent = fmt(pw, 0);
-  $("regen").textContent = pw != null && pw < 0 ? " regen" : "";
+  $("regen").textContent = pw != null && pw < -1 ? " regen" : "";
   $("acc").textContent = fmt(acc, 0); { const a = Math.max(0, Math.min(100, acc || 0)); $("accb").setAttribute("stroke-dasharray", a + " 100"); $("accb").setAttribute("opacity", a > 0.5 ? 1 : 0); } // pedal ring: accelerator fills the right half
   $("brk").textContent = S.BrakePedal == null ? "-" : (S.BrakePedal === true || S.BrakePedal === "true" ? "On" : "Off");
   $("soc").textContent = fmt(num(S.BatteryLevel), 0); $("soc2").textContent = $("soc").textContent; $("tout2").textContent = fmt(num(S.OutsideTemp), 0);
@@ -345,28 +457,24 @@ function render() {
     for (let i = 0; i < el.length; i++) el[i].style.stroke = ((i >= 12 && i < 12 + nd) ? (i >= 52 ? "#ff3b30" : "#ffc400") : (i < 12 && 11 - i < nr) ? "#0a84ff" : "#1e1e1e"); }
   { const b = num(S.BatteryLevel) || 0; $("socb").style.width = Math.max(0, Math.min(100, b)) + "%"; $("socb").style.background = b < 15 ? "var(--bad)" : b < 30 ? "var(--warn)" : "var(--ok)"; }
   { const b = (S.BrakePedal === true || S.BrakePedal === "true") ? 100 : Math.max(0, Math.min(100, num(S.BrakePedalPos) || 0)); $("brkb").setAttribute("stroke-dasharray", b + " 100"); $("brkb").setAttribute("opacity", b > 0.5 ? 1 : 0); } // brake fills the left half
-  { const w = ["Fd", "Fp", "Rd", "Rp"].map(k => S[k + "Window"]).filter(x => x != null && !/unknown/i.test(String(x))); $("windows").textContent = w.length === 0 ? "-" : w.some(x => !/closed/i.test(String(x))) ? "Open" : "Closed"; flag("windows", w.length === 0 ? "" : w.some(x => !/closed/i.test(String(x))) ? "warn" : "ok"); }
-  const r = num(S.EstBatteryRange ?? S.RatedRange ?? S.IdealBatteryRange); $("rng").textContent = r == null ? "-" : (r * MI).toFixed(0);
+  const r = num(S.EstBatteryRange ?? S.RatedRange ?? S.IdealBatteryRange); $("rng").textContent = r == null ? "--" : (r * MI).toFixed(0); $("rng2").textContent = $("rng").textContent; $("rng").parentElement.style.opacity = r == null ? ".45" : "";
   if (pw != null && sp != null) { effWin.push([pw, sp]); if (effWin.length > 10) effWin.shift(); }
   const effKm = effWin.reduce((a, x) => a + x[1], 0), effKw = effWin.reduce((a, x) => a + x[0], 0); // equal time steps, so sums give energy and distance
   { const e = effKm >= 100 ? effKw * 1000 / effKm : null; $("eff").textContent = (sp != null && sp >= 10 && e != null && Math.abs(e) < 1000) ? e.toFixed(0) : "-"; }
-  const cr = num(S.CruiseSetSpeed), crOn = cr != null && cr > 0; $("cruise").textContent = crOn ? (cr * MI).toFixed(0) : "Off"; $("cru").hidden = !crOn; $("cruise").style.color = crOn ? "var(--acc)" : "";
+  // CruiseSetSpeed is only the last value the driver set (fields.json has no "cruise active" field), so cruise counts as on
+  // only while the car is in drive and moving.
+  const cr = num(S.CruiseSetSpeed), crOn = cr != null && cr > 0 && /D$/.test(String(S.Gear ?? "")) && sp != null && sp > 5; $("cruise").textContent = crOn ? (cr * MI).toFixed(0) : "Off"; $("cru").hidden = !crOn; $("cruise").style.color = crOn ? "var(--acc)" : "";
   $("effh").textContent = $("eff").textContent; $("effw").hidden = $("eff").textContent === "-"; $("tout3").textContent = fmt(num(S.OutsideTemp), 0);
   $("tout").textContent = fmt(num(S.OutsideTemp), 0); $("tin").textContent = fmt(num(S.InsideTemp), 0);
   const fsd = num(S.SelfDrivingMilesSinceReset); $("fsd").textContent = fsd == null ? "-" : (fsd * MI).toFixed(1);
   const cs = S.DetailedChargeState ?? S.ChargeState, ck = num(S.DCChargingPower) || num(S.ACChargingPower);
   $("chkw").textContent = fmt(ck, 1); $("chst").textContent = cs == null ? "-" : String(cs).replace(/^DetailedChargeState/, "");
-  { const h = num(S.TimeToFullCharge ?? S.EstimatedHoursToChargeTermination); $("chtm").textContent = h == null ? "-" : (h * 60).toFixed(0); } // reported in hours
+  { const h = num(S.TimeToFullCharge ?? S.EstimatedHoursToChargeTermination), m = h == null ? null : Math.round(h * 60); $("chtm").textContent = m == null ? "-" : m >= 60 ? Math.floor(m / 60) + " h " + (m % 60) + " min" : m + " min"; } // reported in hours
+  { const c = /charging|starting/i.test(String(cs)), cok = c ? "ok" : ""; flag("chst", cok); flag("chkw", cok); }
   $("pv").textContent = fmt(num(S.PackVoltage), 0); $("pa").textContent = fmt(num(S.PackCurrent), 0);
-  $("lock").textContent = S.Locked == null ? "-" : (S.Locked === true || S.Locked === "true" ? "Locked" : "Unlocked");
-  const ds = S.DoorState, od2 = openDoors(ds); $("doors").textContent = od2 == null ? "-" : od2.length > 1 ? od2.length + " open" : od2.length === 1 ? od2[0].replace(/([a-z])([A-Z])/g, "$1 $2") : "All closed";
-  flag("lock", S.Locked == null ? "" : (S.Locked === true || S.Locked === "true") ? "ok" : "warn");
-  flag("doors", od2 == null ? "" : od2.length ? "bad" : "ok");
-  { const m = String(S.SentryMode ?? "").replace(/^SentryModeState/, ""), off = m === "Off" || S.SentryMode === false, unk = S.SentryMode == null || m === "Unknown" || m === "";
-    $("sentry").textContent = unk ? "-" : off ? "Off" : m === "Panic" ? "Alert" : "On"; flag("sentry", unk || off ? "" : m === "Panic" ? "bad" : "ok"); }
-  const tp = ["Fl","Fr","Rl","Rr"].map(k => num(S["TpmsPressure" + k])); $("tyre").innerHTML = tp.every(x => x == null) ? "<b>-</b>" : tp.map(x => { const p = x == null ? null : x * PSI_PER_ATM; return '<b class="' + (p != null && p < 38 ? "bad" : "") + '">' + (p == null ? "-" : p.toFixed(0)) + "</b>"; }).join(""); // Tesla reports bar; below 38 psi is flagged
-  flag("tyre", tp.some(x => x != null && x * PSI_PER_ATM < 38) ? "bad" : "");
+  renderCar();
   const od = num(S.Odometer); $("odo").textContent = od == null ? "-" : (od * MI).toFixed(0); $("sw").textContent = S.Version || "-";
+  { const ago = lastEvt ? Math.round((Date.now() - lastEvt) / 1000) : null; $("conn").textContent = !liveMode ? "Sample data" : (DEFAULT_RELAY || store.get("base") ? "Via relay" : "Direct") + (ago == null ? " · no data yet" : " · data " + (ago < 2 ? "just now" : ago + " s ago")); }
   const mi = num(S.MilesToArrival), mn = num(S.MinutesToArrival), asoc = num(S.ExpectedEnergyPercentAtTripArrival);
   $("nav").textContent = (mn == null || /^invalid$/i.test(String(S.DestinationName))) ? "No route" : (S.DestinationName ? S.DestinationName + ": " : "") + (mi == null ? "" : (mi * MI).toFixed(0) + " km, ") + mn.toFixed(0) + " min" + (asoc == null ? "" : ", arrive " + asoc.toFixed(0) + "%");
   const p = loc(S.Location);
@@ -378,7 +486,15 @@ function render() {
     $("amap").href = "https://maps.apple.com/?ll=" + p[0] + "," + p[1] + "&q=My%20car";
   }
   const lat = num(S.LateralAcceleration), lon = num(S.LongitudinalAcceleration);
-  if (lat != null || lon != null) { gfPts.push([lat || 0, lon || 0]); if (gfPts.length > 40) gfPts.shift(); }
+  if (lat != null || lon != null) {
+    // The sensor reads about 0.2 g at rest (slope or mounting). While stopped (or in P) the page learns that offset and shows 0.00 g;
+    // while moving it subtracts the offset and ignores anything under 0.05 g.
+    const a = lat || 0, b = lon || 0, still = (sp != null && sp < 1) || /P$/.test(String(S.Gear ?? ""));
+    let x, y;
+    if (still) { gbN = Math.min(gbN + 1, 20); gBase[0] += (a - gBase[0]) / gbN; gBase[1] += (b - gBase[1]) / gbN; x = 0; y = 0; }
+    else { x = a - gBase[0]; y = b - gBase[1]; if (Math.hypot(x, y) < 0.05) { x = 0; y = 0; } }
+    gfPts.push([x, y]); if (gfPts.length > 40) gfPts.shift();
+  }
   drawG();
 }
 function drawG() {
@@ -454,6 +570,13 @@ function startDemo() {
     const mph = v / MI, acc = ph >= 5 && ph < 12 ? 80 : ph < 30 && ph >= 12 ? 20 : 0, brk = ph >= 30 && ph < 36;
     const pw = ph >= 5 && ph < 12 ? 120 : ph >= 12 && ph < 30 ? 18 : ph >= 30 && ph < 36 ? -35 : 1;
     Object.assign(S, { VehicleSpeed: mph, Gear: v > 0 ? "D" : "P", PedalPosition: acc, BrakePedal: brk, PackVoltage: 380, PackCurrent: pw * 1000 / 380, BatteryLevel: 72, EstBatteryRange: 190, CruiseSetSpeed: 0, OutsideTemp: 21, InsideTemp: 23, SelfDrivingMilesSinceReset: 3.4, LateralAcceleration: Math.sin(t / 4) * 0.4, LongitudinalAcceleration: brk ? -0.5 : acc > 50 ? 0.8 : 0, Location: { latitude: base[0] + t * 0.0001, longitude: base[1] + Math.sin(t / 10) * 0.0005 }, Locked: false, SentryMode: "Off", Odometer: 12345, Version: "demo", TpmsPressureFl: 2.9, TpmsPressureFr: 2.9, TpmsPressureRl: 2.8, TpmsPressureRr: 2.5, DetailedChargeState: "Disconnected", MinutesToArrival: 18, MilesToArrival: 7.2, DestinationName: "Demo", ExpectedEnergyPercentAtTripArrival: 65 });
+    // ?scn=1 all closed and locked, ?scn=2 some things open (and charging), ?scn=3 everything open (door list sent as an array)
+    const scn = new URLSearchParams(location.search).get("scn") || "1", closed = "WindowStateClosed", wo = "WindowStateOpened";
+    // ?scn=idle: what the real car showed parked: P, 0 km/h, a 0.19 g sensor offset, tiny battery current, old cruise setting, no range yet
+    if (scn === "idle") { Object.assign(S, { Gear: "ShiftStateP", VehicleSpeed: 0, PedalPosition: 0, BrakePedal: false, LateralAcceleration: 0.19, LongitudinalAcceleration: -0.04, PackCurrent: -0.3, CruiseSetSpeed: 50, BatteryLevel: 78, OutsideTemp: 17, DoorState: {}, Locked: true }); delete S.EstBatteryRange; }
+    if (scn === "1") Object.assign(S, { Locked: true, SentryMode: "SentryModeStateOff", RightHandDrive: true, DoorState: {}, FdWindow: closed, FpWindow: closed, RdWindow: closed, RpWindow: closed, ChargePortDoorOpen: false, TpmsPressureRr: 2.9 });
+    if (scn === "2") Object.assign(S, { Locked: false, SentryMode: "SentryModeStateArmed", RightHandDrive: true, DoorState: { DriverFront: false, PassengerFront: true, DriverRear: false, PassengerRear: false, TrunkFront: true, TrunkRear: false }, FdWindow: closed, FpWindow: closed, RdWindow: closed, RpWindow: "WindowStatePartiallyOpen", ChargePortDoorOpen: true, DetailedChargeState: "DetailedChargeStateCharging", ACChargingPower: 10.8, TimeToFullCharge: 1.25, VehicleSpeed: 0, Gear: "ShiftStateP" });
+    if (scn === "3") Object.assign(S, { Locked: false, SentryMode: "SentryModeStatePanic", RightHandDrive: true, DoorState: ["DriverFront", "PassengerFront", "DriverRear", "PassengerRear", "TrunkFront", "TrunkRear"], FdWindow: wo, FpWindow: wo, RdWindow: wo, RpWindow: wo, ChargePortDoorOpen: true, TpmsPressureFl: 2.3 });
   }, 1000);
 }
 
@@ -464,7 +587,7 @@ function show(app) { $("setup").hidden = app; $("app").hidden = !app; }
 function flag(id, lvl) { const t = $(id).closest(".t"); if (t) { t.classList.remove("ok", "warn", "bad"); if (lvl) t.classList.add(lvl); } }
 function buildTicks() { const g = $("ticks"); if (g.children.length) return; for (let i = 0; i < 60; i++) { const l = document.createElementNS("http://www.w3.org/2000/svg", "line"), major = i % 5 === 0; l.setAttribute("x1", 100); l.setAttribute("x2", 100); l.setAttribute("y1", 3); l.setAttribute("y2", major ? 19 : 14); l.setAttribute("transform", "rotate(" + (-135 + i * 270 / 59).toFixed(2) + " 100 100)"); l.setAttribute("stroke", "#1e1e1e"); g.appendChild(l); } }
 let curPage = null; // the page being shown, so a resize (for example Safari's toolbar) never throws you back to the middle
-function home() { const p = $("pages"); p.style.scrollBehavior = "auto"; if (curPage == null) { const q = new URLSearchParams(location.search).get("page"); curPage = q == null ? 1 : +q; } p.scrollLeft = p.clientWidth * curPage; }
+function home() { const p = $("pages"); p.style.scrollBehavior = "auto"; if (curPage == null) { const q = new URLSearchParams(location.search).get("page"); curPage = q == null ? 2 : +q; /* five pages: charging, car, drive (the middle one, opened first), map, info */ } p.scrollLeft = p.clientWidth * curPage; }
 function startApp(demo) {
   show(true); buildTicks(); keepAwake(); home();
   const dots = () => { const p = $("pages"), i = Math.round(p.scrollLeft / p.clientWidth); [...$("dots").children].forEach((d, j) => d.classList.toggle("on", j === i)); };
@@ -479,6 +602,8 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
+const BUILD = "Build 18 Nov 2026 · 5 pages · v2"; $("build").textContent = BUILD;
+$("upd").onclick = () => { location.href = location.pathname + "?v=" + Date.now(); }; // reloads a fresh copy; the saved token stays in this browser
 $("demo").onclick = () => startApp(true);
 $("gear").onclick = () => { if (confirm("Clear the saved token and settings?")) { store.set("tok", ""); store.set("base", ""); location.reload(); } };
 if (location.search.includes("sample")) startApp(true);
