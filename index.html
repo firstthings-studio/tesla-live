@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#000000">
+<title>Car live</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root{--bg:#000;--card:#1c1c1e;--card2:#2c2c2e;--fg:#fff;--dim:rgba(235,235,245,.6);--dim2:rgba(235,235,245,.3);--sep:rgba(84,84,88,.65);
+ --ok:#30d158;--bad:#ff453a;--warn:#ff9f0a;--acc:#0a84ff;--teal:#64d2ff;--r:22px;
+ --sl:env(safe-area-inset-left);--sr:env(safe-area-inset-right);--st:env(safe-area-inset-top);--sb:env(safe-area-inset-bottom)}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font:400 15px -apple-system,"SF Pro Text","SF Pro Display",system-ui,"Segoe UI",sans-serif;font-variant-numeric:tabular-nums;overscroll-behavior:none;-webkit-font-smoothing:antialiased}
+a{color:var(--acc);text-decoration:none;font-weight:600}
+button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:var(--card2);color:var(--fg);width:100%;margin:4px 0}
+#setup{max-width:520px;margin:0 auto;padding:16px calc(16px + var(--sl))}
+#app{position:fixed;inset:0}
+#pages{display:flex;height:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+#pages::-webkit-scrollbar{display:none}
+.pg{flex:0 0 100vw;height:100%;scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden;position:relative;padding:calc(var(--st) + 8px) calc(var(--sr) + 16px) calc(var(--sb) + 24px) calc(var(--sl) + 16px)}
+.l{font-size:13px;color:var(--dim);font-weight:500}
+.u{font-size:13px;color:var(--dim)}
+.t{background:var(--card);border-radius:var(--r);padding:10px 14px;display:flex;flex-direction:column;justify-content:space-evenly;align-items:center;text-align:center;min-width:0;min-height:0}
+.t>*{max-width:100%}
+.v{font-size:36px;font-weight:700;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.5px;transition:color .3s ease}
+.l{font-weight:600}
+.ic{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;color:var(--acc);flex:none;transition:color .3s ease}
+.hd{display:flex;flex-direction:column;align-items:center;gap:4px}
+#tyre b.bad,.t.bad .l{font-weight:700}
+.t.ok .ic{color:var(--ok)}.t.warn .ic,.t.warn .v{color:var(--warn)}.t.bad .ic,.t.bad .v{color:var(--bad)}
+/* middle: driving */
+#hud{height:100%;display:grid;grid-template-rows:26px 1fr;gap:8px}
+#top{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;font-size:14px}
+#top b{font-weight:700}
+#tr{display:flex;justify-content:flex-end;gap:14px;color:var(--dim)}#tr b{color:var(--fg)}
+#main{display:grid;grid-template-columns:150px 1fr 270px;gap:16px;min-height:0}
+#chip{font-size:13px;color:var(--dim);font-weight:600}
+#ped{padding:10px 8px;gap:6px}
+#pcap{position:relative;flex:1;width:34px;background:var(--card2);border-radius:17px;overflow:hidden;min-height:0}
+#pcap #mid{position:absolute;left:0;right:0;top:50%;height:1px;background:var(--dim2);z-index:1}
+#pcap i{position:absolute;left:0;right:0;height:0;transition:height .3s ease}
+#accb{bottom:50%;background:var(--ok)}#brkb{top:50%;background:var(--bad)}
+#gearv[data-g="D"]{color:var(--ok)}#gearv[data-g="R"]{color:var(--warn)}
+.side{display:flex;flex-direction:column;gap:12px;min-height:0}
+.side .t{flex:1}
+#batt{display:flex;align-items:center;gap:8px}
+.glyph{width:30px;height:14px;border:1.5px solid var(--dim2);border-radius:5px;padding:1.5px;position:relative;flex:none}
+.glyph:after{content:"";position:absolute;right:-5px;top:3px;width:2.5px;height:5px;border-radius:0 2px 2px 0;background:var(--dim2)}
+#socb{height:100%;width:0;border-radius:3px;background:var(--ok);transition:width .3s ease,background .3s ease}
+#gauge{position:relative;height:100%;aspect-ratio:1;max-width:340px}
+#gauge svg{position:absolute;inset:0;width:100%;height:100%}
+#ring{transition:stroke-dasharray .3s ease,stroke .3s ease,opacity .3s ease}
+#spd{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+#speed{font-size:min(33vh,136px);font-weight:300;line-height:1;letter-spacing:-3px}
+#spd .u{font-weight:600;font-size:15px}
+#gearv{background:var(--card2);border-radius:999px;padding:3px 16px;font-size:18px;font-weight:600;margin-top:8px}
+#kw{font-size:14px;color:var(--dim)}
+#regen{color:var(--acc);margin-left:6px}
+#tm{font-size:54px;font-weight:200;line-height:1;letter-spacing:-1px}
+#tm{font-weight:300}#lap .u b{color:var(--fg)}
+#gwrap{align-items:center;justify-content:center;padding:8px}
+#gf{height:100%;max-height:100%;aspect-ratio:1;width:auto;max-width:100%}
+#strip{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+#strip .t{padding:10px 16px;justify-content:center;gap:8px}
+#strip .t>*{width:100%}
+.cap{height:10px;background:var(--card2);border-radius:4px;overflow:hidden}
+.cap i{display:block;height:100%;width:0;border-radius:4px;transition:width .3s ease}
+#accb{background:var(--ok)}#brkb{background:var(--bad)}
+/* left: status */
+#st{height:100%;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(3,1fr);gap:12px}
+#st .v{font-size:29px;letter-spacing:-.8px}
+#tyre{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;font-size:32px;font-weight:700;width:100%}
+#tyre b{font-weight:600;background:var(--card2);border-radius:12px;padding:6px 0;text-align:center}
+#tyre b.bad{color:var(--bad)}
+#log{margin:0;color:var(--warn);font-size:13px;overflow:hidden}
+/* right: map */
+#map{position:absolute;inset:0;background:#0b0e12}
+.leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.8) contrast(.95) saturate(.5)}
+.leaflet-control-attribution{background:rgba(28,28,30,.6)!important;color:var(--dim)!important;backdrop-filter:blur(20px)}
+.leaflet-control-attribution a{color:var(--dim)!important}
+#sheet{position:absolute;right:calc(var(--sr) + 16px);top:calc(var(--st) + 12px);bottom:calc(var(--sb) + 28px);width:250px;z-index:500;background:rgba(44,44,46,.62);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);border-radius:var(--r);padding:6px 16px;display:flex;flex-direction:column;justify-content:space-around;box-shadow:0 8px 30px rgba(0,0,0,.45)}
+#sheet>div{padding:8px 0;border-bottom:.5px solid var(--sep);text-align:center}
+#sheet>div:last-child{border-bottom:0}
+#nav{font-size:22px;white-space:normal;line-height:1.15}
+#dots{position:fixed;bottom:calc(var(--sb) + 8px);left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:600}
+#dots i{width:7px;height:7px;border-radius:50%;background:rgba(235,235,245,.3);transition:background .3s ease}
+#dots i.on{background:#fff}
+/* main driving screen: supercar-style dash (original design), the other pages stay in the system style */
+#p-hud{--acc:#ffc400}
+#p-hud #main{grid-template-columns:132px 1fr 132px;gap:12px}
+#p-hud #gauge{justify-self:center;max-width:none}
+.hx{background:#0a0a0a;border-radius:0;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);box-shadow:inset 0 2px 0 var(--acc)}
+#ticks line{stroke:#1e1e1e;stroke-width:2.6;transition:stroke .15s ease}
+#spd{gap:0;padding-bottom:58px}
+#speed{font-size:min(34vh,142px);font-weight:800;font-style:italic;letter-spacing:-5px;line-height:.9;padding-right:8px}
+#spd .u{font-size:14px;letter-spacing:.12em;color:var(--dim)}
+#gearv{background:none;border:2px solid var(--acc);color:var(--acc);border-radius:0;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);padding:2px 24px;font-size:24px;font-weight:800;font-style:italic;margin-top:6px}
+#gearv[data-g="D"]{color:var(--acc)}#gearv[data-g="R"]{color:var(--bad);border-color:var(--bad)}
+#kw{font-size:13px;color:var(--dim);margin-top:6px}
+#crt{font-size:13px;color:var(--acc);margin-bottom:2px}
+#gf{width:100%;height:auto;max-height:none}
+#lap{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;line-height:1.1;white-space:nowrap}
+#lap .l{font-size:11px}#tm{font-size:34px;font-weight:800;font-style:italic;line-height:1}
+#ped .l,#gwrap .l{font-size:12px}
+#p-hud #main{grid-template-columns:1fr auto 1fr;gap:16px}
+#p-hud #gauge{height:100%;aspect-ratio:1}
+#spd{padding-bottom:0}
+#speed{font-size:min(30vh,122px);letter-spacing:-4px}
+#rside{display:flex;flex-direction:column;gap:12px;min-height:0}
+#rside .t{flex:1}
+#p-hud #lap{position:static;transform:none;align-items:center;white-space:normal;bottom:auto}
+#p-hud #tm{font-size:52px}
+#p-hud #crt{font-size:inherit;color:inherit;margin:0}
+#gwrap .l{font-size:12px}
+#gwrap{gap:6px}
+#gf{flex:1;min-height:0;width:100%;height:auto;max-width:100%;aspect-ratio:auto;object-fit:contain}
+#gwrap>.l{display:none}
+#doors{font-size:22px}
+/* main screen sized for a phone mounted further away; the dial takes the full height, the status bar floats over the corners */
+#p-hud.pg{padding-top:calc(var(--st) + 4px);padding-bottom:calc(var(--sb) + 20px)}
+#hud{grid-template-rows:1fr;gap:0;position:static}
+#top{position:absolute;z-index:3;top:calc(var(--st) + 6px);left:calc(var(--sl) + 18px);right:calc(var(--sr) + 18px);height:34px;display:flex;justify-content:space-between;align-items:center;pointer-events:none}
+/* three-circle layout: G-force | speed dial | timer */
+#gwrap,#rside{margin-top:0;align-self:center;justify-self:center;width:min(100%,250px);aspect-ratio:1;height:auto;border-radius:50%;background:#0a0a0a;clip-path:none;box-shadow:inset 0 0 0 3px var(--acc);overflow:hidden;padding:0}
+#gwrap{display:flex;align-items:center;justify-content:center}
+#gf{width:100%;height:100%;flex:none;object-fit:contain}
+#rside{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center}
+#rside .hx{background:none;box-shadow:none;clip-path:none;flex:none;padding:0;gap:0;justify-content:center}
+#p-hud #lap .l{font-size:14px}
+#p-hud #tm{font-size:64px}
+#lap .u{font-size:16px}
+#p-hud #tm{font-size:clamp(40px,13.5vh,64px)}
+#p-hud #crt .v{font-size:clamp(20px,6.8vh,30px)}
+#rside{padding-top:10px}
+#trk{font-size:12px!important;color:var(--acc)!important;margin-top:2px}
+#kw{font-size:clamp(14px,4.4vh,19px)}
+#p-hud #crt{margin-top:6px}
+#p-hud #crt .l{font-size:14px}
+#p-hud #crt .v{font-size:30px}
+#p-hud #crt .u{font-size:15px}
+#p-hud #gauge{height:100%;aspect-ratio:1;align-self:center}
+#top{font-size:21px}
+#top .u{font-size:19px}
+#batt{gap:10px}
+.glyph{width:44px;height:21px;border-width:2px;padding:2px;border-radius:7px}
+.glyph:after{right:-6px;top:5px;height:7px;width:3px}
+#chip{font-size:19px}
+#tr{gap:18px}
+#speed{font-size:min(37vh,138px)}
+#spd .u{font-size:21px}
+#gearv{font-size:34px;padding:0 26px;border-width:2.5px;margin-top:4px;line-height:1.25}
+#kw{font-size:19px;margin-top:6px}
+#ticks line{stroke-width:3.6}
+#gauge svg path{stroke-width:10px}
+#lap .l,#crt .l{font-size:17px}
+#lap .u{font-size:19px}
+#p-hud #tm{font-size:70px}
+#p-hud #crt .v{font-size:60px}
+#p-hud #crt .u{font-size:22px}
+#p-hud #main{gap:12px}
+#chip::before{content:"\25CF";margin-right:6px;font-size:10px;vertical-align:1px}
+#rot{display:none;position:fixed;inset:0;z-index:1000;background:#000;color:#fff;align-items:center;justify-content:center;flex-direction:column;gap:14px;text-align:center;padding:24px;font-size:20px;font-weight:600}
+#rot svg{width:64px;height:64px;fill:none;stroke:#ffc400;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+@media (orientation:portrait){#app:not([hidden])~#rot{display:flex}}
+/* main screen: supercar-style dash, amber on black (restored) */
+#p-hud{--acc:#ffc400;background:#000}
+.hx{background:#0a0a0a;box-shadow:inset 0 2px 0 var(--acc)}
+#speed{font-weight:800;font-style:italic;letter-spacing:-5px;text-shadow:none}
+#p-hud #tm{font-weight:800;font-style:italic;text-shadow:none}
+#chip{color:var(--acc);text-shadow:none}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div id="setup" hidden>
+  <h2>Set up</h2>
+  <p>Paste your Teslemetry token once. It stays on this phone only.</p>
+  <input id="tok" placeholder="Teslemetry token" autocomplete="off">
+  <input id="base" placeholder="Relay address (leave empty to connect directly)" autocomplete="off">
+  <button id="save" style="background:var(--acc)">Save and start</button>
+  <button id="demo">Try with sample data</button>
+</div>
+
+<div id="app" hidden>
+ <div id="pages">
+
+  <section class="pg" id="p-status">
+   <div id="st">
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span class="l">Charging</span></div><div><div class="v"><span id="chkw">-</span> kW</div><div class="u" id="chst">-</div></div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><rect x="2" y="7" width="17" height="10" rx="3"/><path d="M22 11v2"/></svg><span class="l">Charge level</span></div><div><div class="v"><span id="soc2">-</span> %</div><div class="u">full in <span id="chtm">-</span> min</div></div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span class="l">Pack</span></div><div><div class="v"><span id="pv">-</span> V</div><div class="u"><span id="pa">-</span> A</div></div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M4 17a8 8 0 1 1 16 0M12 17l4-5"/></svg><span class="l">Efficiency now</span></div><div><div class="v"><span id="eff">-</span></div><div class="u">Wh/km</div></div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M10 14V5a2 2 0 0 1 4 0v9a4 4 0 1 1-4 0z"/></svg><span class="l">Temperature</span></div><div><div class="v"><span id="tin">-</span> / <span id="tout2">-</span></div><div class="u">inside / outside, °C</div></div></div>
+
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="l">Locks</span></div><div class="v" id="lock">-</div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M5 20V6a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v14M5 20h14M9 12h6"/></svg><span class="l">Doors and boot</span></div><div class="v" id="doors">-</div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 12h16M12 5v14"/></svg><span class="l">Windows</span></div><div class="v" id="windows">-</div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span class="l">Sentry</span></div><div class="v" id="sentry">-</div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M8 3 5 21M16 3l3 18M12 5v3M12 11v3M12 17v3"/></svg><span class="l">Odometer</span></div><div class="v"><span id="odo">-</span> km</div></div>
+
+    <div class="t" style="grid-column:span 2"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg><span class="l">Tyres, psi (front left, front right, rear left, rear right)</span></div><div id="tyre"><b>-</b></div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg><span class="l">Software</span></div><div class="v" id="sw">-</div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span class="l">Settings</span></div><button id="gear" style="margin:0;padding:8px;font-size:14px">Clear token</button></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg><span class="l">Connection</span></div><p id="log">OK</p></div>
+   </div>
+  </section>
+
+  <section class="pg" id="p-hud">
+   <div id="hud">
+    <div id="top">
+      <div id="batt"><div class="glyph"><div id="socb"></div></div><b><span id="soc">-</span>%</b><span class="u"><span id="rng">-</span> km</span></div>
+      <div id="tr"><span id="chip">Starting</span><span><span id="tout3">-</span> °C</span><b id="clock">-</b></div>
+    </div>
+    <div id="main">
+      <div class="t hx" id="gwrap"><div class="l">G-force</div><canvas id="gf" width="260" height="260"></canvas></div>
+      <div id="gauge">
+        <svg viewBox="0 0 200 200"><g id="ticks"></g>          <g fill="none" stroke-linecap="round" stroke-width="7">
+            <path d="M100 174A74 74 0 0 0 100 26" stroke="#161616"/><path d="M100 174A74 74 0 0 1 100 26" stroke="#161616"/>
+            <path id="accb" d="M100 174A74 74 0 0 1 100 26" pathLength="100" stroke="#30d158" stroke-dasharray="0 100" opacity="0"/>
+            <path id="brkb" d="M100 174A74 74 0 0 0 100 26" pathLength="100" stroke="#ff453a" stroke-dasharray="0 100" opacity="0"/></g>
+          <text x="95" y="195" text-anchor="end" fill="#30d158" font-size="10.5" font-weight="700">Accelerator <tspan id="acc">-</tspan>%</text>
+          <text x="105" y="195" fill="#ff453a" font-size="10.5" font-weight="700">Brake <tspan id="brk">-</tspan></text></svg>
+        <div id="spd">
+          <div id="speed">-</div><div class="u">km/h</div><div id="gearv">-</div>
+          <div id="kw"><span id="pwr">-</span> kW<span id="regen"></span><span id="effw"> · <span id="effh">-</span> Wh/km</span></div>
+        </div>
+      </div>
+      <div id="rside">
+        <div class="t hx" id="lap"><div class="l">0 to 100 km/h</div><div id="tm">0.0</div><div class="u">last <span id="tl">-</span> s · <span id="ts">ready</span></div><div class="l" id="trk">Closed track only</div></div>
+        <div class="t hx" id="crt"><div class="l">Cruise set</div><div class="v"><span id="cruise">Off</span> <span class="u" id="cru" hidden>km/h</span></div></div>
+      </div>
+    </div>
+   </div>
+  </section>
+
+  <section class="pg" id="p-map">
+    <div id="map"></div>
+    <div id="sheet">
+      <div><div class="l">Navigation</div><div class="v" id="nav">-</div></div>
+      <div><div class="l">Outside</div><div class="v"><span id="tout">-</span> °C</div></div>
+      <div><div class="l">Self-driving</div><div class="v"><span id="fsd">-</span> km</div></div>
+      <div><a id="amap" href="#">Open in Maps</a></div>
+    </div>
+  </section>
+
+ </div>
+ <div id="dots"><i></i><i class="on"></i><i></i></div>
+</div>
+<div id="rot"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M20 8c1.5 1.2 2 2.4 2 4s-.5 2.8-2 4M3 12H2"/></svg><div>Turn your phone sideways</div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+"use strict";
+// Units: Teslemetry gives miles and mph and Fahrenheit-free Celsius. We show km, km/h, kW.
+const MI = 1.609344, $ = id => document.getElementById(id);
+const mem = {}; // fallback when the browser blocks storage (private mode), so the token still works until the page closes
+const store = { get(k){try{return localStorage.getItem(k)||mem[k]||""}catch(e){return mem[k]||""}}, set(k,v){mem[k]=v;try{localStorage.setItem(k,v)}catch(e){}} };
+const S = {};                 // latest field values by name
+let effWin = [], map, marker, trail, trailPts = [], wake = null, gfPts = [];
+
+// ---- pure helpers (kept simple so they can be tested in the console) ----
+const num = v => (typeof v === "number" && isFinite(v)) ? v : (typeof v === "string" && v.trim() !== "" && isFinite(+v) ? +v : null);
+const fmt = (v, d = 0) => v == null ? "-" : v.toFixed(d);
+function flatten(ev) {        // accept {data:{A:1}} or {data:[{key,value}]} or {A:1}
+  const d = ev && ev.data !== undefined ? ev.data : ev, out = {};
+  if (Array.isArray(d)) d.forEach(x => { if (x && x.key !== undefined) out[x.key] = x.value; });
+  else if (d && typeof d === "object") Object.assign(out, d);
+  return out;
+}
+function loc(v) { if (!v) return null; const la = num(v.latitude ?? v.lat), lo = num(v.longitude ?? v.lon ?? v.lng); return la == null || lo == null ? null : [la, lo]; }
+const speedKmh = () => { const s = num(S.VehicleSpeed); return s == null ? null : s * MI; };
+// Power = pack voltage x pack current. Teslemetry doesn't say which sign means driving, so the page learns it: while the accelerator is pressed
+// and the car is moving, the current's sign is "driving". Until then it assumes positive = driving.
+let pcSign = 1;
+const powerKw = () => {
+  const v = num(S.PackVoltage), a = num(S.PackCurrent); if (v == null || a == null) return null;
+  const acc = num(S.PedalPosition), sp = speedKmh();
+  if (acc != null && acc > 20 && sp != null && sp > 5 && Math.abs(a) > 5) pcSign = a > 0 ? 1 : -1;
+  return pcSign * v * a / 1000;
+};
+const PSI_PER_ATM = 14.696; // Teslemetry reports tyre pressure in atmospheres
+const openDoors = ds => Array.isArray(ds) ? ds.map(String) : typeof ds === "string" ? ds.split(/[\s,]+/).filter(x => x && !/^(none|closed|invalid|unknown)$/i.test(x)) : ds && typeof ds === "object" ? Object.keys(ds).filter(k => ds[k] === true) : null;
+const GEAR_NAMES = { P: "P", R: "R", N: "N", D: "D" };
+
+// ---- 0 to 100 timer ----
+// The stream is 1 reading a second, so the time is accurate to about half a second at the start; the finish is interpolated between readings.
+const T = { state: "ready", t0: 0, last: null, cur: null, prev: null };
+function timerTick(now) {
+  const sp = speedKmh(), acc = num(S.PedalPosition), pw = powerKw(), br = S.BrakePedal === true || S.BrakePedal === "true";
+  if (sp == null) return;
+  const fresh = sp !== T.cur; if (fresh) { T.prev = T.cur; T.cur = sp; } // a new reading arrived
+  if (T.state === "ready" || T.state === "done") {
+    if (sp < 1) T.state = "ready";
+    else if (T.state === "ready" && fresh && T.prev != null && T.prev < 1 && (acc == null || acc > 0)) { T.state = "run"; T.t0 = now - 500; } // only a start from a standstill counts
+  } else if (T.state === "run") {
+    if (sp >= 100) { const f = T.prev != null && sp > T.prev ? (sp - 100) / (sp - T.prev) : 0; T.last = (now - 1000 * f - T.t0) / 1000; T.state = "done"; }
+    else if (br || (pw != null && pw < 0)) { T.last = (now - T.t0) / 1000; T.state = "done"; }
+    else if (sp < 1) T.state = "ready";
+  }
+  $("tm").textContent = T.state === "run" ? ((now - T.t0) / 1000).toFixed(1) : (T.last != null ? T.last.toFixed(1) : "0.0");
+  $("tl").textContent = T.last != null ? T.last.toFixed(1) : "-";
+  $("ts").textContent = T.state === "run" ? "running" : T.state === "done" ? "stopped" : "ready";
+  $("tm").style.color = T.state === "run" ? "#ffc400" : T.state === "done" ? "#30d158" : "";
+}
+
+// ---- drawing ----
+function render() {
+  const sp = speedKmh(), pw = powerKw(), acc = num(S.PedalPosition);
+  $("speed").textContent = fmt(sp, 0);
+  $("gearv").textContent = S.Gear == null ? "-" : (GEAR_NAMES[String(S.Gear).replace(/^ShiftState/, "")] || "-"); $("gearv").dataset.g = $("gearv").textContent;
+  if (liveMode && lastEvt) { const old = Date.now() - lastEvt > 8000; if (old !== stale) { stale = old; setChip(old ? "No data from car" : "Live", old ? "var(--warn)" : "var(--ok)"); } }
+  $("pwr").textContent = fmt(pw, 0);
+  $("regen").textContent = pw != null && pw < 0 ? " regen" : "";
+  $("acc").textContent = fmt(acc, 0); { const a = Math.max(0, Math.min(100, acc || 0)); $("accb").setAttribute("stroke-dasharray", a + " 100"); $("accb").setAttribute("opacity", a > 0.5 ? 1 : 0); } // pedal ring: accelerator fills the right half
+  $("brk").textContent = S.BrakePedal == null ? "-" : (S.BrakePedal === true || S.BrakePedal === "true" ? "On" : "Off");
+  $("soc").textContent = fmt(num(S.BatteryLevel), 0); $("soc2").textContent = $("soc").textContent; $("tout2").textContent = fmt(num(S.OutsideTemp), 0);
+  { const el = $("ticks").children, nd = pw != null && pw > 0 ? Math.round(Math.min(1, pw / 250) * 48) : 0, nr = pw != null && pw < 0 ? Math.round(Math.min(1, -pw / 80) * 12) : 0; // 60 ticks: 12 regen (blue) then 48 drive (amber, red at the top)
+    for (let i = 0; i < el.length; i++) el[i].style.stroke = ((i >= 12 && i < 12 + nd) ? (i >= 52 ? "#ff3b30" : "#ffc400") : (i < 12 && 11 - i < nr) ? "#0a84ff" : "#1e1e1e"); }
+  { const b = num(S.BatteryLevel) || 0; $("socb").style.width = Math.max(0, Math.min(100, b)) + "%"; $("socb").style.background = b < 15 ? "var(--bad)" : b < 30 ? "var(--warn)" : "var(--ok)"; }
+  { const b = (S.BrakePedal === true || S.BrakePedal === "true") ? 100 : Math.max(0, Math.min(100, num(S.BrakePedalPos) || 0)); $("brkb").setAttribute("stroke-dasharray", b + " 100"); $("brkb").setAttribute("opacity", b > 0.5 ? 1 : 0); } // brake fills the left half
+  { const w = ["Fd", "Fp", "Rd", "Rp"].map(k => S[k + "Window"]).filter(x => x != null && !/unknown/i.test(String(x))); $("windows").textContent = w.length === 0 ? "-" : w.some(x => !/closed/i.test(String(x))) ? "Open" : "Closed"; flag("windows", w.length === 0 ? "" : w.some(x => !/closed/i.test(String(x))) ? "warn" : "ok"); }
+  const r = num(S.EstBatteryRange ?? S.RatedRange ?? S.IdealBatteryRange); $("rng").textContent = r == null ? "-" : (r * MI).toFixed(0);
+  if (pw != null && sp != null) { effWin.push([pw, sp]); if (effWin.length > 10) effWin.shift(); }
+  const effKm = effWin.reduce((a, x) => a + x[1], 0), effKw = effWin.reduce((a, x) => a + x[0], 0); // equal time steps, so sums give energy and distance
+  { const e = effKm >= 100 ? effKw * 1000 / effKm : null; $("eff").textContent = (sp != null && sp >= 10 && e != null && Math.abs(e) < 1000) ? e.toFixed(0) : "-"; }
+  const cr = num(S.CruiseSetSpeed), crOn = cr != null && cr > 0; $("cruise").textContent = crOn ? (cr * MI).toFixed(0) : "Off"; $("cru").hidden = !crOn; $("cruise").style.color = crOn ? "var(--acc)" : "";
+  $("effh").textContent = $("eff").textContent; $("effw").hidden = $("eff").textContent === "-"; $("tout3").textContent = fmt(num(S.OutsideTemp), 0);
+  $("tout").textContent = fmt(num(S.OutsideTemp), 0); $("tin").textContent = fmt(num(S.InsideTemp), 0);
+  const fsd = num(S.SelfDrivingMilesSinceReset); $("fsd").textContent = fsd == null ? "-" : (fsd * MI).toFixed(1);
+  const cs = S.DetailedChargeState ?? S.ChargeState, ck = num(S.DCChargingPower) || num(S.ACChargingPower);
+  $("chkw").textContent = fmt(ck, 1); $("chst").textContent = cs == null ? "-" : String(cs).replace(/^DetailedChargeState/, "");
+  { const h = num(S.TimeToFullCharge ?? S.EstimatedHoursToChargeTermination); $("chtm").textContent = h == null ? "-" : (h * 60).toFixed(0); } // reported in hours
+  $("pv").textContent = fmt(num(S.PackVoltage), 0); $("pa").textContent = fmt(num(S.PackCurrent), 0);
+  $("lock").textContent = S.Locked == null ? "-" : (S.Locked === true || S.Locked === "true" ? "Locked" : "Unlocked");
+  const ds = S.DoorState, od2 = openDoors(ds); $("doors").textContent = od2 == null ? "-" : od2.length > 1 ? od2.length + " open" : od2.length === 1 ? od2[0].replace(/([a-z])([A-Z])/g, "$1 $2") : "All closed";
+  flag("lock", S.Locked == null ? "" : (S.Locked === true || S.Locked === "true") ? "ok" : "warn");
+  flag("doors", od2 == null ? "" : od2.length ? "bad" : "ok");
+  { const m = String(S.SentryMode ?? "").replace(/^SentryModeState/, ""), off = m === "Off" || S.SentryMode === false, unk = S.SentryMode == null || m === "Unknown" || m === "";
+    $("sentry").textContent = unk ? "-" : off ? "Off" : m === "Panic" ? "Alert" : "On"; flag("sentry", unk || off ? "" : m === "Panic" ? "bad" : "ok"); }
+  const tp = ["Fl","Fr","Rl","Rr"].map(k => num(S["TpmsPressure" + k])); $("tyre").innerHTML = tp.every(x => x == null) ? "<b>-</b>" : tp.map(x => { const p = x == null ? null : x * PSI_PER_ATM; return '<b class="' + (p != null && p < 38 ? "bad" : "") + '">' + (p == null ? "-" : p.toFixed(0)) + "</b>"; }).join(""); // Tesla reports bar; below 38 psi is flagged
+  flag("tyre", tp.some(x => x != null && x * PSI_PER_ATM < 38) ? "bad" : "");
+  const od = num(S.Odometer); $("odo").textContent = od == null ? "-" : (od * MI).toFixed(0); $("sw").textContent = S.Version || "-";
+  const mi = num(S.MilesToArrival), mn = num(S.MinutesToArrival), asoc = num(S.ExpectedEnergyPercentAtTripArrival);
+  $("nav").textContent = (mn == null || /^invalid$/i.test(String(S.DestinationName))) ? "No route" : (S.DestinationName ? S.DestinationName + ": " : "") + (mi == null ? "" : (mi * MI).toFixed(0) + " km, ") + mn.toFixed(0) + " min" + (asoc == null ? "" : ", arrive " + asoc.toFixed(0) + "%");
+  const p = loc(S.Location);
+  if (p) {
+    if (!map) { map = L.map("map", { zoomControl: false }); map.attributionControl.setPosition("bottomleft"); L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "© OpenStreetMap contributors" }).addTo(map); marker = L.circleMarker(p, { radius: 9, color: "#fff", weight: 3, fillColor: "#0a84ff", fillOpacity: 1 }).addTo(map); trail = L.polyline([], { weight: 5, color: "#0a84ff" }).addTo(map); map.setView(p, 16); new ResizeObserver(() => map.invalidateSize()).observe($("map")); }
+    const last = trailPts[trailPts.length - 1];
+    if (!last || last[0] !== p[0] || last[1] !== p[1]) { trailPts.push(p); if (trailPts.length > 1500) trailPts.shift(); trail.setLatLngs(trailPts); }
+    marker.setLatLng(p); map.panTo(p, { animate: false });
+    $("amap").href = "https://maps.apple.com/?ll=" + p[0] + "," + p[1] + "&q=My%20car";
+  }
+  const lat = num(S.LateralAcceleration), lon = num(S.LongitudinalAcceleration);
+  if (lat != null || lon != null) { gfPts.push([lat || 0, lon || 0]); if (gfPts.length > 40) gfPts.shift(); }
+  drawG();
+}
+function drawG() {
+  const c = $("gf"), g = c.getContext("2d"), w = c.width, h = c.height, cx = w / 2, cy = h / 2, R = h / 2 - 10, sc = R / 1.2; // 1.2 g edge
+  g.clearRect(0, 0, w, h); g.strokeStyle = "rgba(235,235,245,.18)"; g.lineWidth = 2; g.fillStyle = "rgba(235,235,245,.6)"; g.font = "700 24px -apple-system, system-ui, sans-serif";
+  [0.5, 1].forEach(r => { g.beginPath(); g.arc(cx, cy, r * sc, 0, 7); g.stroke(); });
+  g.beginPath(); g.moveTo(cx - R, cy); g.lineTo(cx + R, cy); g.moveTo(cx, cy - R); g.lineTo(cx, cy + R); g.stroke();
+  const tr = gfPts.slice(-6); tr.forEach((q, i) => { g.fillStyle = "rgba(255,196,0," + (0.12 + 0.88 * (i + 1) / tr.length) + ")"; g.beginPath(); g.arc(cx + q[0] * sc, cy - q[1] * sc, i === tr.length - 1 ? 15 : 5 + i, 0, 7); g.fill(); });
+  const q = gfPts[gfPts.length - 1] || [0, 0]; g.fillStyle = "rgba(235,235,245,.75)"; g.textAlign = "center"; g.fillText("G-force", cx, 34); g.fillStyle = "#fff"; g.fillText(Math.hypot(q[0], q[1]).toFixed(2) + " g", cx, h - 22); g.textAlign = "start";
+}
+
+// ---- stream (fetch with a Bearer header, parses Server-Sent Events) ----
+let ctl = null, retry = 1000, timer = null;
+function setChip(t, c) { $("chip").textContent = t; $("chip").style.color = c || ""; }
+let liveMode = false, lastEvt = 0, stale = false;
+function onEvent(txt) {
+  lastEvt = Date.now();
+  let ev; try { ev = JSON.parse(txt); } catch (e) { return; }
+  Object.assign(S, flatten(ev));
+  if (ev && ev.vin && !S._vin) S._vin = ev.vin;
+}
+async function connect() {
+  if (ctl) ctl.abort(); ctl = new AbortController();
+  const base = (store.get("base") || "https://api.teslemetry.com").replace(/\/+$/, "");
+  setChip("Connecting", "var(--warn)");
+  try {
+    const r = await fetch(base + "/sse?topics=data,connectivity", { headers: { Authorization: "Bearer " + store.get("tok"), Accept: "text/event-stream" }, signal: ctl.signal, cache: "no-store" });
+    if (r.status === 401 || r.status === 403) { setChip("Token not accepted", "var(--bad)"); return; }
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    setChip("Live", "var(--ok)"); retry = 1000;
+    const rd = r.body.getReader(), dec = new TextDecoder(); let buf = "";
+    for (;;) {
+      const { value, done } = await rd.read(); if (done) break;
+      buf += dec.decode(value, { stream: true });
+      let i; while ((i = buf.indexOf("\n\n")) >= 0) {
+        const block = buf.slice(0, i); buf = buf.slice(i + 2);
+        const data = block.split("\n").filter(l => l.startsWith("data:")).map(l => l.slice(5).trim()).join("");
+        if (data) onEvent(data);
+      }
+    }
+  } catch (e) {
+    if (e.name === "AbortError") return;
+    $("log").textContent = "Connection problem: " + e.message + ". If this says Failed to fetch, the relay address is wrong or missing.";
+  }
+  setChip("Reconnecting", "var(--warn)"); retry = Math.min(retry * 2, 30000);
+  timer = setTimeout(connect, retry);
+}
+
+// ---- sample stream (no car needed): a short drive with an acceleration run ----
+function startDemo() {
+  setChip("Sample data", "var(--acc)"); let t = 0;
+  const base = [-37.8136, 144.9631];
+  setInterval(() => {
+    t++; const ph = t % 60; let v = ph < 5 ? 0 : ph < 12 ? (ph - 5) * 15 : ph < 30 ? 105 : ph < 36 ? 105 - (ph - 30) * 17 : 0; // mph-ish converted below
+    const mph = v / MI, acc = ph >= 5 && ph < 12 ? 80 : ph < 30 && ph >= 12 ? 20 : 0, brk = ph >= 30 && ph < 36;
+    const pw = ph >= 5 && ph < 12 ? 120 : ph >= 12 && ph < 30 ? 18 : ph >= 30 && ph < 36 ? -35 : 1;
+    Object.assign(S, { VehicleSpeed: mph, Gear: v > 0 ? "D" : "P", PedalPosition: acc, BrakePedal: brk, PackVoltage: 380, PackCurrent: pw * 1000 / 380, BatteryLevel: 72, EstBatteryRange: 190, CruiseSetSpeed: 0, OutsideTemp: 21, InsideTemp: 23, SelfDrivingMilesSinceReset: 3.4, LateralAcceleration: Math.sin(t / 4) * 0.4, LongitudinalAcceleration: brk ? -0.5 : acc > 50 ? 0.8 : 0, Location: { latitude: base[0] + t * 0.0001, longitude: base[1] + Math.sin(t / 10) * 0.0005 }, Locked: false, SentryMode: "Off", Odometer: 12345, Version: "demo", TpmsPressureFl: 2.9, TpmsPressureFr: 2.9, TpmsPressureRl: 2.8, TpmsPressureRr: 2.5, DetailedChargeState: "Disconnected", MinutesToArrival: 18, MilesToArrival: 7.2, DestinationName: "Demo", ExpectedEnergyPercentAtTripArrival: 65 });
+  }, 1000);
+}
+
+// ---- keep awake, startup ----
+async function keepAwake() { try { if ("wakeLock" in navigator) wake = await navigator.wakeLock.request("screen"); } catch (e) {} }
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") { keepAwake(); if (store.get("tok") && !location.search.includes("sample")) { clearTimeout(timer); connect(); } } });
+function show(app) { $("setup").hidden = app; $("app").hidden = !app; }
+function flag(id, lvl) { const t = $(id).closest(".t"); if (t) { t.classList.remove("ok", "warn", "bad"); if (lvl) t.classList.add(lvl); } }
+function buildTicks() { const g = $("ticks"); if (g.children.length) return; for (let i = 0; i < 60; i++) { const l = document.createElementNS("http://www.w3.org/2000/svg", "line"), major = i % 5 === 0; l.setAttribute("x1", 100); l.setAttribute("x2", 100); l.setAttribute("y1", 3); l.setAttribute("y2", major ? 19 : 14); l.setAttribute("transform", "rotate(" + (-135 + i * 270 / 59).toFixed(2) + " 100 100)"); l.setAttribute("stroke", "#1e1e1e"); g.appendChild(l); } }
+let curPage = null; // the page being shown, so a resize (for example Safari's toolbar) never throws you back to the middle
+function home() { const p = $("pages"); p.style.scrollBehavior = "auto"; if (curPage == null) { const q = new URLSearchParams(location.search).get("page"); curPage = q == null ? 1 : +q; } p.scrollLeft = p.clientWidth * curPage; }
+function startApp(demo) {
+  show(true); buildTicks(); keepAwake(); home();
+  const dots = () => { const p = $("pages"), i = Math.round(p.scrollLeft / p.clientWidth); [...$("dots").children].forEach((d, j) => d.classList.toggle("on", j === i)); };
+  let lockUntil = 0;
+  $("pages").addEventListener("scroll", () => { dots(); if (Date.now() > lockUntil) { const p = $("pages"); curPage = Math.round(p.scrollLeft / p.clientWidth); } if (map) map.invalidateSize(); }, { passive: true });
+  const back = () => { lockUntil = Date.now() + 400; home(); dots(); };
+  addEventListener("resize", back); addEventListener("pageshow", back); addEventListener("orientationchange", back); dots();
+  setInterval(() => { render(); }, 1000);
+  setInterval(() => timerTick(performance.now()), 100);
+  const tick = () => { $("clock").textContent = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); }; tick(); setInterval(tick, 10000);
+  liveMode = !demo;
+  demo ? startDemo() : connect();
+}
+$("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
+$("demo").onclick = () => startApp(true);
+$("gear").onclick = () => { if (confirm("Clear the saved token and settings?")) { store.set("tok", ""); store.set("base", ""); location.reload(); } };
+if (location.search.includes("sample")) startApp(true);
+else if (store.get("tok")) startApp(false);
+else show(false);
+</script>
+</body>
+</html>
