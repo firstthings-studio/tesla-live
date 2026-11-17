@@ -251,7 +251,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 .side3{gap:12px}
 #ch .v,#inf .v,.side3 .v{font-size:28px;line-height:1.2;font-weight:600}
 #inf .v#conn{font-size:17px}
-#carsum{font-size:17px;font-weight:600;line-height:1.25;min-height:44px;display:flex;align-items:center;justify-content:center}
+#carsum{font-size:17px;font-weight:600;line-height:1.25;min-height:24px;padding-top:2px;display:flex;align-items:center;justify-content:center;text-align:center}
 #log{font-size:13px}
 /* no data yet: quiet placeholders instead of a huge slanted dash */
 #speed.nd{font-weight:300;font-style:normal;letter-spacing:0;color:rgba(235,235,245,.22)}
@@ -303,7 +303,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
      <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span class="l">Sentry</span></div><div class="v" id="sentry">-</div></div>
     </div>
     <div id="carbox">
-     <svg id="car" viewBox="0 -16 320 356">
+     <svg id="car" viewBox="-40 -16 400 356">
       <text class="tu" x="160" y="-4" text-anchor="middle" style="font-size:13px">▲ Front</text>
       <ellipse id="sring" cx="160" cy="170" rx="104" ry="172"/>
       <g class="wheels">
@@ -327,10 +327,10 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
       <circle id="cport" cx="108" cy="316" r="6"/>
       <circle id="wheel-driver" cx="187" cy="140" r="7"/>
       <g id="padlock" transform="translate(160 186)"><path d="M-8 -3v-6a8 8 0 0 1 16 0v6" fill="none" stroke-width="3.5" stroke-linecap="round"/><rect x="-12" y="-3" width="24" height="19" rx="5"/></g>
-      <text id="t-fl" class="tp" x="74" y="76" text-anchor="end">-</text><text id="t-fr" class="tp" x="246" y="76">-</text>
-      <text id="t-rl" class="tp" x="74" y="274" text-anchor="end">-</text><text id="t-rr" class="tp" x="246" y="274">-</text>
-      <text class="tu" x="74" y="91" text-anchor="end">psi</text><text class="tu" x="246" y="91">psi</text>
-      <text class="tu" x="74" y="289" text-anchor="end">psi</text><text class="tu" x="246" y="289">psi</text>
+      <text id="t-fl" class="tp" x="40" y="76" text-anchor="end">-</text><text id="t-fr" class="tp" x="280" y="76">-</text>
+      <text id="t-rl" class="tp" x="40" y="274" text-anchor="end">-</text><text id="t-rr" class="tp" x="280" y="274">-</text>
+      <text class="tu" x="40" y="92" text-anchor="end">psi</text><text class="tu" x="280" y="92">psi</text>
+      <text class="tu" x="40" y="290" text-anchor="end">psi</text><text class="tu" x="280" y="290">psi</text>
      </svg>
      <div id="carsum">Waiting for the car</div>
     </div>
@@ -451,7 +451,7 @@ function renderCar() {
   const ds = doorSet(S.DoorState), open = [], put = (id, on) => { const e = $(id); if (e) e.classList.toggle("open", !!on); };
   ["fl", "fr", "rl", "rr"].forEach(p => put("d-" + p, false));
   put("frunk", false); put("trunk", false);
-  if (ds) ds.forEach(c => { if (c === "ft") { put("frunk", true); open.push("Frunk open"); } else if (c === "rt") { put("trunk", true); open.push("Boot open"); } else { const p = where[c]; put("d-" + p, true); open.push(SIDE_NAME[p] + " door open"); } });
+  if (ds) ds.forEach(c => { if (c === "ft") { put("frunk", true); open.push("Front boot open"); } else if (c === "rt") { put("trunk", true); open.push("Boot open"); } else { const p = where[c]; put("d-" + p, true); open.push(SIDE_NAME[p] + " door open"); } });
   const winOf = { Fd: "df", Fp: "pf", Rd: "dr", Rp: "pr" }, wopen = []; let wknown = 0;
   Object.keys(winOf).forEach(k => { const v = S[k + "Window"], unk = v == null || /unknown/i.test(String(v)), p = where[winOf[k]], on = !unk && !/closed/i.test(String(v)); if (!unk) wknown++; put("w-" + p, on); if (on) { wopen.push(p); open.push(SIDE_NAME[p] + " window open"); } });
   ["fl", "fr", "rl", "rr"].forEach(p => { if (!wopen.includes(p)) put("w-" + p, false); });
@@ -467,9 +467,13 @@ function renderCar() {
   [["fl", "Fl"], ["fr", "Fr"], ["rl", "Rl"], ["rr", "Rr"]].forEach(([p, k]) => { const x = num(S["TpmsPressure" + k]), psi = x == null ? null : x * PSI_PER_ATM, e = $("t-" + p), bad = psi != null && psi < 38; e.textContent = psi == null ? "-" : psi.toFixed(0); e.classList.toggle("bad", bad); if (bad) { low++; open.push(SIDE_NAME[p] + " tyre low"); } });
   const none = ds == null && wknown === 0 && lk == null;
   // one plain sentence: name a single open thing, count several
-  const dL = open.filter(x => / door open$| open$/.test(x) && !/window|port/.test(x)), wL = open.filter(x => /window open$/.test(x)), tL = open.filter(x => /tyre low$/.test(x)), pL = open.filter(x => /port open$/.test(x));
-  const bits = [dL.length > 1 ? dL.length + " doors and boot open" : dL[0], wL.length > 1 ? wL.length + " windows open" : wL[0], pL[0], tL.length > 1 ? tL.length + " tyres low" : tL[0]].filter(Boolean);
-  $("carsum").textContent = none ? "Waiting for the car" : open.length === 0 ? (lk === true ? "All closed and locked" : lk === false ? "All closed, unlocked" : "All closed") : bits.length > 2 ? bits.slice(0, 2).join(" · ") + " · +" + (bits.length - 2) + " more" : bits.join(" · ");
+  const doorsOnly = open.filter(x => / door open$/.test(x)), bootsOnly = open.filter(x => /^(Front boot|Boot) open$/.test(x)).map(x => x.replace(/ open$/, "").toLowerCase());
+  const wL = open.filter(x => /window open$/.test(x)), tL = open.filter(x => /tyre low$/.test(x)), pL = open.filter(x => /port open$/.test(x));
+  // doors and boots in one phrase that says exactly which, e.g. "Front-left door and front boot open"
+  const dbParts = [...(doorsOnly.length > 1 ? [doorsOnly.length + " doors"] : doorsOnly.map(x => x.replace(/ open$/, ""))), ...bootsOnly];
+  const dbText = dbParts.length === 0 ? null : (dbParts.length === 1 ? dbParts[0] : dbParts.slice(0, -1).join(", ") + " and " + dbParts[dbParts.length - 1]) + " open";
+  const bits = [dbText && dbText.charAt(0).toUpperCase() + dbText.slice(1), wL.length > 1 ? wL.length + " windows open" : wL[0], pL[0], tL.length > 1 ? tL.length + " tyres low" : tL[0]].filter(Boolean);
+  $("carsum").textContent = none ? "Waiting for the car" : open.length === 0 ? (lk === true ? "All closed and locked" : lk === false ? "All closed, unlocked" : "All closed") : bits.length > 1 ? bits[0] + " · +" + (bits.length - 1) + " more" : bits[0];
   $("carsum").classList.toggle("warn", open.length > 0); $("carsum").classList.toggle("ok", !none && open.length === 0 && lk === true);
 }
 const GEAR_NAMES = { P: "P", R: "R", N: "N", D: "D" };
