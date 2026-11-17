@@ -241,6 +241,35 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #sheet .v{font-size:28px;line-height:1.2}
 #sheet #nav{font-size:17px;line-height:1.25}
 #sheet{padding:8px 16px}
+/* ===== drive page, variant B: an oversized dial (only its sides show), huge centred speed, circles in the bottom corners, racing palette ===== */
+#p-hud{--acc:#ffd400;--racey:#ffd400;background:#000}
+#p-hud #main{display:block;height:100%}
+#p-hud #gauge{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);height:auto;width:152vh;aspect-ratio:1;z-index:1;max-width:none}
+#p-hud #gwrap,#p-hud #rside{position:absolute;z-index:4;width:min(36vh,166px);height:auto;aspect-ratio:1;margin:0;bottom:calc(var(--sb) + 22px);box-shadow:inset 0 0 0 2px #2a2a2a}
+#p-hud #gwrap{left:calc(var(--sl) + 16px)}
+#p-hud #rside{right:calc(var(--sr) + 24px);cursor:pointer;-webkit-tap-highlight-color:transparent}
+#gauge svg text{display:none}
+#speed{font-size:min(46vh,206px);color:#fff}
+#spd{gap:0;padding-bottom:6vh}
+#spd .u{font-size:22px}
+#gearv{font-size:40px;padding:0 32px;border:3px solid #ffd400;color:#ffd400;border-radius:10px;clip-path:none;line-height:1.2}
+#gearv[data-g="R"]{color:#ff2d2d;border-color:#ff2d2d}
+#kw{font-size:22px}
+#pedhtml{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(var(--sb) + 30px);z-index:5;display:flex;gap:28px;font-size:19px;font-weight:700;white-space:nowrap}
+#pedhtml .pg2{color:#00e060}#pedhtml .pr2{color:#ff2d2d}
+#p-hud #tm{font-size:clamp(34px,10vh,44px)}
+#p-hud #tm.txt{font-size:clamp(17px,5.2vh,22px);font-style:normal;font-weight:700;line-height:1.1;letter-spacing:0}
+#p-hud #tm.armed{color:#ffd400}
+#tsub{font-size:12px;line-height:1.25;max-width:90%}
+#tsub.armed{color:#ffd400;font-weight:600}
+#tlast{font-size:12px}
+#p-hud #lap{gap:4px;width:100%}
+#p-hud #rside.armedring{box-shadow:inset 0 0 0 3px #ffd400}
+#p-hud #crt{position:absolute;z-index:5;right:calc(var(--sr) + 24px);bottom:calc(var(--sb) + 22px + min(36vh,166px) + 8px);width:min(36vh,166px);margin:0;padding:0;display:block;background:none;box-shadow:none;text-align:center;font-size:15px;font-weight:700;color:#ffd400;white-space:nowrap}
+#p-hud #crt[hidden]{display:none}
+#p-hud #crt .u,#p-hud #crt #cru{display:inline;color:var(--dim);font-weight:600}
+#chip{z-index:5}
+#batt,#tr{background:rgba(0,0,0,.72);padding:3px 12px 3px 8px;border-radius:16px}
 /* iOS-native scale: 8-pt grid, 16-pt margins, 12-pt gaps, type 34/28/22/17/13 */
 .pg{padding-left:calc(var(--sl) + 16px);padding-right:calc(var(--sr) + 16px);padding-top:calc(var(--st) + 8px);padding-bottom:calc(var(--sb) + 24px)}
 .t{padding:8px 16px;gap:4px}
@@ -287,7 +316,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span class="l">Charging power</span></div><div class="v" id="chkw">-</div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="l">Time to full</span></div><div class="v" id="chtm">-</div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 12h4l2-6 4 12 2-6h8"/></svg><span class="l">Charge state</span></div><div class="v" id="chst">-</div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M4 17a8 8 0 1 1 16 0M12 17l4-5"/></svg><span class="l">Range</span></div><div class="v"><span id="rng2">-</span> km</div><div class="u" id="rng2est" hidden>est. from battery level</div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M4 17a8 8 0 1 1 16 0M12 17l4-5"/></svg><span class="l">Range</span></div><div class="v"><span id="rng2">-</span> km</div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span class="l">Pack voltage</span></div><div class="v"><span id="pv">-</span> V</div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span class="l">Pack current</span></div><div class="v"><span id="pa">-</span> A</div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M8 3 5 21M16 3l3 18M12 5v3M12 11v3M12 17v3"/></svg><span class="l">Efficiency now</span></div><div class="v"><span id="eff">-</span> <span class="u">Wh/km</span></div></div>
@@ -344,9 +373,10 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 
 
   <section class="pg" id="p-hud">
+   <div id="pedhtml"><span class="pg2">Accelerator <b id="acc2">-</b>%</span><span class="pr2">Brake <b id="brk2">-</b></span></div>
    <div id="hud">
     <div id="top">
-      <div id="batt"><div class="glyph"><div id="socb"></div></div><b><span id="soc">-</span>%</b><span class="u"><span id="rng">-</span> km<span id="rngest" hidden> est.</span></span></div>
+      <div id="batt"><div class="glyph"><div id="socb"></div></div><b><span id="soc">-</span>%</b><span class="u"><span id="rng">-</span> km</span></div>
       <div id="tr"><span id="chip">Starting</span><span><span id="tout3">-</span> °C</span><b id="clock">-</b></div>
     </div>
     <div id="main">
@@ -364,8 +394,8 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
         </div>
       </div>
       <div id="rside">
-        <div class="t hx" id="lap"><div id="tm">0.0</div><div class="u">Last run <span id="tl">--</span><span id="tls" hidden> s</span> · <span id="ts">ready</span></div><div class="l" id="trk">0 to 100<br>closed track only</div></div>
-        <div class="t hx" id="crt"><div class="l">Cruise</div><div class="v"><span id="cruise">Off</span> <span class="u" id="cru" hidden>km/h</span></div></div>
+        <div class="t hx" id="lap"><div id="tm">Tap to arm</div><div class="u" id="tsub">0 to 100 · closed track only</div><div class="u" id="tlast">Last run <span id="tl">--</span><span id="tls" hidden> s</span></div></div>
+        <div id="crt" hidden>Cruise <b id="cruise">--</b><span id="cru"> km/h</span></div>
       </div>
     </div>
    </div>
@@ -478,26 +508,34 @@ function renderCar() {
 }
 const GEAR_NAMES = { P: "P", R: "R", N: "N", D: "D" };
 
-// ---- 0 to 100 timer ----
-// The stream is 1 reading a second, so the time is accurate to about half a second at the start; the finish is interpolated between readings.
-const T = { state: "ready", t0: 0, last: null, cur: null, prev: null };
+// ---- 0 to 100 timer: arms only when tapped ----
+// Only an armed timer can start, so a parked car can never record a run. Armed: the first movement from a standstill starts it; it stops at 100 km/h
+// (interpolated between the 1-a-second readings) or on brake or regen. It disarms after one run or after 60 s, and a tap cancels it.
+// A run under 2.0 s is treated as noise and not saved. The start is accurate to about half a second.
+const T = { state: "idle", t0: 0, armedAt: 0, last: null, cur: null, prev: null, note: "" };
 function timerTick(now) {
-  const sp = speedKmh(), acc = num(S.PedalPosition), pw = powerKw(), br = S.BrakePedal === true || S.BrakePedal === "true";
-  if (sp == null) return;
-  const fresh = sp !== T.cur; if (fresh) { T.prev = T.cur; T.cur = sp; } // a new reading arrived
-  if (T.state === "ready" || T.state === "done") {
-    if (sp < 1) T.state = "ready";
-    else if (T.state === "ready" && fresh && T.prev != null && T.prev < 1 && (acc == null || acc > 0)) { T.state = "run"; T.t0 = now - 500; } // only a start from a standstill counts
-  } else if (T.state === "run") {
-    if (sp >= 100) { const f = T.prev != null && sp > T.prev ? (sp - 100) / (sp - T.prev) : 0; T.last = (now - 1000 * f - T.t0) / 1000; T.state = "done"; }
-    else if (br || (pw != null && pw < 0)) { T.last = (now - T.t0) / 1000; T.state = "done"; }
-    else if (sp < 1) T.state = "ready";
+  const sp = speedKmh(), pw = powerKw(), br = S.BrakePedal === true || S.BrakePedal === "true";
+  if (sp != null) {
+    const fresh = sp !== T.cur; if (fresh) { T.prev = T.cur; T.cur = sp; } // a new reading arrived
+    if (T.state === "armed") {
+      if (now - T.armedAt > 60000) { T.state = "idle"; T.note = "Disarmed after 60 s"; }
+      else if (fresh && T.prev != null && T.prev < 1 && sp >= 1) { T.state = "run"; T.t0 = now - 500; }
+    } else if (T.state === "run") {
+      const el = (now - T.t0) / 1000;
+      if (sp >= 100) { const f = T.prev != null && sp > T.prev ? (sp - 100) / (sp - T.prev) : 0, t = (now - 1000 * f - T.t0) / 1000; if (t < 2.0) { T.state = "idle"; T.note = "Too quick to be real, not saved"; } else { T.last = t; T.state = "done"; } }
+      else if (br || (pw != null && pw < -1)) { T.state = "idle"; T.note = el < 2.0 ? "Cancelled" : "Stopped at " + Math.round(sp) + " km/h"; }
+      else if (sp < 1) { T.state = "idle"; T.note = "Cancelled"; }
+    }
   }
-  $("tm").textContent = T.state === "run" ? ((now - T.t0) / 1000).toFixed(1) : (T.last != null ? T.last.toFixed(1) : "0.0");
+  const tm = $("tm"), sub = $("tsub"), ring = $("rside");
+  tm.classList.remove("txt", "armed"); sub.classList.remove("armed"); ring.classList.toggle("armedring", T.state === "armed"); tm.style.color = "";
+  if (T.state === "idle") { tm.textContent = "Tap to arm"; tm.classList.add("txt"); sub.textContent = T.note || "0 to 100 · closed track only"; }
+  else if (T.state === "armed") { tm.textContent = "Armed"; tm.classList.add("txt", "armed"); sub.textContent = "Launch from standstill · tap to cancel"; sub.classList.add("armed"); }
+  else if (T.state === "run") { tm.textContent = ((now - T.t0) / 1000).toFixed(1); sub.textContent = "Running"; }
+  else { tm.textContent = T.last.toFixed(1); sub.textContent = "Done · tap to arm again"; tm.style.color = "#30d158"; }
   $("tl").textContent = T.last != null ? T.last.toFixed(1) : "--"; $("tls").hidden = T.last == null;
-  $("ts").textContent = T.state === "run" ? "running" : T.state === "done" ? "stopped" : "ready";
-  $("tm").style.color = T.state === "run" ? "#ffc400" : T.state === "done" ? "#30d158" : "";
 }
+function toggleArm() { if (T.state === "idle" || T.state === "done") { T.state = "armed"; T.armedAt = performance.now(); T.note = ""; } else if (T.state === "armed") { T.state = "idle"; T.note = "Disarmed"; } }
 
 // ---- drawing ----
 function render() {
@@ -511,22 +549,23 @@ function render() {
   $("regen").textContent = pw != null && pw < -1 ? " regen" : "";
   $("acc").textContent = fmt(acc, 0); { const a = Math.max(0, Math.min(100, acc || 0)); $("accb").setAttribute("stroke-dasharray", a + " 100"); $("accb").setAttribute("opacity", a > 0.5 ? 1 : 0); } // pedal ring: accelerator fills the right half
   $("brk").textContent = S.BrakePedal == null ? "-" : (S.BrakePedal === true || S.BrakePedal === "true" ? "On" : "Off");
+  $("acc2").textContent = $("acc").textContent; $("brk2").textContent = $("brk").textContent;
   $("soc").textContent = fmt(num(S.BatteryLevel), 0); $("soc2").textContent = $("soc").textContent; $("tout2").textContent = fmt(num(S.OutsideTemp), 0);
   { const el = $("ticks").children, nd = pw != null && pw > 0 ? Math.round(Math.min(1, pw / 250) * 48) : 0, nr = pw != null && pw < 0 ? Math.round(Math.min(1, -pw / 80) * 12) : 0; // 60 ticks: 12 regen (blue) then 48 drive (amber, red at the top)
-    for (let i = 0; i < el.length; i++) el[i].style.stroke = ((i >= 12 && i < 12 + nd) ? (i >= 52 ? "#ff3b30" : "#ffc400") : (i < 12 && 11 - i < nr) ? "#0a84ff" : "#1e1e1e"); }
+    for (let i = 0; i < el.length; i++) el[i].style.stroke = ((i >= 12 && i < 12 + nd) ? (i < 38 ? "#00e060" : i < 52 ? "#ffd400" : "#ff2d2d") : (i < 12 && 11 - i < nr) ? "#1e9bff" : i === 12 ? "#8e8e93" : i < 12 ? "#10233d" : "#1e1e1e"); } // shift-light colours: green, then yellow, red only near the top; regen in electric blue; dark blue shows the regen zone when unlit
   { const b = num(S.BatteryLevel) || 0; $("socb").style.width = Math.max(0, Math.min(100, b)) + "%"; $("socb").style.background = b < 15 ? "var(--bad)" : b < 30 ? "var(--warn)" : "var(--ok)"; }
   { const b = (S.BrakePedal === true || S.BrakePedal === "true") ? 100 : Math.max(0, Math.min(100, num(S.BrakePedalPos) || 0)); $("brkb").setAttribute("stroke-dasharray", b + " 100"); $("brkb").setAttribute("opacity", b > 0.5 ? 1 : 0); } // brake fills the left half
   { // Range: the car's own figure when it has sent one; until then an estimate from the battery level (2024 Model 3 Long Range, 629 km WLTP).
     const r = num(S.EstBatteryRange ?? S.RatedRange ?? S.IdealBatteryRange), bl = num(S.BatteryLevel), est = r == null && bl != null;
     const km = r != null ? r * MI : est ? bl * 6.29 : null;
     $("rng").textContent = km == null ? "--" : km.toFixed(0); $("rng2").textContent = $("rng").textContent;
-    $("rngest").hidden = !est; $("rng2est").hidden = !est; $("rng").parentElement.style.opacity = est || km == null ? ".55" : ""; $("rng2").parentElement.style.opacity = est || km == null ? ".6" : ""; }
+    $("rng").parentElement.style.opacity = est || km == null ? ".55" : ""; $("rng2").parentElement.style.opacity = est || km == null ? ".6" : ""; }
   if (pw != null && sp != null) { effWin.push([pw, sp]); if (effWin.length > 10) effWin.shift(); }
   const effKm = effWin.reduce((a, x) => a + x[1], 0), effKw = effWin.reduce((a, x) => a + x[0], 0); // equal time steps, so sums give energy and distance
   { const e = effKm >= 100 ? effKw * 1000 / effKm : null; $("eff").textContent = (sp != null && sp >= 10 && e != null && Math.abs(e) < 1000) ? e.toFixed(0) : "--"; }
   // CruiseSetSpeed is only the last value the driver set (fields.json has no "cruise active" field), so cruise counts as on
   // only while the car is in drive and moving.
-  const cr = num(S.CruiseSetSpeed), crOn = cr != null && cr > 0 && /D$/.test(String(S.Gear ?? "")) && sp != null && sp > 5; $("cruise").textContent = crOn ? (cr * MI).toFixed(0) : "Off"; $("cru").hidden = !crOn; $("cruise").style.color = crOn ? "var(--acc)" : "";
+  const cr = num(S.CruiseSetSpeed), crOn = cr != null && cr > 0 && /D$/.test(String(S.Gear ?? "")) && sp != null && sp > 5; $("cruise").textContent = crOn ? (cr * MI).toFixed(0) : "Off"; $("crt").hidden = !crOn;
   $("effh").textContent = $("eff").textContent; $("effw").hidden = $("eff").textContent === "--"; $("tout3").textContent = fmt(num(S.OutsideTemp), 0);
   $("tout").textContent = fmt(num(S.OutsideTemp), 0); $("tin").textContent = fmt(num(S.InsideTemp), 0);
   const fsd = num(S.SelfDrivingMilesSinceReset); $("fsd").textContent = fsd == null ? "-" : (fsd * MI).toFixed(1); $("fsd").closest("#sheet>div").hidden = fsd == null; // hidden until the car reports it
@@ -696,11 +735,13 @@ function startApp(demo) {
   setInterval(() => timerTick(performance.now()), 100);
   const tick = () => { $("clock").textContent = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); }; tick(); setInterval(tick, 10000);
   liveMode = !demo;
+  if (demo) { const tmode = new URLSearchParams(location.search).get("timer"); if (tmode === "armed") { T.state = "armed"; T.armedAt = performance.now(); } if (tmode === "run") { T.state = "run"; T.t0 = performance.now() - 4300; } if (tmode === "done") { T.state = "done"; T.last = 5.8; } } // sample-mode previews of the timer states
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
 const BUILD = "Build 18 Nov 2026 · 5 pages · v2"; $("build").textContent = BUILD;
 $("upd").onclick = () => { location.href = location.pathname + "?v=" + Date.now(); }; // reloads a fresh copy; the saved token stays in this browser
+$("rside").onclick = toggleArm;
 $("ver").onclick = () => { if (confirm("Read the software version from Teslemetry? This can use up to 2 credits (500 a month are included). It never wakes the car.")) readVersion(); };
 $("demo").onclick = () => startApp(true);
 $("gear").onclick = () => { if (confirm("Clear the saved token and settings?")) { store.set("tok", ""); store.set("base", ""); location.reload(); } };
