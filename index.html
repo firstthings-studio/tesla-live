@@ -385,7 +385,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
   <section class="pg" id="p-info">
    <div id="inf">
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M8 3 5 21M16 3l3 18M12 5v3M12 11v3M12 17v3"/></svg><span class="l">Odometer</span></div><div class="v"><span id="odo">-</span> km</div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg><span class="l">Software</span></div><div class="v" id="sw">-</div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg><span class="l">Software</span></div><div class="v" id="sw">--</div><button id="ver" style="margin:0;padding:6px 12px;font-size:13px;font-weight:600;width:auto" hidden>Read version (up to 2 credits)</button></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg><span class="l">Connection</span></div><div class="v" id="conn" style="font-size:20px;white-space:normal">-</div><p id="log">OK</p></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span class="l">Settings</span></div><div style="width:100%"><button id="upd" style="margin:0 0 8px;padding:10px;font-size:17px;font-weight:600;background:var(--acc)">Check for update</button><button id="gear" style="margin:0;padding:10px;font-size:17px;font-weight:600">Clear token</button><div class="u" id="build" style="margin-top:6px"></div></div></div>
    </div>
@@ -540,7 +540,7 @@ function render() {
   $("pv").textContent = fmt(num(S.PackVoltage), 0); { const pa = num(S.PackCurrent); $("pa").textContent = pa == null ? "--" : (Math.abs(pa) < 2 ? 0 : pa).toFixed(0); } // under 2 A is idle noise
   renderCar();
   { const lg = $("log"); if (!liveMode) { lg.textContent = "Sample mode"; lg.style.color = "var(--dim)"; } else lg.style.color = (streamOpen && /^(Connected|OK)/.test(lg.textContent)) ? "var(--ok)" : ""; } // green when live, dim in sample, orange for problems
-  const od = num(S.Odometer); $("odo").textContent = od == null ? "-" : (od * MI).toFixed(0); $("sw").textContent = S.Version || "-";
+  const od = num(S.Odometer); $("odo").textContent = od == null ? "-" : (od * MI).toFixed(0); $("sw").textContent = S.Version || "--"; $("ver").hidden = !!S.Version || !liveMode;
   { const ago = lastEvt ? Math.round((Date.now() - lastEvt) / 1000) : null; $("conn").textContent = !liveMode ? "Sample data" : (DEFAULT_RELAY || store.get("base") ? "Via relay" : "Direct") + (ago == null ? " · no data yet" : " · data " + (ago < 2 ? "just now" : ago + " s ago")); }
   const mi = num(S.MilesToArrival), mn = num(S.MinutesToArrival), asoc = num(S.ExpectedEnergyPercentAtTripArrival);
   $("nav").textContent = (mn == null || /^invalid$/i.test(String(S.DestinationName))) ? "No route" : (S.DestinationName ? S.DestinationName + ": " : "") + (mi == null ? "" : (mi * MI).toFixed(0) + " km, ") + mn.toFixed(0) + " min" + (asoc == null ? "" : ", arrive " + asoc.toFixed(0) + "%");
@@ -586,6 +586,36 @@ function onEvent(txt) {
   scheduleRender(); // show each reading as soon as it arrives instead of waiting for the 1 s tick
 }
 let rafPending = false;
+// ---- free snapshot of the last values the car sent (GET /telemetry: cache only, no credits, never wakes the car) ----
+// Used on load and every 10 minutes to fill tiles the stream hasn't sent yet (a parked car only sends on change). Stream values always win.
+let vinCache = null, seedStarted = false;
+async function relayGet(path) {
+  const relay = store.get("base") || DEFAULT_RELAY; if (!relay) throw new Error("no relay");
+  const r = await fetch(relay.replace(/\/+$/, "") + path, { headers: { Authorization: "Bearer " + store.get("tok") }, cache: "no-store" });
+  if (!r.ok) throw new Error("HTTP " + r.status); return r.json();
+}
+async function findVin() {
+  if (S._vin) return S._vin; if (vinCache) return vinCache;
+  const j = await relayGet("/api/1/products"), list = (j && j.response) || [], v = Array.isArray(list) ? list.find(x => x && typeof x.vin === "string" && x.vin.length === 17) : null;
+  vinCache = v ? v.vin : null; return vinCache;
+}
+const dig = (o, p) => p.split(".").reduce((a, k) => (a == null ? undefined : a[k]), o);
+function fillFromSnapshot(j) {
+  const root = (j && j.response) || j || {}, d = root.data || root.telemetry || {};
+  for (const [k, v] of Object.entries(d)) { const val = v && typeof v === "object" && !Array.isArray(v) && "value" in v ? v.value : v; if (S[k] === undefined && val != null) S[k] = val; }
+  const fromVd = (key, path, conv) => { const x = dig(root.vehicle_data, path) ?? dig(root, path); if (x != null && S[key] === undefined) S[key] = conv ? conv(x) : x; };
+  fromVd("Version", "vehicle_state.car_version", x => String(x).split(" ")[0]);
+  fromVd("EstBatteryRange", "charge_state.est_battery_range"); fromVd("InsideTemp", "climate_state.inside_temp");
+  scheduleRender();
+}
+async function seedFromCache() { try { const vin = await findVin(); if (vin) fillFromSnapshot(await relayGet("/api/1/vehicles/" + vin + "/telemetry")); } catch (e) { /* optional extra: ignore */ } }
+function startSeeding() { if (seedStarted || !(store.get("base") || DEFAULT_RELAY)) return; seedStarted = true; seedFromCache(); setInterval(seedFromCache, 600000); }
+// Software version isn't a streamable field here, so it is read on request only: one vehicle_data call, up to 2 credits, never wakes the car.
+async function readVersion() {
+  const b = $("ver"); b.disabled = true; b.textContent = "Reading...";
+  try { const vin = await findVin(), j = await relayGet("/api/1/vehicles/" + vin + "/vehicle_data?endpoints=vehicle_state"), v = dig(j, "response.vehicle_state.car_version") ?? dig(j, "vehicle_state.car_version"); if (v) { S.Version = String(v).split(" ")[0]; scheduleRender(); } else b.textContent = "Not available"; }
+  catch (e) { b.textContent = "Couldn't read"; } b.disabled = false;
+}
 function scheduleRender() { if (rafPending) return; rafPending = true; requestAnimationFrame(() => { rafPending = false; render(); }); }
 async function connect() {
   if (ctl) ctl.abort(); ctl = new AbortController();
@@ -609,7 +639,7 @@ async function connect() {
     if (!r) throw lastErr;
     if (r.status === 401 || r.status === 403) { setChip("Token not accepted", "var(--bad)"); $("log").textContent = "Token not accepted. Copy it again from Teslemetry."; return; }
     if (!r.ok) throw new Error("HTTP " + r.status);
-    streamOpen = true; wasOpen = true; setChip("Live", "var(--ok)"); retry = 1000; lastEvt = Date.now(); $("log").textContent = "Connected";
+    startSeeding(); streamOpen = true; wasOpen = true; setChip("Live", "var(--ok)"); retry = 1000; lastEvt = Date.now(); $("log").textContent = "Connected";
     const rd = r.body.getReader(), dec = new TextDecoder(); let buf = "";
     for (;;) {
       const { value, done } = await rd.read(); if (done) break;
@@ -671,6 +701,7 @@ function startApp(demo) {
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
 const BUILD = "Build 18 Nov 2026 · 5 pages · v2"; $("build").textContent = BUILD;
 $("upd").onclick = () => { location.href = location.pathname + "?v=" + Date.now(); }; // reloads a fresh copy; the saved token stays in this browser
+$("ver").onclick = () => { if (confirm("Read the software version from Teslemetry? This can use up to 2 credits (500 a month are included). It never wakes the car.")) readVersion(); };
 $("demo").onclick = () => startApp(true);
 $("gear").onclick = () => { if (confirm("Clear the saved token and settings?")) { store.set("tok", ""); store.set("base", ""); location.reload(); } };
 if (location.search.includes("sample")) startApp(true);
