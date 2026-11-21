@@ -1,11 +1,12 @@
 // Offline start-up for the Tesla live page.
 // Network first, so a new upload is always picked up when there is signal; the saved copy is used only when the network fails.
 // Only this site's own files are handled. The relay, Teslemetry, map tiles and the CDN all go straight to the network and are never stored.
-const CACHE = "tesla-live-v1";
-const SHELL = ["./", "manifest.webmanifest", "icon-180.png", "icon-192.png", "icon-512.png", "icon.svg"];
+const CACHE = "tesla-live-v2";
+const SHELL = ["./", "manifest.webmanifest", "icon-180.png", "icon-192.png", "icon-512.png"];
 
 self.addEventListener("install", e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).catch(() => {}).then(() => self.skipWaiting()));
+  // each file on its own, so one missing file can't leave the whole cache empty
+  e.waitUntil(caches.open(CACHE).then(c => Promise.all(SHELL.map(f => c.add(f).catch(() => {})))).then(() => self.skipWaiting()));
 });
 
 self.addEventListener("activate", e => {
