@@ -286,7 +286,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #p-hud #gauge svg path.f{transition:stroke-dasharray .12s ease-out,opacity .12s ease-out!important} /* the drive page turns transitions off; the pedal band keeps its smooth fill */
 #gauge svg path.tedge{fill:none;stroke:#00e060;stroke-width:3.2px;stroke-linecap:round;opacity:0;filter:url(#gl)}
 #gauge svg path.tedge.on{animation:tblink .8s steps(1) infinite}
-#trkL.dalert,#trkR.dalert{stroke:#ff9f0a;animation:dpulse .5s ease-in-out 3 alternate}@keyframes dpulse{from{opacity:1}to{opacity:.35}}
+#trkL.dalert,#trkR.dalert{stroke:#ff9f0a;opacity:1;animation:dpulse .5s ease-in-out 3 alternate}@keyframes dpulse{from{opacity:1}to{opacity:.35}}
 #ticks.breath{animation:breath 5s ease-in-out infinite}@keyframes breath{0%,100%{opacity:1}50%{opacity:.45}}
 #ticks.rpulse rect.rl{animation:rpulse .9s ease-in-out infinite}@keyframes rpulse{0%,100%{opacity:1}50%{opacity:.4}}
 #gearv{border-color:currentColor;box-shadow:0 0 18px -4px currentColor,inset 0 0 12px -6px currentColor;text-shadow:0 0 14px currentColor}
@@ -315,9 +315,11 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #p-hud{background:radial-gradient(110% 95% at 50% 42%,#0e141b 0%,#06090d 52%,#000 100%)}
 #p-hud #gauge{position:absolute;left:0!important;top:0!important;right:auto!important;bottom:auto!important;width:100%!important;height:100%!important;transform:none!important;aspect-ratio:auto!important;max-width:none;z-index:1;pointer-events:none} /* full page: older ring rules pinned it to the centre */
 #p-hud #gauge #dash{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
-#p-hud #dash path.pb{stroke-width:var(--bw,24px);fill:none}
-#p-hud #dash path.pe{stroke:url(#gEdge);stroke-width:calc(var(--bw,24px) + 3px);fill:none}
-#p-hud #dash path.tedge{fill:none;stroke:#00e060;stroke-width:4px;stroke-linecap:round;opacity:0;filter:url(#glu)}
+#p-hud #dash path.pb{stroke-width:var(--gw,64px);fill:none;filter:url(#edge)}
+#p-hud #dash path.amb{opacity:.22}
+#p-hud #dash #acctip{filter:url(#edge)}
+#p-hud #dash path.pe{display:none}
+#p-hud #dash path.tedge{fill:none;stroke:#00e060;stroke-width:var(--gw,64px);stroke-linecap:butt;opacity:0;filter:url(#edge)}
 #p-hud #dash path.tedge.on{animation:tblink .8s steps(1) infinite}
 #ticks line{stroke-linecap:round}
 #ticks line.lit{filter:url(#glu)}
@@ -513,20 +515,21 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
         <svg id="dash" xmlns="http://www.w3.org/2000/svg"><defs>
           <filter id="gl" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
           <filter id="glu" filterUnits="userSpaceOnUse" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="edge" filterUnits="userSpaceOnUse" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceGraphic" stdDeviation="26" result="b1"/><feComponentTransfer in="b1" result="b1s"><feFuncA type="linear" slope="1.7"/></feComponentTransfer><feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b2"/><feMerge><feMergeNode in="b1s"/><feMergeNode in="b2"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
           <linearGradient id="gTrk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16181c"/><stop offset=".5" stop-color="#0c0d10"/><stop offset="1" stop-color="#121418"/></linearGradient>
           <linearGradient id="gEdge" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3f47"/><stop offset=".45" stop-color="#1b1e23"/><stop offset="1" stop-color="#2a2e35"/></linearGradient>
         </defs>
-          <g id="ticks"></g>
           <path id="tel" class="tedge"/><path id="ter" class="tedge"/>
           <g fill="none" stroke-linecap="butt" stroke-linejoin="miter">
             <path id="edgL" class="pe"/><path id="edgR" class="pe"/>
-            <path id="trkL" class="pb" pathLength="100" stroke="url(#gTrk)" stroke-dasharray="100 100"/>
-            <path id="trkR" class="pb" pathLength="100" stroke="url(#gTrk)" stroke-dasharray="100 100"/>
-            <path id="regb" class="pb f" pathLength="100" stroke="#1e9bff" stroke-dasharray="0 100" opacity="0" filter="url(#gl)"/>
-            <path id="brkb" class="pb f" pathLength="100" stroke="#ff2d2d" stroke-dasharray="0 100" opacity="0" filter="url(#gl)"/>
-            <path id="accb" class="pb f" pathLength="100" stroke="#00e060" stroke-dasharray="0 100" opacity="0" filter="url(#gl)"/>
+            <path id="trkL" class="pb amb" pathLength="100" stroke="#2a3a4e" stroke-dasharray="100 100"/>
+            <path id="trkR" class="pb amb" pathLength="100" stroke="#2a3a4e" stroke-dasharray="100 100"/>
+            <path id="regb" class="pb f" pathLength="100" stroke="#1e9bff" stroke-dasharray="0 100" opacity="0"/>
+            <path id="brkb" class="pb f" pathLength="100" stroke="#e8262b" stroke-dasharray="0 100" opacity="0"/>
+            <path id="accb" class="pb f" pathLength="100" stroke="#00e060" stroke-dasharray="0 100" opacity="0"/>
           </g>
-          <circle id="acctip" cx="0" cy="0" r="5" fill="#eafff2" filter="url(#gl)" opacity="0"/>
+          <g id="ticks"></g>
+          <circle id="acctip" cx="0" cy="0" r="7" fill="#d8ffe8" opacity="0"/>
         </svg>
         <div id="crpill" hidden><span id="crv">--</span></div>
       </div>
@@ -776,7 +779,7 @@ function paintTicks(now) {
 }
 // Lays out both brackets from the real page size and the safe areas (Dynamic Island, rounded corners, home bar).
 let geo = null;
-// A point along one half of the frame, from the bottom centre (0) round to the top centre (1).
+// A point along one half of the screen edge, from the bottom centre (0) round to the top centre (1).
 function bracketPoint(right, f) {
   if (!geo) return null; const { W, xL, xR, yT, yB } = geo, cx = W / 2, dir = right ? 1 : -1, xo = right ? xR : xL, a = Math.abs(xo - cx), v = yB - yT;
   let d = Math.max(0, Math.min(1, f)) * (2 * a + v);
@@ -784,31 +787,33 @@ function bracketPoint(right, f) {
   if (d <= v) return { x: xo, y: yB - d }; d -= v;
   return { x: xo - dir * d, y: yT };
 }
-// One straight-edged frame using the whole screen inside the safe areas (Dynamic Island, corners, home bar).
-// Left half = slowing (regen, brake), right half = going (accelerator); both fill from the bottom centre.
-// Bar meters and the two pods sit inside the frame.
+// No frame: the left half of the screen edge glows for slowing (regen blue, brake red), the right half for going (accelerator green),
+// both lighting from the bottom centre round to the top centre and fading inward. The light may run behind the Dynamic Island;
+// everything readable stays inside the safe areas.
 function layoutDash() {
   const sec = $("p-hud"), W = sec.clientWidth, H = sec.clientHeight; if (!W || !H) return;
   const pr = getComputedStyle($("saprobe")), sl = parseFloat(pr.paddingLeft) || 0, sr = parseFloat(pr.paddingRight) || 0, st = parseFloat(pr.paddingTop) || 0, sb = parseFloat(pr.paddingBottom) || 0;
-  const cx = W / 2, bw = Math.round(Math.max(12, Math.min(0.044 * H, 22))), m = 8;
-  const xL = sl + m + bw / 2, xR = W - sr - m - bw / 2, yT = st + Math.max(42, 0.1 * H) + bw / 2, yB = H - sb - Math.max(22, 0.055 * H) - bw / 2;
+  const cx = W / 2, e = 0, gw = Math.round(Math.max(8, 0.026 * H)), eb = Math.round(Math.max(14, 0.062 * H));
+  const xL = e, xR = W - e, yT = e, yB = H - e;
   const dL = "M" + cx + " " + yB + "H" + xL + "V" + yT + "H" + cx, dR = "M" + cx + " " + yB + "H" + xR + "V" + yT + "H" + cx;
   ["edgL", "trkL", "regb", "brkb"].forEach(id => $(id).setAttribute("d", dL)); ["edgR", "trkR", "accb"].forEach(id => $(id).setAttribute("d", dR));
-  $("dash").setAttribute("viewBox", "0 0 " + W + " " + H); $("gauge").style.setProperty("--bw", bw + "px");
-  // bar meters just inside each upright
-  const tlen = Math.max(10, 0.034 * H), tmaj = tlen * 1.5, tg = 7, inL = xL + bw / 2 + tg, inR = xR - bw / 2 - tg;
-  const g0 = $("ticks"); g0.innerHTML = ""; const thin = store.get("ticks") === "thin", y0 = yB - bw / 2 - 10, y1 = yT + bw / 2 + 10, step = (y0 - y1) / (NB - 1), sw = Math.max(2, step * (thin ? 0.3 : 0.56));
-  for (let i = 0; i < NB; i++) { const y = y0 - i * step, len = i % 5 === 4 ? tmaj : tlen;
+  $("dash").setAttribute("viewBox", "0 0 " + W + " " + H); const gs = $("gauge").style; gs.setProperty("--gw", gw + "px"); gs.setProperty("--bw", gw + "px");
+  $("edge").firstElementChild.setAttribute("stdDeviation", eb);
+  // bar meters near each side, inside the safe area
+  const tlen = Math.max(10, 0.034 * H), tmaj = tlen * 1.5, inL = sl + 16, inR = W - sr - 16;
+  const yTop = st + Math.max(52, 0.13 * H), yBot = H - sb - Math.max(30, 0.075 * H);
+  const g0 = $("ticks"); g0.innerHTML = ""; const thin = store.get("ticks") === "thin", step = (yBot - yTop) / (NB - 1), sw = Math.max(2, step * (thin ? 0.3 : 0.56));
+  for (let i = 0; i < NB; i++) { const y = yBot - i * step, len = i % 5 === 4 ? tmaj : tlen;
     [["bl", inL, 1], ["br", inR, -1]].forEach(([cls, x, dir]) => { const l = document.createElementNS("http://www.w3.org/2000/svg", "line");
       l.setAttribute("x1", x); l.setAttribute("x2", x + dir * len); l.setAttribute("y1", y); l.setAttribute("y2", y); l.setAttribute("stroke-width", sw); l.setAttribute("class", cls); l.style.stroke = cls === "bl" ? OFFB : OFF; g0.appendChild(l); }); }
-  // turn-signal light strips just inside the bars
-  const ts = tmaj + 8; $("tel").setAttribute("d", "M" + (inL + ts) + " " + y1 + "V" + y0); $("ter").setAttribute("d", "M" + (inR - ts) + " " + y1 + "V" + y0);
-  // the two pods sit in the bottom corners inside the frame
-  const P = Math.round(Math.min(0.34 * H, 146, (yB - yT) * 0.46)), podIn = tmaj + 20, podBottom = H - (yB - bw / 2) + 10;
-  const gw = $("gwrap"), rs = $("rside"); gw.style.width = rs.style.width = P + "px"; gw.style.left = (inL + podIn) + "px"; rs.style.right = (W - inR + podIn) + "px"; gw.style.bottom = rs.style.bottom = podBottom + "px";
-  // cruise readout sits on the top edge, in the middle
-  const cp = $("crpill"); cp.style.left = cx + "px"; cp.style.top = yT + "px";
-  geo = { W, H, xL, xR, yT, yB, bw }; paintTicks(performance.now()); scheduleRender(); // redraw the tip and fills on the new geometry straight away
+  // turn signals: the matching side edge of the screen pulses green
+  $("tel").setAttribute("d", "M" + xL + " " + (H * 0.18) + "V" + (H * 0.82)); $("ter").setAttribute("d", "M" + xR + " " + (H * 0.18) + "V" + (H * 0.82));
+  // the two pods sit in the bottom corners, inside the bars
+  const P = Math.round(Math.min(0.34 * H, 146)), podIn = tmaj + 22, podBottom = sb + Math.max(26, 0.07 * H);
+  const gwp = $("gwrap"), rs = $("rside"); gwp.style.width = rs.style.width = P + "px"; gwp.style.left = (inL + podIn) + "px"; rs.style.right = (W - inR + podIn) + "px"; gwp.style.bottom = rs.style.bottom = podBottom + "px";
+  // cruise readout at the top centre
+  const cp = $("crpill"); cp.style.left = cx + "px"; cp.style.top = (st + Math.max(24, 0.06 * H)) + "px";
+  geo = { W, H, xL: 3, xR: W - 3, yT: 3, yB: H - 3, gw }; paintTicks(performance.now()); scheduleRender();
 }
 function writeSpeed() {
   const e = $("speed"), t = parkedView ? (socView == null ? "--" : String(socView)) : spShown == null ? "--" : String(Math.round(spShown));
@@ -845,7 +850,7 @@ function driveFx(sp, pw, acc, charging, eff) {
     if (q) { tip.setAttribute("cx", q.x.toFixed(1)); tip.setAttribute("cy", q.y.toFixed(1)); } tip.setAttribute("opacity", a > 3 && q ? 1 : 0); }
   // hard braking: the red band glows brighter
   { const br = truthy(S.BrakePedal), lon = num(S.LongitudinalAcceleration), dec = lon == null ? 0 : lon - gBase[1], hard = br && (dec < -0.35 || (pw != null && pw < -45)), b = $("brkb");
-    b.setAttribute("stroke", hard ? "#ff6a6a" : "#ff2d2d"); b.style.strokeWidth = hard ? "calc(var(--bw) + 4px)" : ""; }
+    b.setAttribute("stroke", hard ? "#ff3b30" : "#e8262b"); b.style.strokeWidth = hard ? "calc(var(--gw) * 1.35)" : ""; }
   // a door or boot opening while in Park: the band flashes amber for 3 s
   { const ds = doorSet(S.DoorState), c = ds == null ? null : ds.size;
     if (c != null && doorsWas != null && c > doorsWas && inP) { ["trkL", "trkR"].forEach(id => { const e = $(id); e.classList.remove("dalert"); void e.getBBox(); e.classList.add("dalert"); }); clearTimeout(doorAlertTo); doorAlertTo = setTimeout(() => ["trkL", "trkR"].forEach(id => $(id).classList.remove("dalert")), 3000); }
@@ -1025,7 +1030,7 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "v12 · 22 Nov 2026"; $("build").textContent = BUILD;
+const BUILD = "v13 · 22 Nov 2026"; $("build").textContent = BUILD;
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {}); // opens with no signal; the network copy always wins when online
 $("upd").onclick = () => { location.href = location.pathname + "?v=" + Date.now(); }; // reloads a fresh copy; the saved token stays in this browser
 $("rside").onclick = toggleArm;
