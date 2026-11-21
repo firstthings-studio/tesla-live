@@ -282,6 +282,38 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #p-hud #crt[hidden]{display:none}
 #p-hud #crt .u,#p-hud #crt #cru{display:inline;color:var(--dim);font-weight:600}
 #chip{z-index:5}
+/* ===== v8 drive screen ===== */
+#p-hud #gauge svg path.f{transition:stroke-dasharray .12s ease-out,opacity .12s ease-out!important} /* the drive page turns transitions off; the pedal band keeps its smooth fill */
+#gauge svg path.tedge{fill:none;stroke:#00e060;stroke-width:3.2px;stroke-linecap:round;opacity:0;filter:url(#gl)}
+#gauge svg path.tedge.on{animation:tblink .8s steps(1) infinite}
+#trkL.dalert,#trkR.dalert{stroke:#ff9f0a;animation:dpulse .5s ease-in-out 3 alternate}@keyframes dpulse{from{opacity:1}to{opacity:.35}}
+#ticks.breath{animation:breath 5s ease-in-out infinite}@keyframes breath{0%,100%{opacity:1}50%{opacity:.45}}
+#ticks.rpulse rect.rl{animation:rpulse .9s ease-in-out infinite}@keyframes rpulse{0%,100%{opacity:1}50%{opacity:.4}}
+#gearv{border-color:currentColor;box-shadow:0 0 18px -4px currentColor,inset 0 0 12px -6px currentColor;text-shadow:0 0 14px currentColor}
+#gearv[data-g="P"]{color:#ffd400}#gearv[data-g="D"]{color:#00e060}#gearv[data-g="N"]{color:#9a9aa0}#gearv[data-g="R"]{color:#ff2d2d}
+#speed{transition:none}#speed.sg{color:#00e060}#speed.sy{color:#ffd400}#speed.sr{color:#ff2d2d}
+#cstack #kw{pointer-events:auto;cursor:pointer;padding:8px 14px;margin:-8px -14px;-webkit-tap-highlight-color:transparent}
+#kw.eg{color:#00e060}#kw.ea{color:#ffb340}#kw.eb{color:#5ac8fa}
+#kw #regen{color:inherit}#kw #regen:empty{margin-left:0}
+#ktr{display:none;width:0;height:0;margin-left:0;vertical-align:3px;border-left:5px solid transparent;border-right:5px solid transparent}
+#ktr.up,#ktr.dn{display:inline-block;margin-left:6px}#ktr.up{border-bottom:8px solid currentColor}#ktr.dn{border-top:8px solid currentColor}
+#p-hud #top{transition:opacity .35s ease!important}#p-hud #top.away{opacity:0}
+#topzone{position:absolute;z-index:6;left:0;right:0;top:0;height:22%;display:none}#hud.toph #topzone{display:block}
+#p-hud #gwrap,#p-hud #rside{transition:opacity .35s ease!important}
+#hud.moving #gwrap,#hud.moving #rside:not(.keep){opacity:0;pointer-events:none}
+.cz{position:absolute;z-index:6;bottom:0;width:30%;height:45%;display:none}#czl{left:0}#czr{right:0}#hud.moving .cz{display:block}
+#chip.dotonly{font-size:0}#chip.dotonly::before{font-size:18px;margin-right:0;vertical-align:-1px}
+.ti{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-4px}
+#pstat{display:inline-flex;gap:10px;align-items:center}#pstat[hidden],.ti[hidden]{display:none}
+#ilock.ok{color:#30d158}#ilock.warn{color:#ff9f0a}#isentry{color:#ff453a}
+#iice{color:#64d2ff;margin-right:4px}
+#batt b.lw{color:#ff9f0a}#batt b.lb{color:#ff453a}
+#night{position:fixed;inset:0;z-index:9999;pointer-events:none;background:#ffdcbe;mix-blend-mode:multiply}#night[hidden]{display:none}
+#dots{transition:opacity .5s ease}#dots.fade{opacity:0}
+#p-hud #tm.info{font-style:normal}
+.brow{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-top:4px;font-size:12px;white-space:nowrap}.brow .u{font-size:12px}
+.linkbtn{background:none!important;border:0;color:var(--dim);font-size:12px;padding:0;margin:0;width:auto;text-decoration:underline;cursor:pointer}
+@media (prefers-reduced-motion:reduce){#ticks.breath,#ticks.rpulse rect.rl,#trkL.dalert,#trkR.dalert{animation:none}}
 #gearv.pop{animation:gpop .35s ease-out}@keyframes gpop{0%{transform:scale(1.4)}100%{transform:scale(1)}}
 #offl{position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:50;background:#ff9f0a;color:#000;font-weight:700;font-size:13px;padding:3px 14px;border-radius:0 0 10px 10px}#offl[hidden]{display:none}
 #batt,#tr{background:rgba(0,0,0,.72);padding:3px 12px 3px 8px;border-radius:16px}
@@ -416,28 +448,33 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
   <section class="pg" id="p-hud">
    <div id="hud">
     <div id="offl" hidden>No internet connection</div>
+    <div id="night" hidden></div>
     <div id="top">
       <div id="batt"><div class="glyph"><div id="socb"></div></div><b><span id="soc">-</span>%</b><span class="u"><span id="rng">-</span> km</span></div>
-      <div id="tr"><span id="chip">Starting</span><span><span id="tout3">-</span> °C</span><b id="clock">-</b></div>
+      <div id="tr"><span id="pstat" hidden><svg id="ilock" class="ti" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path id="ilockarm" d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><svg id="isentry" class="ti" viewBox="0 0 24 24" hidden><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span><span id="chip">Starting</span><span><svg id="iice" class="ti" viewBox="0 0 24 24" hidden><path d="M12 2v20M3.3 7l17.4 10M3.3 17l17.4-10M9 4l3 2 3-2M9 20l3-2 3 2"/></svg><span id="tout3">-</span> °C</span><b id="clock">-</b></div>
     </div>
     <div id="main">
       <div class="t hx" id="gwrap"><div class="l">G-force</div><canvas id="gf" width="260" height="260"></canvas></div>
       <div id="gauge">
-        <svg viewBox="0 0 200 200"><g id="ticks"></g>
+        <svg viewBox="0 0 200 200"><defs><filter id="gl" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g id="ticks"></g>
+          <path id="tel" class="tedge" d="M12.5 150.5A101 101 0 0 1 12.5 49.5"/><path id="ter" class="tedge" d="M187.5 150.5A101 101 0 0 0 187.5 49.5"/>
+          <circle id="spdot" cx="100" cy="43.5" r="1.9" fill="#fff" opacity="0"/><path id="crm" d="M100 46L96.6 40H103.4Z" fill="#fff" opacity="0"/>
           <g id="zero"><line x1="100" y1="-1" x2="100" y2="21" stroke="#fff" stroke-width="1.1" transform="rotate(-80.1 100 100)"/><text x="-7" y="84" text-anchor="middle" fill="#fff" font-size="7" font-weight="700">0</text></g>
           <circle cx="100" cy="100" r="71.5" fill="none" stroke="#0b0b0d" stroke-width="21"/>
           <circle cx="100" cy="100" r="82" fill="none" stroke="#1a1a1e" stroke-width=".8"/><circle cx="100" cy="100" r="61" fill="none" stroke="#1a1a1e" stroke-width=".8"/>
           <g fill="none" stroke-linecap="round">
-            <path class="pb" d="M100 171.5A71.5 71.5 0 0 0 100 28.5" pathLength="100" stroke="#0d2a17" stroke-dasharray="100 100"/>
-            <path class="pb" d="M100 171.5A71.5 71.5 0 0 1 100 28.5" pathLength="100" stroke="#16202e" stroke-dasharray="100 100"/>
+            <path id="trkR" class="pb" d="M100 171.5A71.5 71.5 0 0 0 100 28.5" pathLength="100" stroke="#0d2a17" stroke-dasharray="100 100"/>
+            <path id="trkL" class="pb" d="M100 171.5A71.5 71.5 0 0 1 100 28.5" pathLength="100" stroke="#16202e" stroke-dasharray="100 100"/>
             <path id="accb" class="pb f" d="M100 171.5A71.5 71.5 0 0 0 100 28.5" pathLength="100" stroke="#00e060" stroke-dasharray="0 100" opacity="0"/>
             <path id="regb" class="pb f" d="M100 171.5A71.5 71.5 0 0 1 100 28.5" pathLength="100" stroke="#1e9bff" stroke-dasharray="0 100" opacity="0"/>
-            <path id="brkb" class="pb f" d="M100 171.5A71.5 71.5 0 0 1 100 28.5" pathLength="100" stroke="#ff2d2d" stroke-dasharray="0 100" opacity="0"/></g></svg>
+            <path id="brkb" class="pb f" d="M100 171.5A71.5 71.5 0 0 1 100 28.5" pathLength="100" stroke="#ff2d2d" stroke-dasharray="0 100" opacity="0"/></g>
+          <circle id="acctip" cx="100" cy="171.5" r="5" fill="#eafff2" filter="url(#gl)" opacity="0"/></svg>
       </div>
       <i id="tsl" class="tsig"></i><i id="tsr" class="tsig"></i>
+      <div id="topzone"></div><div id="czl" class="cz"></div><div id="czr" class="cz"></div>
       <div id="cstack">
         <div id="speed">-</div><div class="u" id="kmh">km/h</div><div id="gearv">-</div>
-        <div id="kw"><span id="pwr">-</span> kW<span id="regen"></span><span id="effw"> · <span id="effh">-</span> Wh/km</span></div>
+        <div id="kw"><span id="pwr">-</span> <span id="kwu">kW</span><i id="ktr"></i><span id="regen"></span><span id="effw"> · <span id="effh">-</span> <span id="effu">Wh/km</span></span></div>
       </div>
       <div id="rside">
         <div class="t hx" id="lap"><div id="tm">Tap to arm</div><div class="u" id="tsub">0–100 km/h</div><div class="u" id="tnote">Closed track only</div><div class="u" id="tlast">Last run <span id="tl">--</span><span id="tls" hidden> s</span></div></div>
@@ -465,7 +502,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M3 13l2-5a2 2 0 0 1 2-1.5h10a2 2 0 0 1 2 1.5l2 5v4H3zM6 17v2M18 17v2"/></svg><span class="l">Vehicle</span></div><div class="v" style="font-size:20px;white-space:normal;line-height:1.15">Model 3 Long Range</div><div class="u" id="vehsub">2024</div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg><span class="l">Connection</span></div><div class="v" id="conn" style="font-size:17px;white-space:normal">-</div><p id="log">OK</p></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="l">Last data</span></div><div class="v" id="lastdata">--</div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span class="l">Settings</span></div><div style="width:100%"><button id="upd" style="margin:0 0 8px;padding:10px;font-size:17px;font-weight:600;background:var(--acc)">Check for update</button><button id="gear" style="margin:0;padding:10px;font-size:17px;font-weight:600">Clear token</button><div class="u" id="build" style="margin-top:6px"></div></div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span class="l">Settings</span></div><div style="width:100%"><button id="upd" style="margin:0 0 8px;padding:10px;font-size:17px;font-weight:600;background:var(--acc)">Check for update</button><button id="gear" style="margin:0;padding:10px;font-size:17px;font-weight:600">Clear token</button><div class="brow"><button id="thin" class="linkbtn">Thin ticks: off</button><span class="u" id="build"></span></div></div></div>
    </div>
   </section>
 
@@ -561,35 +598,39 @@ const GEAR_NAMES = { P: "P", R: "R", N: "N", D: "D" };
 // (interpolated between the 1-a-second readings) or on brake or regen. It disarms after one run or after 60 s, and a tap cancels it.
 // A run under 2.0 s is treated as noise and not saved. The start is accurate to about half a second.
 try { localStorage.removeItem("runs"); } catch (e) {} // old saved timer runs are no longer kept
-const T = { state: "idle", t0: 0, armedAt: 0, last: null, cur: null, prev: null, note: "" };
+const T = { state: "idle", t0: 0, armedAt: 0, last: null, cur: null, prev: null, note: "", showUntil: 0, doneAt: 0 };
 function timerTick(now) {
   const sp = speedKmh(), pw = powerKw(), br = S.BrakePedal === true || S.BrakePedal === "true";
   if (sp != null) {
     const fresh = sp !== T.cur; if (fresh) { T.prev = T.cur; T.cur = sp; } // a new reading arrived
     if (T.state === "armed") {
-      if (now - T.armedAt > 60000) { T.state = "idle"; T.note = "Disarmed after 60 s"; }
+      if (now - T.armedAt > 60000) { T.state = "idle"; T.note = "Disarmed after 60 s"; T.showUntil = now + 6000; }
       else if (fresh && T.prev != null && T.prev < 1 && sp >= 1) { T.state = "run"; T.t0 = now - 500; }
     } else if (T.state === "run") {
       const el = (now - T.t0) / 1000;
-      if (sp >= 100) { const f = T.prev != null && sp > T.prev ? (sp - 100) / (sp - T.prev) : 0, t = (now - 1000 * f - T.t0) / 1000; if (t < 2.0) { T.state = "idle"; T.note = "Too quick to be real, not saved"; } else { T.last = t; T.state = "done"; } }
-      else if (br || (pw != null && pw < -1)) { T.state = "idle"; T.note = el < 2.0 ? "Cancelled" : "Stopped at " + Math.round(sp) + " km/h"; }
-      else if (sp < 1) { T.state = "idle"; T.note = "Cancelled"; }
+      if (sp >= 100) { const f = T.prev != null && sp > T.prev ? (sp - 100) / (sp - T.prev) : 0, t = (now - 1000 * f - T.t0) / 1000; if (t < 2.0) { T.state = "idle"; T.note = "Too quick to be real"; T.showUntil = now + 6000; } else { T.last = t; T.state = "done"; } }
+      else if (br || (pw != null && pw < -1)) { T.state = "idle"; T.note = el < 2.0 ? "Cancelled" : "Stopped at " + Math.round(sp) + " km/h"; T.showUntil = now + 6000; }
+      else if (sp < 1) { T.state = "idle"; T.note = "Cancelled"; T.showUntil = now + 6000; }
     }
   }
+  if (T.state === "done" && T.doneAt && now - T.doneAt > 30000) { T.state = "idle"; T.showUntil = 0; } // back to range and temperature 30 s after a run
+  if (T.state === "done" && !T.doneAt) T.doneAt = now; if (T.state !== "done") T.doneAt = 0;
   const tm = $("tm"), sub = $("tsub"), note = $("tnote"), ring = $("rside");
-  tm.classList.remove("txt", "armed"); sub.classList.remove("armed"); note.classList.remove("armed"); ring.classList.toggle("armedring", T.state === "armed"); tm.style.color = "";
-  if (T.state === "idle") { tm.textContent = "Tap to arm"; tm.classList.add("txt"); sub.textContent = "0–100 km/h"; note.textContent = T.note || "Closed track only"; }
+  tm.classList.remove("txt", "armed", "info"); $("tlast").hidden = false; sub.classList.remove("armed"); note.classList.remove("armed"); ring.classList.toggle("armedring", T.state === "armed"); tm.style.color = "";
+  if (T.state === "idle" && now >= T.showUntil) { const ot = num(S.OutsideTemp); tm.textContent = $("rng").textContent; tm.classList.add("info"); sub.textContent = "km range"; note.textContent = ot == null ? "" : ot <= 3 ? "Ice risk · " + Math.round(ot) + " °C" : Math.round(ot) + " °C outside"; note.style.color = ot != null && ot <= 3 ? "#64d2ff" : "var(--dim)"; $("tlast").textContent = "Tap for 0–100"; }
+  else if (T.state === "idle") { tm.textContent = "Tap to arm"; tm.classList.add("txt"); sub.textContent = "0–100 km/h"; note.textContent = T.note || "Closed track only"; note.style.color = ""; }
   else if (T.state === "armed") { tm.textContent = "Armed"; tm.classList.add("txt", "armed"); sub.textContent = "Ready"; sub.classList.add("armed"); note.textContent = "Tap to cancel"; }
   else if (T.state === "run") { tm.textContent = ((now - T.t0) / 1000).toFixed(1); sub.textContent = "Running"; note.textContent = ""; }
   else { tm.textContent = T.last.toFixed(1); sub.textContent = "Done"; note.textContent = "Tap to arm again"; tm.style.color = "#30d158"; }
-  $("tl").textContent = T.last != null ? T.last.toFixed(1) : "--"; $("tls").hidden = T.last == null;
+  if (!(T.state === "idle" && now >= T.showUntil)) { note.style.color = ""; if (!$("tl")) $("tlast").innerHTML = 'Last run <span id="tl">--</span><span id="tls" hidden> s</span>'; $("tl").textContent = T.last != null ? T.last.toFixed(1) : "--"; $("tls").hidden = T.last == null; }
 }
-function toggleArm() { if (T.state === "idle" || T.state === "done") { T.state = "armed"; T.armedAt = performance.now(); T.note = ""; } else if (T.state === "armed") { T.state = "idle"; T.note = "Disarmed"; } }
+function toggleArm() { const now = performance.now(); if (T.state === "idle" || T.state === "done") { T.state = "armed"; T.armedAt = now; T.note = ""; } else if (T.state === "armed") { T.state = "idle"; T.note = "Disarmed"; T.showUntil = now + 6000; } timerTick(now); }
 
 // ---- drawing ----
 function render() {
   const sp = speedKmh(), pw = powerKw(), acc = num(S.PedalPosition);
-  $("speed").textContent = sp == null ? "--" : fmt(sp, 0); $("speed").classList.toggle("nd", sp == null); $("speed").classList.toggle("d3", $("speed").textContent.length >= 3); // 100+ uses a smaller size so it stays inside the band $("gearv").classList.toggle("nd", S.Gear == null);
+  spTarget = sp; $("speed").classList.toggle("nd", sp == null); fxKick(); // the number rolls to the new value (see fxFrame); 100+ uses a smaller size so it stays inside the band
+  $("gearv").classList.toggle("nd", S.Gear == null);
   $("gearv").textContent = S.Gear == null ? "P" : (GEAR_NAMES[String(S.Gear).replace(/^ShiftState/, "")] || "-"); { const g0 = $("gearv").dataset.g; $("gearv").dataset.g = $("gearv").textContent; if (g0 && g0 !== $("gearv").dataset.g) { $("gearv").classList.remove("pop"); void $("gearv").offsetWidth; $("gearv").classList.add("pop"); } } // short pop when the gear changes
   // Status comes from the stream itself. A parked car only sends when something changes, so silence while parked is normal.
   if (liveMode && streamOpen) { const quiet = Date.now() - lastEvt, parked = S.Gear == null || /P$/.test(String(S.Gear));
@@ -601,17 +642,9 @@ function render() {
   { const a = Math.max(0, Math.min(100, acc || 0)); $("accb").setAttribute("stroke-dasharray", a + " 100"); $("accb").setAttribute("opacity", a > 0.5 ? 1 : 0); } // inner band, right half: accelerator fills from the bottom up
   { const r = pw != null && pw < 0 ? Math.min(100, -pw / 60 * 100) : 0; $("regb").setAttribute("stroke-dasharray", r + " 100"); $("regb").setAttribute("opacity", r > 0.5 ? 1 : 0); } // left half: regen in blue, about 60 kW at full
   $("soc").textContent = fmt(num(S.BatteryLevel), 0); $("soc2").textContent = $("soc").textContent; $("tout2").textContent = fmt(num(S.OutsideTemp), 0);
-  { const el = $("ticks").children, nd = pw != null && pw > 0 ? Math.round(Math.min(1, pw / 250) * 48) : 0, nr = pw != null && pw < 0 ? Math.round(Math.min(1, -pw / 80) * 12) : 0; // 60 ticks: 12 regen (blue) then 48 drive (amber, red at the top)
-    for (let i = 0; i < el.length; i++) {
-      const dl = i >= 12 && i < 12 + nd, rl = i < 12 && 11 - i < nr, s = el[i].style;
-      s.stroke = "none";
-      if (dl) s.fill = i < 38 ? "#00e060" : i < 52 ? "#ffd400" : "#ff2d2d";  // lit: solid shift-light colour (green, yellow, red only near the top)
-      else if (rl) s.fill = "#1e9bff";                                         // regen in electric blue
-      else if (i < 12) s.fill = "#12294a";                                     // regen zone, unlit: dark blue
-      else s.fill = "#202020";                                                 // drive zone, unlit
-    } }
+  TK.nd = pw != null && pw > 0 ? Math.round(Math.min(1, pw / 250) * 48) : 0; TK.nr = pw != null && pw < 0 ? Math.round(Math.min(1, -pw / 80) * 12) : 0; paintTicks(performance.now()); // 60 ticks: 12 regen (blue) then 48 drive
   { const b = num(S.BatteryLevel) || 0, f = $("bfill"); f.style.width = Math.max(0, Math.min(100, b)) + "%"; f.style.background = b < 15 ? "var(--bad)" : b < 30 ? "var(--warn)" : "var(--ok)"; } // the wide battery bar on the charging page
-  { const b = num(S.BatteryLevel) || 0; $("socb").style.width = Math.max(0, Math.min(100, b)) + "%"; $("socb").style.background = b < 15 ? "var(--bad)" : b < 30 ? "var(--warn)" : "var(--ok)"; }
+  { const bl = num(S.BatteryLevel), b = bl || 0; $("socb").style.width = Math.max(0, Math.min(100, b)) + "%"; $("socb").style.background = b < 10 ? "var(--bad)" : b < 20 ? "var(--warn)" : "var(--ok)"; const bt = $("soc").parentElement; bt.classList.toggle("lb", bl != null && bl < 10); bt.classList.toggle("lw", bl != null && bl >= 10 && bl < 20); }
   { const b = (S.BrakePedal === true || S.BrakePedal === "true") ? 100 : Math.max(0, Math.min(100, num(S.BrakePedalPos) || 0)); $("brkb").setAttribute("stroke-dasharray", b + " 100"); $("brkb").setAttribute("opacity", b > 0.5 ? 1 : 0); } // brake fills the left half
   { // Range: the car's own figure when it has sent one; until then an estimate from the battery level (2024 Model 3 Long Range, 629 km WLTP).
     const r = num(S.EstBatteryRange ?? S.RatedRange ?? S.IdealBatteryRange), bl = num(S.BatteryLevel), est = r == null && bl != null;
@@ -635,7 +668,7 @@ function render() {
   { const h = num(S.TimeToFullCharge ?? S.EstimatedHoursToChargeTermination), m = h == null ? null : Math.round(h * 60); $("chtm").textContent = !chargingNow || m == null ? "--" : m >= 60 ? Math.floor(m / 60) + " h " + (m % 60) + " min" : m + " min"; $("chtm").classList.toggle("quiet", !chargingNow || m == null); $("chfull").textContent = chargingNow && m != null ? "Full at " + new Date(Date.now() + m * 60000).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : ""; } // reported in hours
   { const cok = chargingNow ? "ok" : ""; flag("chst", cok); flag("chkw", cok); }
   $("pv").textContent = fmt(num(S.PackVoltage), 0); { const pa = num(S.PackCurrent); $("pa").textContent = pa == null ? "--" : (Math.abs(pa) < 2 ? 0 : pa).toFixed(0); } // under 2 A is idle noise
-  renderCar();
+  renderCar(); driveFx(sp, pw, acc, chargingNow, effKm >= 100 ? effKw * 1000 / effKm : null);
   { const lg = $("log"); if (!liveMode) { lg.textContent = "Sample mode"; lg.style.color = "var(--dim)"; } else lg.style.color = (streamOpen && /^(Connected|OK)/.test(lg.textContent)) ? "var(--ok)" : ""; } // green when live, dim in sample, orange for problems
   $("vehsub").textContent = "2024 · " + (S.RightHandDrive === false || S.RightHandDrive === "false" ? "left-hand drive" : "right-hand drive");
   { const qs = lastEvt ? Math.round((Date.now() - lastEvt) / 60000) : 0; $("navl").textContent = liveMode && qs >= 2 ? "Navigation · last seen " + qs + " min ago" : "Navigation"; }
@@ -645,6 +678,7 @@ function render() {
   const mi = num(S.MilesToArrival), mn = num(S.MinutesToArrival), asoc = num(S.ExpectedEnergyPercentAtTripArrival);
   $("nav").textContent = (mn == null || /^invalid$/i.test(String(S.DestinationName))) ? "No route" : (S.DestinationName ? S.DestinationName + ": " : "") + (mi == null ? "" : (mi * MI).toFixed(0) + " km, ") + mn.toFixed(0) + " min" + (asoc == null ? "" : ", arrive " + asoc.toFixed(0) + "%");
   const p = loc(S.Location);
+  if (p && liveMode) { const k = p[0].toFixed(2) + "," + p[1].toFixed(2); if (store.get("loc") !== k) store.set("loc", k); }
   if (p) {
     if (!map) { $("nomap").hidden = true; map = L.map("map", { zoomControl: false }); map.attributionControl.setPosition("bottomleft"); L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "© OpenStreetMap contributors" }).addTo(map); marker = L.circleMarker(p, { radius: 9, color: "#fff", weight: 3, fillColor: "#0a84ff", fillOpacity: 1 }).addTo(map); trail = L.polyline([], { weight: 5, color: "#0a84ff" }).addTo(map); map.setView(p, 16); new ResizeObserver(() => map.invalidateSize()).observe($("map")); }
     const last = trailPts[trailPts.length - 1];
@@ -664,6 +698,91 @@ function render() {
   }
   drawG();
 }
+// ---- drive screen effects (v8) ----
+const TK = { nd: 0, nr: 0, charging: false, socN: 0 };     // what the ticks should show
+let spTarget = null, spShown = null, parkedView = false, parkedSince = 0, socView = null;
+let sweepStart = 0, sweepEnd = 0, fxOn = false, fxLast = 0, chgLast = 0;
+const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const tickColour = i => i < 12 ? "#1e9bff" : i < 38 ? "#00e060" : i < 52 ? "#ffd400" : "#ff2d2d";
+function paintTicks(now) {
+  const el = $("ticks").children; if (!el.length) return;
+  const sw = now < sweepEnd ? Math.sin(Math.PI * (now - sweepStart) / (sweepEnd - sweepStart)) : -1;
+  const cp = TK.charging ? (now % 2600) / 2600 : 0;
+  for (let i = 0; i < el.length; i++) {
+    const e = el[i], s = e.style; let f, rl = false;
+    if (sw >= 0) f = i < Math.round(sw * 60) ? tickColour(i) : (i < 12 ? "#12294a" : "#202020");                          // start-up sweep
+    else if (TK.charging) { const j = i - 12; f = j < 0 ? "#12294a" : j < Math.round(cp * TK.socN) ? "#00e060" : j < TK.socN ? "#0f4a26" : "#202020"; } // charging: fills to the battery level
+    else { const dl = i >= 12 && i < 12 + TK.nd; rl = i < 12 && 11 - i < TK.nr; f = dl ? tickColour(i) : rl ? "#1e9bff" : i < 12 ? "#12294a" : "#202020"; }
+    s.fill = f; s.stroke = "none"; e.classList.toggle("rl", rl);
+  }
+}
+function writeSpeed() {
+  const e = $("speed"), t = parkedView ? (socView == null ? "--" : String(socView)) : spShown == null ? "--" : String(Math.round(spShown));
+  if (e.textContent !== t) e.textContent = t; e.classList.toggle("d3", t.length >= 3);
+  $("kmh").textContent = parkedView ? "% · " + $("rng").textContent + " km" : "km/h";
+}
+function fxKick() { if (!fxOn) { fxOn = true; requestAnimationFrame(fxFrame); } }
+function fxFrame(now) {
+  let more = false; const dt = fxLast ? Math.min(100, now - fxLast) : 16; fxLast = now;
+  if (spTarget == null || spShown == null || REDUCED || parkedView) spShown = spTarget;                  // the number rolls toward each new reading
+  else if (Math.abs(spTarget - spShown) > 0.3) { spShown += (spTarget - spShown) * Math.min(1, dt / 170); more = true; } else spShown = spTarget;
+  writeSpeed();
+  if (now < sweepEnd) { paintTicks(now); more = true; } else if (sweepEnd) { sweepEnd = 0; paintTicks(now); }
+  if (TK.charging && !REDUCED) { if (now - chgLast > 50) { chgLast = now; paintTicks(now); } more = true; }
+  if (more) requestAnimationFrame(fxFrame); else { fxOn = false; fxLast = 0; }
+}
+function startSweep() { if (REDUCED) return; sweepStart = performance.now(); sweepEnd = sweepStart + 1500; fxKick(); }
+const pwHist = []; let pwHistT = 0, doorsWas = null, doorAlertTo = null, topPeek = 0, circPeek = 0;
+function driveFx(sp, pw, acc, charging, eff) {
+  const now = Date.now(), gear = S.Gear == null ? null : String(S.Gear).replace(/^ShiftState/, ""), inP = gear === "P", moving = sp != null && sp > 5;
+  // parked view: after 30 s in Park the centre shows battery and range instead of 0 km/h
+  if (inP && (sp == null || sp < 1)) { if (!parkedSince) parkedSince = now; } else parkedSince = 0;
+  const pv = !!parkedSince && now - parkedSince >= 30000, bl = num(S.BatteryLevel);
+  socView = bl == null ? null : Math.round(bl); if (pv !== parkedView) { parkedView = pv; fxKick(); } else writeSpeed();
+  // charging sweep, breathing ring when parked, regen pulse
+  TK.charging = !!charging && !moving; TK.socN = Math.round(Math.max(0, Math.min(100, bl || 0)) / 100 * 48); if (TK.charging) fxKick();
+  $("ticks").classList.toggle("breath", inP && !TK.charging && !REDUCED);
+  $("ticks").classList.toggle("rpulse", pw != null && pw < -40);
+  // speed colour follows the ticks under hard acceleration
+  const sc = parkedView || pw == null ? "" : pw >= 208 ? "sr" : pw >= 135 ? "sy" : pw >= 100 ? "sg" : "";
+  $("speed").classList.remove("sg", "sy", "sr"); if (sc) $("speed").classList.add(sc);
+  // turn signals also light the matching edge of the ring
+  { const t = String(S.LightsTurnSignal || ""); $("tel").classList.toggle("on", /Left|Both/.test(t)); $("ter").classList.toggle("on", /Right|Both/.test(t)); }
+  // accelerator tip: a bright dot at the end of the green band
+  { const a = Math.max(0, Math.min(100, acc || 0)), ang = (90 - 180 * a / 100) * Math.PI / 180, tip = $("acctip");
+    tip.setAttribute("cx", (100 + 71.5 * Math.cos(ang)).toFixed(2)); tip.setAttribute("cy", (100 + 71.5 * Math.sin(ang)).toFixed(2)); tip.setAttribute("opacity", a > 3 ? 1 : 0); }
+  // hard braking: the red band glows brighter
+  { const br = truthy(S.BrakePedal), lon = num(S.LongitudinalAcceleration), dec = lon == null ? 0 : lon - gBase[1], hard = br && (dec < -0.35 || (pw != null && pw < -45)), b = $("brkb");
+    if (hard) { b.setAttribute("filter", "url(#gl)"); b.setAttribute("stroke", "#ff5c5c"); } else { b.removeAttribute("filter"); b.setAttribute("stroke", "#ff2d2d"); } }
+  // a door or boot opening while in Park: the band flashes amber for 3 s
+  { const ds = doorSet(S.DoorState), c = ds == null ? null : ds.size;
+    if (c != null && doorsWas != null && c > doorsWas && inP) { ["trkL", "trkR"].forEach(id => { const e = $(id); e.classList.remove("dalert"); void e.getBBox(); e.classList.add("dalert"); }); clearTimeout(doorAlertTo); doorAlertTo = setTimeout(() => ["trkL", "trkR"].forEach(id => $(id).classList.remove("dalert")), 3000); }
+    if (c != null) doorsWas = c; }
+  // cruise: a marker on the ring at the set speed (0 to 200 km/h around the ring), green while holding it, with a dot for the current speed
+  { const cr = num(S.CruiseSetSpeed), crK = cr == null ? null : cr * MI, on = crK != null && crK > 0 && gear === "D" && sp != null && sp > 5;
+    const rot = v => "rotate(" + (-135 + Math.max(0, Math.min(200, v)) / 200 * 270).toFixed(2) + " 100 100)";
+    const m = $("crm"), d = $("spdot"); m.setAttribute("opacity", on ? 1 : 0); d.setAttribute("opacity", on ? 0.9 : 0);
+    if (on) { m.setAttribute("transform", rot(crK)); d.setAttribute("transform", rot(sp)); m.setAttribute("fill", Math.abs(sp - crK) <= 2.5 ? "#00e060" : "#fff"); } }
+  // kW line: tap to swap kW and Wh/km; colour by efficiency; small trend arrow
+  if (now - pwHistT > 900 && pw != null) { pwHistT = now; pwHist.push(pw); if (pwHist.length > 4) pwHist.shift(); }
+  { const whMode = store.get("kwmode") === "wh", effOk = eff != null && sp != null && sp >= 10 && Math.abs(eff) < 1000;
+    $("pwr").textContent = whMode ? (effOk ? eff.toFixed(0) : "--") : fmt(pw, 0); $("kwu").textContent = whMode ? "Wh/km" : "kW";
+    $("effh").textContent = whMode ? fmt(pw, 0) : effOk ? eff.toFixed(0) : "--"; $("effu").textContent = whMode ? "kW" : "Wh/km";
+    $("effw").hidden = whMode ? pw == null : !effOk; if (whMode) $("regen").textContent = "";
+    const k = $("kw"); k.classList.remove("eg", "ea", "eb");
+    if (pw != null && pw < -1) k.classList.add("eb"); else if (effOk && eff <= 160) k.classList.add("eg"); else if ((effOk && eff >= 230) || (pw != null && pw >= 150)) k.classList.add("ea");
+    const tr = $("ktr"), d = pwHist.length >= 3 ? pwHist[pwHist.length - 1] - pwHist[0] : 0; tr.className = Math.abs(d) < 8 ? "" : d > 0 ? "up" : "dn"; }
+  // top bar hides while driving (tap the top to see it for 5 s); it stays if something needs attention
+  { const okChip = $("chip").classList.contains("dotonly") || !liveMode, away = moving && okChip && now > topPeek && $("offl").hidden;
+    $("top").classList.toggle("away", away); $("hud").classList.toggle("toph", away); }
+  // G and timer circles hide above 20 km/h (tap a bottom corner to see them for 8 s); a running 0-100 always stays
+  { const mv = sp != null && sp > 20 && now > circPeek; $("hud").classList.toggle("moving", mv); $("rside").classList.toggle("keep", T.state === "armed" || T.state === "run" || T.state === "done"); }
+  // parked: lock and Sentry icons in the top bar
+  { const lk = S.Locked == null ? null : truthy(S.Locked), sm = String(S.SentryMode ?? "").replace(/^SentryModeState/, ""), son = S.SentryMode != null && sm !== "Off" && sm !== "Unknown" && sm !== "" && S.SentryMode !== false;
+    $("pstat").hidden = !inP || (lk == null && !son); const il = $("ilock"); il.classList.toggle("ok", lk === true); il.classList.toggle("warn", lk === false); il.style.display = lk == null ? "none" : ""; $("ilockarm").setAttribute("d", lk === false ? "M8 11V8a4 4 0 0 1 7.5-1.8" : "M8 11V8a4 4 0 0 1 8 0v3"); $("isentry").toggleAttribute("hidden", !son); }
+  // ice: a snowflake at 3 C or colder
+  { const ot = num(S.OutsideTemp); $("iice").toggleAttribute("hidden", !(ot != null && ot <= 3)); }
+}
 let gPeak = null; // peak-hold dot: the strongest recent G reading, fades over 2 s
 function drawG() {
   const c = $("gf"), g = c.getContext("2d"), w = c.width, h = c.height, cx = w / 2, cy = h / 2, R = h / 2 - 10, sc = R / 1.2; // 1.2 g edge
@@ -680,9 +799,26 @@ function drawG() {
 // ---- stream (fetch with a Bearer header, parses Server-Sent Events) ----
 const DEFAULT_RELAY = "https://fancy-shape-530a.3andfree-app.workers.dev"; // the relay Worker; it only allows this page's address and read-only requests
 let ctl = null, retry = 1000, timer = null, method = "query";
-function nightDim() { const h = new Date().getHours(); document.documentElement.style.filter = h >= 19 || h < 6 ? "brightness(.75)" : ""; } nightDim(); setInterval(nightDim, 60000); // dimmer from 7 pm to 6 am
+// Sunrise and sunset for a place and day (NOAA's simple method, good to a few minutes). Returns local Date objects, or null near the poles.
+function sunTimes(lat, lon, d) {
+  const rad = Math.PI / 180, day = Math.floor((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - Date.UTC(d.getFullYear(), 0, 0)) / 864e5);
+  const g = 2 * Math.PI / 365 * (day - 1);
+  const eq = 229.18 * (0.000075 + 0.001868 * Math.cos(g) - 0.032077 * Math.sin(g) - 0.014615 * Math.cos(2 * g) - 0.040849 * Math.sin(2 * g));
+  const dec = 0.006918 - 0.399912 * Math.cos(g) + 0.070257 * Math.sin(g) - 0.006758 * Math.cos(2 * g) + 0.000907 * Math.sin(2 * g) - 0.002697 * Math.cos(3 * g) + 0.00148 * Math.sin(3 * g);
+  const c = (Math.cos(90.833 * rad) / (Math.cos(lat * rad) * Math.cos(dec))) - Math.tan(lat * rad) * Math.tan(dec);
+  if (c < -1 || c > 1) return null;
+  const ha = Math.acos(c) / rad, mid = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+  return { rise: new Date(mid + (720 - 4 * (lon + ha) - eq) * 60000), set: new Date(mid + (720 - 4 * (lon - ha) - eq) * 60000) };
+}
+// Night: a warm, dimmer tint from sunset to sunrise where the car last was; 7 pm to 6 am until a location is known.
+function isNight(now) {
+  const k = store.get("loc").split(","), la = +k[0], lo = +k[1];
+  if (k.length === 2 && isFinite(la) && isFinite(lo)) { const t = sunTimes(la, lo, now); if (t) return now < t.rise || now > t.set; }
+  const h = now.getHours(); return h >= 19 || h < 6;
+}
+function nightDim() { const on = isNight(new Date()) || location.search.includes("night"); document.documentElement.style.filter = on ? "brightness(.74)" : ""; $("night").hidden = !on; } nightDim(); setInterval(nightDim, 60000); // dimmer and warmer at night; colours keep their meaning
 function netBanner() { $("offl").hidden = navigator.onLine !== false; } addEventListener("online", netBanner); addEventListener("offline", netBanner); netBanner();
-function setChip(t, c) { $("chip").textContent = t; $("chip").style.color = c || ""; }
+function setChip(t, c) { const e = $("chip"); e.textContent = t; e.title = t; e.style.color = c || ""; e.classList.toggle("dotonly", /^Live/.test(t)); }
 let liveMode = false, lastEvt = 0, streamOpen = false, wasOpen = false;
 function onEvent(txt) {
   lastEvt = Date.now();
@@ -789,12 +925,12 @@ document.addEventListener("visibilitychange", () => { if (document.visibilitySta
 function show(app) { $("setup").hidden = app; $("app").hidden = !app; }
 function flag(id, lvl) { const t = $(id).closest(".t"); if (t) { t.classList.remove("ok", "warn", "bad"); if (lvl) t.classList.add(lvl); } }
 // Each tick is a small rounded block (no outline).
-function buildTicks() { const g = $("ticks"); if (g.children.length) return; for (let i = 0; i < 60; i++) { const r = document.createElementNS("http://www.w3.org/2000/svg", "rect"), major = i % 5 === 0; r.setAttribute("x", 98.2); r.setAttribute("y", 2); r.setAttribute("width", 3.6); r.setAttribute("height", major ? 17 : 13); r.setAttribute("rx", 0.8); r.setAttribute("transform", "rotate(" + (-135 + i * 270 / 59).toFixed(2) + " 100 100)"); r.style.fill = i < 12 ? "#12294a" : "#202020"; r.style.stroke = "none"; g.appendChild(r); } }
+function buildTicks() { const g = $("ticks"); if (g.children.length) return; for (let i = 0; i < 60; i++) { const r = document.createElementNS("http://www.w3.org/2000/svg", "rect"), major = i % 5 === 0; const thin = store.get("ticks") === "thin"; r.setAttribute("x", thin ? 98.9 : 98.2); r.setAttribute("y", 2); r.setAttribute("width", thin ? 2.2 : 3.6); r.setAttribute("height", major ? 17 : 13); r.setAttribute("rx", 0.8); r.setAttribute("transform", "rotate(" + (-135 + i * 270 / 59).toFixed(2) + " 100 100)"); r.style.fill = i < 12 ? "#12294a" : "#202020"; r.style.stroke = "none"; g.appendChild(r); } }
 let curPage = null; // the page being shown, so a resize (for example Safari's toolbar) never throws you back to the middle
 function home() { const p = $("pages"); p.style.scrollBehavior = "auto"; if (curPage == null) { const q = new URLSearchParams(location.search).get("page"); curPage = q == null ? 2 : +q; /* five pages: charging, car, drive (the middle one, opened first), map, info */ } p.scrollLeft = p.clientWidth * curPage; }
 function startApp(demo) {
-  show(true); buildTicks(); keepAwake(); home();
-  const dots = () => { const p = $("pages"), i = Math.round(p.scrollLeft / p.clientWidth); [...$("dots").children].forEach((d, j) => d.classList.toggle("on", j === i)); };
+  show(true); buildTicks(); keepAwake(); home(); startSweep();
+  let dotsTo = null; const dots = () => { const p = $("pages"), i = Math.round(p.scrollLeft / p.clientWidth); [...$("dots").children].forEach((d, j) => d.classList.toggle("on", j === i)); $("dots").classList.remove("fade"); clearTimeout(dotsTo); dotsTo = setTimeout(() => $("dots").classList.add("fade"), 3000); }; // page dots fade 3 s after a swipe
   let lockUntil = 0;
   $("pages").addEventListener("scroll", () => { dots(); if (Date.now() > lockUntil) { const p = $("pages"); curPage = Math.round(p.scrollLeft / p.clientWidth); } if (map) map.invalidateSize(); }, { passive: true });
   const back = () => { lockUntil = Date.now() + 400; home(); dots(); };
@@ -807,10 +943,15 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "Build 22 Nov 2026 · 5 pages · v7"; $("build").textContent = BUILD;
+const BUILD = "v8 · 22 Nov 2026"; $("build").textContent = BUILD;
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {}); // opens with no signal; the network copy always wins when online
 $("upd").onclick = () => { location.href = location.pathname + "?v=" + Date.now(); }; // reloads a fresh copy; the saved token stays in this browser
 $("rside").onclick = toggleArm;
+$("kw").onclick = () => { store.set("kwmode", store.get("kwmode") === "wh" ? "kw" : "wh"); render(); }; // tap to swap kW and Wh/km
+$("topzone").onclick = () => { topPeek = Date.now() + 5000; render(); };
+$("czl").onclick = $("czr").onclick = () => { circPeek = Date.now() + 8000; render(); };
+const thinLabel = () => { $("thin").textContent = "Thin ticks: " + (store.get("ticks") === "thin" ? "on" : "off"); }; thinLabel();
+$("thin").onclick = () => { store.set("ticks", store.get("ticks") === "thin" ? "" : "thin"); $("ticks").innerHTML = ""; buildTicks(); thinLabel(); render(); };
 $("ver").onclick = () => { if (confirm("Read the software version from Teslemetry? This can use up to 2 credits (500 a month are included). It never wakes the car.")) readVersion(); };
 $("demo").onclick = () => startApp(true);
 $("gear").onclick = () => { if (confirm("Clear the saved token and settings?")) { store.set("tok", ""); store.set("base", ""); location.reload(); } };
