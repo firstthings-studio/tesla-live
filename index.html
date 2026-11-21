@@ -316,17 +316,18 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #p-hud::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.07;mix-blend-mode:overlay;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
 #p-hud #gauge{position:absolute;left:0!important;top:0!important;right:auto!important;bottom:auto!important;width:100%!important;height:100%!important;transform:none!important;aspect-ratio:auto!important;max-width:none;z-index:1;pointer-events:none} /* full page: older ring rules pinned it to the centre */
 #p-hud #gauge #dash{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
-#p-hud #dash path.pb{stroke-width:var(--t,32px);fill:none;stroke-opacity:.2;stroke-linecap:round;filter:url(#soft)}
-#p-hud #dash path.pb.amb{stroke-linecap:butt}
-#p-hud #dash path.pb.hard{stroke-opacity:.15}
-#p-hud #dash path.halo{stroke-width:var(--hw,40px);fill:none;stroke-opacity:.42;stroke-linecap:round;filter:url(#halo)}
-#p-hud #dash path.halo.hard{stroke-opacity:.55}
+#p-hud #dash path.pb{stroke-width:var(--t,32px);fill:none;stroke-opacity:0;stroke-linecap:round}
+#p-hud #dash path.pb.amb{stroke-linecap:butt;stroke-opacity:.05;filter:url(#soft)}
+#p-hud #dash path.pb.hard{stroke-opacity:0}
+#p-hud #dash path.halo{stroke-width:var(--hw,40px);fill:none;stroke-opacity:1;stroke-linecap:round;filter:url(#halo);mask:url(#bandMask)}
+#p-hud #dash path.halo.hard{stroke-width:calc(var(--hw,40px) * 1.25)}
+#p-hud #dash path.core,#p-hud #dash #acctip{display:none}
 #p-hud #dash path.core{stroke-width:var(--cw,3px);fill:none;stroke-linecap:round;filter:url(#bloom)}
 #p-hud #dash path.core.hard{stroke-width:calc(var(--cw,3px) * 1.8)}
-#p-hud #dash path.amb{stroke-opacity:.055}
+#p-hud #dash path.amb{stroke-opacity:.05}
 #p-hud #dash #acctip{filter:url(#bloom)}
 #p-hud #dash path.pe{display:none}
-#p-hud #dash path.tedge{fill:none;stroke:#00e060;stroke-width:var(--cw,3px);stroke-linecap:round;opacity:0;filter:url(#bloom)}
+#p-hud #dash path.tedge{fill:none;stroke:#00e060;stroke-width:var(--hw,40px);stroke-linecap:round;opacity:0;filter:url(#halo);mask:url(#bandMask)}
 #p-hud #dash path.tedge.on{animation:tblink .8s steps(1) infinite}
 #ticks line{stroke-linecap:round}
 #ticks line.lit{filter:url(#glu)}
@@ -525,7 +526,9 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
           <filter id="edge" filterUnits="userSpaceOnUse" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceGraphic" stdDeviation="26" result="b1"/><feComponentTransfer in="b1" result="b1s"><feFuncA type="linear" slope="1.7"/></feComponentTransfer><feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b2"/><feMerge><feMergeNode in="b1s"/><feMergeNode in="b2"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
           <filter id="soft" filterUnits="userSpaceOnUse" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="1.6"/></filter>
           <filter id="bloom" filterUnits="userSpaceOnUse" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceGraphic" stdDeviation="22" result="w"/><feComponentTransfer in="w" result="ws"><feFuncA type="linear" slope="3.4"/></feComponentTransfer><feGaussianBlur in="SourceGraphic" stdDeviation="6" result="m"/><feComponentTransfer in="m" result="ms"><feFuncA type="linear" slope="1.6"/></feComponentTransfer><feMerge><feMergeNode in="ws"/><feMergeNode in="ms"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          <filter id="halo" filterUnits="userSpaceOnUse" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="18"/></filter>
+          <filter id="halo" filterUnits="userSpaceOnUse" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="18"/><feComponentTransfer><feFuncA type="linear" slope="2.6"/></feComponentTransfer></filter>
+          <filter id="feather" filterUnits="userSpaceOnUse" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="3"/></filter>
+          <mask id="bandMask" maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%"><g filter="url(#feather)"><rect id="bmOuter" x="0" y="0" width="0" height="0" fill="#fff"/><rect id="bmInner" x="0" y="0" width="0" height="0" rx="0" fill="#000"/></g></mask>
           <linearGradient id="gTrk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16181c"/><stop offset=".5" stop-color="#0c0d10"/><stop offset="1" stop-color="#121418"/></linearGradient>
           <linearGradient id="gEdge" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3f47"/><stop offset=".45" stop-color="#1b1e23"/><stop offset="1" stop-color="#2a2e35"/></linearGradient>
         </defs>
@@ -814,11 +817,12 @@ const halfPath = (W, H, k, rad, right) => { const cx = W / 2, x = right ? W - k 
 function layoutDash() {
   const sec = $("p-hud"), W = sec.clientWidth, H = sec.clientHeight; if (!W || !H) return;
   const pr = getComputedStyle($("saprobe")), sl = parseFloat(pr.paddingLeft) || 0, sr = parseFloat(pr.paddingRight) || 0, st = parseFloat(pr.paddingTop) || 0, sb = parseFloat(pr.paddingBottom) || 0;
-  const cx = W / 2, t = Math.round(Math.max(18, 0.075 * H)), ri = Math.round(Math.max(10, 0.04 * H)), rc = ri + t / 2, cw = Math.max(2.5, 0.0065 * H);
+  const cx = W / 2, t = Math.round(Math.max(24, 0.1 * H)), ri = Math.round(Math.max(12, 0.05 * H)), rc = ri + t / 2, cw = Math.max(2.5, 0.0065 * H);
   const bodyL = halfPath(W, H, t / 2, rc, false), bodyR = halfPath(W, H, t / 2, rc, true), coreL = halfPath(W, H, t, ri, false), coreR = halfPath(W, H, t, ri, true);
   ["trkL", "regb", "brkb"].forEach(id => $(id).setAttribute("d", bodyL)); ["trkR", "accb"].forEach(id => $(id).setAttribute("d", bodyR));
   ["regc", "brkc", "regh", "brkh"].forEach(id => $(id).setAttribute("d", coreL)); ["accc", "acch"].forEach(id => $(id).setAttribute("d", coreR));
-  $("dash").setAttribute("viewBox", "0 0 " + W + " " + H); const gs = $("gauge").style; gs.setProperty("--t", t + "px"); gs.setProperty("--cw", cw + "px"); gs.setProperty("--hw", Math.round(Math.max(20, 0.1 * H)) + "px"); $("halo").firstElementChild.setAttribute("stdDeviation", Math.round(Math.max(10, 0.045 * H)));
+  $("dash").setAttribute("viewBox", "0 0 " + W + " " + H); const gs = $("gauge").style; gs.setProperty("--t", t + "px"); gs.setProperty("--cw", cw + "px"); gs.setProperty("--hw", Math.round(t * 0.3) + "px"); $("halo").firstElementChild.setAttribute("stdDeviation", Math.round(t * 0.5));
+  { const o = $("bmOuter"), i = $("bmInner"); o.setAttribute("width", W); o.setAttribute("height", H); i.setAttribute("x", t); i.setAttribute("y", t); i.setAttribute("width", W - 2 * t); i.setAttribute("height", H - 2 * t); i.setAttribute("rx", ri); }
   $("bloom").firstElementChild.setAttribute("stdDeviation", Math.round(Math.max(16, 0.075 * H)));
   // bar meters just inside the band, inside the safe area
   const tlen = Math.max(10, 0.034 * H), tmaj = tlen * 1.5, inL = Math.max(sl, t) + 14, inR = W - Math.max(sr, t) - 14;
@@ -1055,7 +1059,7 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "v14 · 22 Nov 2026"; $("build").textContent = BUILD;
+const BUILD = "v15 · 22 Nov 2026"; $("build").textContent = BUILD;
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {}); // opens with no signal; the network copy always wins when online
 $("upd").onclick = () => { location.href = location.pathname + "?v=" + Date.now(); }; // reloads a fresh copy; the saved token stays in this browser
 $("rside").onclick = toggleArm;
