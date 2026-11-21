@@ -319,13 +319,17 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #cstack{top:calc(50% - 31vh);bottom:calc(50% - 29vh);justify-content:center;gap:2.2vh}
 #p-hud #tr{margin-left:auto}
 #gearrow{display:flex;align-items:center;gap:2.6vh}
+#gearv{display:none}
+#prnd{display:flex;align-items:flex-end;gap:1.5vh;font-style:italic;font-weight:800;line-height:1;--gc:#ffd400}
+#prnd[data-g="R"]{--gc:#ff2d2d}#prnd[data-g="N"]{--gc:#c7c7cc}#prnd[data-g="D"]{--gc:#00e060}
+#prnd b{font-size:min(5.4vh,23px);color:#3a3a3c;position:relative;padding:0 .1em 1.3vh}
+#prnd b.on{font-size:min(10.5vh,46px);color:var(--gc)}
+#prnd b.on::after{content:"";position:absolute;left:12%;right:12%;bottom:0;height:3px;border-radius:2px;background:currentColor;box-shadow:0 0 8px currentColor}
+#prnd b.pop{animation:gpop .35s ease-out}
+#tlast:empty{display:none}
 #gearrow .tsig{position:static;top:auto;left:auto;right:auto}
-#gearv{position:relative;isolation:isolate;font-size:min(10vh,44px);font-weight:800;font-style:italic;line-height:1.3;padding:0 1.05em;border:0;border-radius:0;background:none;box-shadow:none;text-shadow:none;filter:drop-shadow(0 0 7px currentColor)}
-#gearv::before,#gearv::after{content:"";position:absolute;inset:0;z-index:-1;clip-path:polygon(16% 0,84% 0,100% 50%,84% 100%,16% 100%,0 50%)}
-#gearv::before{background:currentColor}
-#gearv::after{inset:3px;background:#050505}
-#p-hud #gwrap,#p-hud #rside{border-radius:0;box-shadow:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M26 1.5H74L98.5 50L74 98.5H26L1.5 50Z' fill='%230a0a0a' stroke='%232c2c2e' stroke-width='2.5' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E") center/100% 100% no-repeat}
-#p-hud #rside.armedring{box-shadow:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M26 1.5H74L98.5 50L74 98.5H26L1.5 50Z' fill='%230a0a0a' stroke='%23ffd400' stroke-width='3.5' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E")}
+#p-hud #gwrap,#p-hud #rside{border-radius:50%;background:#060606;box-shadow:inset 0 0 0 1.5px #2c2c2e}
+#p-hud #rside.armedring{box-shadow:inset 0 0 0 2.5px #ffd400}
 #p-hud #tm.info{font-size:clamp(30px,9.5vh,42px)}#dots.fade{opacity:0}
 #p-hud #tm.info{font-style:normal}
 .brow{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-top:4px;font-size:12px;white-space:nowrap}.brow .u{font-size:12px}
@@ -476,20 +480,20 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
         <svg viewBox="0 0 200 200"><defs><filter id="gl" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g id="ticks"></g>
           <path id="tel" class="tedge" d="M12.5 150.5A101 101 0 0 1 12.5 49.5"/><path id="ter" class="tedge" d="M187.5 150.5A101 101 0 0 0 187.5 49.5"/>
           <circle id="spdot" cx="100" cy="43.5" r="1.9" fill="#fff" opacity="0"/><path id="crm" d="M100 46L96.6 40H103.4Z" fill="#fff" opacity="0"/>
-          <g id="zero"><line x1="100" y1="-1" x2="100" y2="21" stroke="#fff" stroke-width="1.1" transform="rotate(-80.1 100 100)"/><text x="-7" y="84" text-anchor="middle" fill="#fff" font-size="7" font-weight="700">0</text></g>
+          <g id="zero"><line x1="100" y1="-1" x2="100" y2="21" stroke="#fff" stroke-width="1.1" transform="rotate(-80.1 100 100)"/></g>
           <circle cx="100" cy="100" r="71.5" fill="none" stroke="#0b0b0d" stroke-width="21"/>
           <circle cx="100" cy="100" r="82" fill="none" stroke="#1a1a1e" stroke-width=".8"/><circle cx="100" cy="100" r="61" fill="none" stroke="#1a1a1e" stroke-width=".8"/>
           <g fill="none" stroke-linecap="round">
-            <path id="trkR" class="pb" d="M100 171.5A71.5 71.5 0 0 0 100 28.5" pathLength="100" stroke="#0d2a17" stroke-dasharray="100 100"/>
-            <path id="trkL" class="pb" d="M100 171.5A71.5 71.5 0 0 1 100 28.5" pathLength="100" stroke="#16202e" stroke-dasharray="100 100"/>
+            <path id="trkR" class="pb" d="M100 171.5A71.5 71.5 0 0 0 100 28.5" pathLength="100" stroke="#0f0f11" stroke-dasharray="100 100"/>
+            <path id="trkL" class="pb" d="M100 171.5A71.5 71.5 0 0 1 100 28.5" pathLength="100" stroke="#0f0f11" stroke-dasharray="100 100"/>
             <path id="accb" class="pb f" d="M100 171.5A71.5 71.5 0 0 0 100 28.5" pathLength="100" stroke="#00e060" stroke-dasharray="0 100" opacity="0"/>
             <path id="regb" class="pb f" d="M100 171.5A71.5 71.5 0 0 1 100 28.5" pathLength="100" stroke="#1e9bff" stroke-dasharray="0 100" opacity="0"/>
             <path id="brkb" class="pb f" d="M100 171.5A71.5 71.5 0 0 1 100 28.5" pathLength="100" stroke="#ff2d2d" stroke-dasharray="0 100" opacity="0"/></g>
-          <circle id="acctip" cx="100" cy="171.5" r="5" fill="#eafff2" filter="url(#gl)" opacity="0"/></svg>
+          <circle id="acctip" cx="100" cy="171.5" r="4.2" fill="#eafff2" filter="url(#gl)" opacity="0"/></svg>
       </div>
       <div id="topzone"></div><div id="czl" class="cz"></div><div id="czr" class="cz"></div>
       <div id="cstack">
-        <div id="speed">-</div><div class="u" id="kmh">km/h</div><div id="gearrow"><i id="tsl" class="tsig"></i><div id="gearv">-</div><i id="tsr" class="tsig"></i></div>
+        <div id="speed">-</div><div class="u" id="kmh">km/h</div><div id="gearrow"><i id="tsl" class="tsig"></i><div id="gearv">-</div><div id="prnd" aria-label="Gear"><b>P</b><b>R</b><b>N</b><b>D</b></div><i id="tsr" class="tsig"></i></div>
       </div>
       <div id="rside">
         <div class="t hx" id="lap"><div id="tm">Tap to arm</div><div class="u" id="tsub">0–100 km/h</div><div class="u" id="tnote">Closed track only</div><div class="u" id="tlast">Last run <span id="tl">--</span><span id="tls" hidden> s</span></div></div>
@@ -632,7 +636,7 @@ function timerTick(now) {
   if (T.state === "done" && !T.doneAt) T.doneAt = now; if (T.state !== "done") T.doneAt = 0;
   const tm = $("tm"), sub = $("tsub"), note = $("tnote"), ring = $("rside");
   tm.classList.remove("txt", "armed", "info"); $("tlast").hidden = false; sub.classList.remove("armed"); note.classList.remove("armed"); ring.classList.toggle("armedring", T.state === "armed"); tm.style.color = "";
-  if (T.state === "idle" && now >= T.showUntil) { const ot = num(S.OutsideTemp), bl = num(S.BatteryLevel); tm.textContent = bl == null ? "--%" : Math.round(bl) + "%"; tm.classList.add("info"); tm.style.color = bl == null ? "" : bl < 10 ? "#ff453a" : bl < 20 ? "#ff9f0a" : ""; sub.textContent = $("rng").textContent + " km"; note.textContent = ot == null ? "" : ot <= 3 ? "Ice risk · " + Math.round(ot) + " °C" : Math.round(ot) + " °C outside"; note.style.color = ot != null && ot <= 3 ? "#64d2ff" : "var(--dim)"; $("tlast").textContent = "Tap for 0–100"; }
+  if (T.state === "idle" && now >= T.showUntil) { const ot = num(S.OutsideTemp), bl = num(S.BatteryLevel); tm.textContent = bl == null ? "--%" : Math.round(bl) + "%"; tm.classList.add("info"); tm.style.color = bl == null ? "" : bl < 10 ? "#ff453a" : bl < 20 ? "#ff9f0a" : ""; sub.textContent = $("rng").textContent + " km"; note.textContent = ot == null ? "" : ot <= 3 ? "Ice risk · " + Math.round(ot) + " °C" : Math.round(ot) + " °C outside"; note.style.color = ot != null && ot <= 3 ? "#64d2ff" : "var(--dim)"; $("tlast").textContent = ""; }
   else if (T.state === "idle") { tm.textContent = "Tap to arm"; tm.classList.add("txt"); sub.textContent = "0–100 km/h"; note.textContent = T.note || "Closed track only"; note.style.color = ""; }
   else if (T.state === "armed") { tm.textContent = "Armed"; tm.classList.add("txt", "armed"); sub.textContent = "Ready"; sub.classList.add("armed"); note.textContent = "Tap to cancel"; }
   else if (T.state === "run") { tm.textContent = ((now - T.t0) / 1000).toFixed(1); sub.textContent = "Running"; note.textContent = ""; }
@@ -754,6 +758,9 @@ function driveFx(sp, pw, acc, charging, eff) {
   TK.charging = !!charging && !moving; TK.socN = Math.round(Math.max(0, Math.min(100, bl || 0)) / 100 * 48); if (TK.charging) fxKick();
   $("ticks").classList.toggle("breath", inP && !TK.charging && !REDUCED);
   $("ticks").classList.toggle("rpulse", pw != null && pw < -40);
+  // gear strip: light the active gear; nothing lit until the car has sent a gear
+  { const g = $("gearv").textContent, known = S.Gear != null, pr = $("prnd"); pr.dataset.g = known ? g : "";
+    [...pr.children].forEach(b => { const on = known && b.textContent === g; if (on && !b.classList.contains("on")) { b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop"); } b.classList.toggle("on", on); }); }
   // turn signals also light the matching edge of the ring
   { const t = String(S.LightsTurnSignal || ""); $("tel").classList.toggle("on", /Left|Both/.test(t)); $("ter").classList.toggle("on", /Right|Both/.test(t)); }
   // accelerator tip: a bright dot at the end of the green band
@@ -942,7 +949,7 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "v9 · 22 Nov 2026"; $("build").textContent = BUILD;
+const BUILD = "v10 · 22 Nov 2026"; $("build").textContent = BUILD;
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {}); // opens with no signal; the network copy always wins when online
 $("upd").onclick = () => { location.href = location.pathname + "?v=" + Date.now(); }; // reloads a fresh copy; the saved token stays in this browser
 $("rside").onclick = toggleArm;
