@@ -420,7 +420,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
       <div class="t hx" id="gwrap"><div class="l">G-force</div><canvas id="gf" width="260" height="260"></canvas></div>
       <div id="gauge">
         <svg viewBox="0 0 200 200"><g id="ticks"></g>
-          <g id="zero"><line x1="100" y1="-1" x2="100" y2="21" stroke="#fff" stroke-width="1.1" transform="rotate(-80.1 100 100)"/><text x="31" y="90" text-anchor="middle" fill="#fff" font-size="7" font-weight="700">0</text></g>
+          <g id="zero"><line x1="100" y1="-1" x2="100" y2="21" stroke="#fff" stroke-width="1.1" transform="rotate(-80.1 100 100)"/><text x="-7" y="84" text-anchor="middle" fill="#fff" font-size="7" font-weight="700">0</text></g>
           <circle cx="100" cy="100" r="71.5" fill="none" stroke="#0b0b0d" stroke-width="21"/>
           <circle cx="100" cy="100" r="82" fill="none" stroke="#1a1a1e" stroke-width=".8"/><circle cx="100" cy="100" r="61" fill="none" stroke="#1a1a1e" stroke-width=".8"/>
           <g fill="none" stroke-linecap="round">
@@ -800,7 +800,8 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "Build 18 Nov 2026 · 5 pages · v5"; $("build").textContent = BUILD;
+const BUILD = "Build 22 Nov 2026 · 5 pages · v6"; $("build").textContent = BUILD;
+if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {}); // opens with no signal; the network copy always wins when online
 $("upd").onclick = () => { location.href = location.pathname + "?v=" + Date.now(); }; // reloads a fresh copy; the saved token stays in this browser
 $("rside").onclick = toggleArm;
 $("ver").onclick = () => { if (confirm("Read the software version from Teslemetry? This can use up to 2 credits (500 a month are included). It never wakes the car.")) readVersion(); };
