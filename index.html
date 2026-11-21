@@ -310,6 +310,37 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #batt b.lw{color:#ff9f0a}#batt b.lb{color:#ff453a}
 #night{position:fixed;inset:0;z-index:9999;pointer-events:none;background:#ffdcbe;mix-blend-mode:multiply}#night[hidden]{display:none}
 #dots{transition:opacity .5s ease}
+/* ===== v11: rectangular gauges, rendered look ===== */
+#saprobe{position:fixed;visibility:hidden;pointer-events:none;width:0;height:0;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+#p-hud{background:radial-gradient(110% 95% at 50% 42%,#0e141b 0%,#06090d 52%,#000 100%)}
+#p-hud #gauge{position:absolute;left:0!important;top:0!important;right:auto!important;bottom:auto!important;width:100%!important;height:100%!important;transform:none!important;aspect-ratio:auto!important;max-width:none;z-index:1;pointer-events:none} /* full page: older ring rules pinned it to the centre */
+#p-hud #gauge #dash{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+#p-hud #dash path.pb{stroke-width:var(--bw,24px);fill:none}
+#p-hud #dash path.pe{stroke:url(#gEdge);stroke-width:calc(var(--bw,24px) + 3px);fill:none}
+#p-hud #dash path.tedge{fill:none;stroke:#00e060;stroke-width:4px;stroke-linecap:round;opacity:0;filter:url(#glu)}
+#p-hud #dash path.tedge.on{animation:tblink .8s steps(1) infinite}
+#ticks line{stroke-linecap:round}
+#ticks line.lit{filter:url(#glu)}
+#ticks.rpulse .rl{animation:rpulse .9s ease-in-out infinite}
+#crpill{position:absolute;transform:translate(-50%,-50%);padding:3px 14px;border-radius:999px;background:#0b0e12;box-shadow:inset 0 0 0 1.5px #3a3f47;font:italic 800 clamp(15px,4.6vh,20px)/1.1 -apple-system,system-ui,sans-serif;color:#fff;letter-spacing:.02em;white-space:nowrap}
+#crpill.hold{color:#00e060;box-shadow:inset 0 0 0 1.5px #00e060,0 0 14px -2px #00e060}
+#crpill[hidden]{display:none}
+#crpill::before{content:"";display:inline-block;width:.62em;height:.62em;margin-right:.45em;border:2px solid currentColor;border-radius:50%;vertical-align:-.04em}
+#road{position:absolute;left:0;right:0;bottom:0;height:58%;z-index:0;pointer-events:none;overflow:hidden;perspective:300px;perspective-origin:50% 0;opacity:.6;-webkit-mask-image:radial-gradient(55% 110% at 50% 100%,#000 25%,transparent 72%);mask-image:radial-gradient(55% 110% at 50% 100%,#000 25%,transparent 72%)}
+#roadg{position:absolute;left:-60%;right:-60%;top:0;height:300%;transform:rotateX(64deg);transform-origin:50% 0;
+  background-image:linear-gradient(90deg,transparent calc(50% - 132px),rgba(150,180,210,.55) calc(50% - 132px),rgba(150,180,210,.55) calc(50% - 128px),transparent calc(50% - 128px),transparent calc(50% + 128px),rgba(150,180,210,.55) calc(50% + 128px),rgba(150,180,210,.55) calc(50% + 132px),transparent calc(50% + 132px)),
+  repeating-linear-gradient(0deg,rgba(150,180,210,.16) 0 2px,transparent 2px 70px),
+  repeating-linear-gradient(90deg,rgba(150,180,210,.05) 0 1px,transparent 1px 64px);
+  animation:roadmove 1s linear infinite;animation-play-state:paused}
+#roadg.go{animation-play-state:running}
+@keyframes roadmove{from{background-position:0 0,0 0,0 0}to{background-position:0 0,0 70px,0 0}}
+#speed{background:linear-gradient(180deg,#fff 35%,#aeb8c3);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 8px 22px rgba(0,0,0,.7)) drop-shadow(0 0 26px rgba(150,190,255,.10))}
+#speed.nd{background:linear-gradient(180deg,#5a5f66,#3a3e44);-webkit-background-clip:text;background-clip:text}
+#p-hud #gwrap,#p-hud #rside{width:min(34vh,146px);background:radial-gradient(circle at 50% 28%,#161a20 0%,#08090b 68%);box-shadow:inset 0 0 0 1.5px #2c3037,inset 0 1.5px 0 0 rgba(255,255,255,.07),0 14px 34px rgba(0,0,0,.65)}
+#p-hud #rside.armedring{box-shadow:inset 0 0 0 2.5px #ffd400,0 0 18px -4px #ffd400,0 14px 34px rgba(0,0,0,.65)}
+#p-hud #crt{display:none!important}
+#cstack{z-index:3}
+@media (prefers-reduced-motion:reduce){#roadg{animation:none}#ticks.rpulse .rl{animation:none}}
 /* ===== v9: pure driving. One number, one gear, the ring does the rest. ===== */
 #p-hud #batt,#p-hud #tr>span:has(#tout3){display:none}
 #tout3wrap{display:none}
@@ -470,26 +501,34 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
    <div id="hud">
     <div id="offl" hidden>No internet connection</div>
     <div id="night" hidden></div>
+    <div id="saprobe" aria-hidden="true"></div>
     <div id="top">
       <div id="batt"><div class="glyph"><div id="socb"></div></div><b><span id="soc">-</span>%</b><span class="u"><span id="rng">-</span> km</span></div>
       <div id="tr"><span id="pstat" hidden><svg id="ilock" class="ti" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path id="ilockarm" d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><svg id="isentry" class="ti" viewBox="0 0 24 24" hidden><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span><span id="chip">Starting</span><span id="tout3wrap"><svg id="iice" class="ti" viewBox="0 0 24 24" hidden><path d="M12 2v20M3.3 7l17.4 10M3.3 17l17.4-10M9 4l3 2 3-2M9 20l3-2 3 2"/></svg><span id="tout3">-</span> °C</span><b id="clock">-</b></div>
     </div>
     <div id="main">
       <div class="t hx" id="gwrap"><div class="l">G-force</div><canvas id="gf" width="260" height="260"></canvas></div>
+      <div id="road"><div id="roadg"></div></div>
       <div id="gauge">
-        <svg viewBox="0 0 200 200"><defs><filter id="gl" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g id="ticks"></g>
-          <path id="tel" class="tedge" d="M12.5 150.5A101 101 0 0 1 12.5 49.5"/><path id="ter" class="tedge" d="M187.5 150.5A101 101 0 0 0 187.5 49.5"/>
-          <circle id="spdot" cx="100" cy="43.5" r="1.9" fill="#fff" opacity="0"/><path id="crm" d="M100 46L96.6 40H103.4Z" fill="#fff" opacity="0"/>
-          <g id="zero"><line x1="100" y1="-1" x2="100" y2="21" stroke="#fff" stroke-width="1.1" transform="rotate(-80.1 100 100)"/></g>
-          <circle cx="100" cy="100" r="71.5" fill="none" stroke="#0b0b0d" stroke-width="21"/>
-          <circle cx="100" cy="100" r="82" fill="none" stroke="#1a1a1e" stroke-width=".8"/><circle cx="100" cy="100" r="61" fill="none" stroke="#1a1a1e" stroke-width=".8"/>
-          <g fill="none" stroke-linecap="round">
-            <path id="trkR" class="pb" d="M100 171.5A71.5 71.5 0 0 0 100 28.5" pathLength="100" stroke="#0f0f11" stroke-dasharray="100 100"/>
-            <path id="trkL" class="pb" d="M100 171.5A71.5 71.5 0 0 1 100 28.5" pathLength="100" stroke="#0f0f11" stroke-dasharray="100 100"/>
-            <path id="accb" class="pb f" d="M100 171.5A71.5 71.5 0 0 0 100 28.5" pathLength="100" stroke="#00e060" stroke-dasharray="0 100" opacity="0"/>
-            <path id="regb" class="pb f" d="M100 171.5A71.5 71.5 0 0 1 100 28.5" pathLength="100" stroke="#1e9bff" stroke-dasharray="0 100" opacity="0"/>
-            <path id="brkb" class="pb f" d="M100 171.5A71.5 71.5 0 0 1 100 28.5" pathLength="100" stroke="#ff2d2d" stroke-dasharray="0 100" opacity="0"/></g>
-          <circle id="acctip" cx="100" cy="171.5" r="4.2" fill="#eafff2" filter="url(#gl)" opacity="0"/></svg>
+        <svg id="dash" xmlns="http://www.w3.org/2000/svg"><defs>
+          <filter id="gl" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="glu" filterUnits="userSpaceOnUse" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <linearGradient id="gTrk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16181c"/><stop offset=".5" stop-color="#0c0d10"/><stop offset="1" stop-color="#121418"/></linearGradient>
+          <linearGradient id="gEdge" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3f47"/><stop offset=".45" stop-color="#1b1e23"/><stop offset="1" stop-color="#2a2e35"/></linearGradient>
+        </defs>
+          <g id="ticks"></g>
+          <path id="tel" class="tedge"/><path id="ter" class="tedge"/>
+          <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path id="edgL" class="pe"/><path id="edgR" class="pe"/>
+            <path id="trkL" class="pb" pathLength="100" stroke="url(#gTrk)" stroke-dasharray="100 100"/>
+            <path id="trkR" class="pb" pathLength="100" stroke="url(#gTrk)" stroke-dasharray="100 100"/>
+            <path id="regb" class="pb f" pathLength="100" stroke="#1e9bff" stroke-dasharray="0 100" opacity="0" filter="url(#gl)"/>
+            <path id="brkb" class="pb f" pathLength="100" stroke="#ff2d2d" stroke-dasharray="0 100" opacity="0" filter="url(#gl)"/>
+            <path id="accb" class="pb f" pathLength="100" stroke="#00e060" stroke-dasharray="0 100" opacity="0" filter="url(#gl)"/>
+          </g>
+          <circle id="acctip" cx="0" cy="0" r="5" fill="#eafff2" filter="url(#gl)" opacity="0"/>
+        </svg>
+        <div id="crpill" hidden><span id="crv">--</span></div>
       </div>
       <div id="topzone"></div><div id="czl" class="cz"></div><div id="czr" class="cz"></div>
       <div id="cstack">
@@ -659,7 +698,7 @@ function render() {
   { const a = Math.max(0, Math.min(100, acc || 0)); $("accb").setAttribute("stroke-dasharray", a + " 100"); $("accb").setAttribute("opacity", a > 0.5 ? 1 : 0); } // inner band, right half: accelerator fills from the bottom up
   { const r = pw != null && pw < 0 ? Math.min(100, -pw / 60 * 100) : 0; $("regb").setAttribute("stroke-dasharray", r + " 100"); $("regb").setAttribute("opacity", r > 0.5 ? 1 : 0); } // left half: regen in blue, about 60 kW at full
   $("soc").textContent = fmt(num(S.BatteryLevel), 0); $("soc2").textContent = $("soc").textContent; $("tout2").textContent = fmt(num(S.OutsideTemp), 0);
-  TK.nd = pw != null && pw > 0 ? Math.round(Math.min(1, pw / 250) * 48) : 0; TK.nr = pw != null && pw < 0 ? Math.round(Math.min(1, -pw / 80) * 12) : 0; paintTicks(performance.now()); // 60 ticks: 12 regen (blue) then 48 drive
+  TK.nd = pw != null && pw > 0 ? Math.round(Math.min(1, pw / 250) * NB) : 0; TK.nr = pw != null && pw < 0 ? Math.round(Math.min(1, -pw / 80) * NB) : 0; paintTicks(performance.now()); // 60 ticks: 12 regen (blue) then 48 drive
   { const b = num(S.BatteryLevel) || 0, f = $("bfill"); f.style.width = Math.max(0, Math.min(100, b)) + "%"; f.style.background = b < 15 ? "var(--bad)" : b < 30 ? "var(--warn)" : "var(--ok)"; } // the wide battery bar on the charging page
   { const bl = num(S.BatteryLevel), b = bl || 0; $("socb").style.width = Math.max(0, Math.min(100, b)) + "%"; $("socb").style.background = b < 10 ? "var(--bad)" : b < 20 ? "var(--warn)" : "var(--ok)"; const bt = $("soc").parentElement; bt.classList.toggle("lb", bl != null && bl < 10); bt.classList.toggle("lw", bl != null && bl >= 10 && bl < 20); }
   { const b = (S.BrakePedal === true || S.BrakePedal === "true") ? 100 : Math.max(0, Math.min(100, num(S.BrakePedalPos) || 0)); $("brkb").setAttribute("stroke-dasharray", b + " 100"); $("brkb").setAttribute("opacity", b > 0.5 ? 1 : 0); } // brake fills the left half
@@ -716,22 +755,58 @@ function render() {
   drawG();
 }
 // ---- drive screen effects (v8) ----
-const TK = { nd: 0, nr: 0, charging: false, socN: 0 };     // what the ticks should show
+const TK = { nd: 0, nr: 0, charging: false, soc: 0 };     // what the bars should show (30 bars a side)
 let spTarget = null, spShown = null, parkedView = false, parkedSince = 0, socView = null;
 let sweepStart = 0, sweepEnd = 0, fxOn = false, fxLast = 0, chgLast = 0;
 const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
-const tickColour = i => i < 12 ? "#1e9bff" : i < 38 ? "#00e060" : i < 52 ? "#ffd400" : "#ff2d2d";
+const NB = 30, OFF = "#2a2e35", OFFB = "#18304f";
+const barColour = i => i < NB * 0.6 ? "#00e060" : i < NB * 0.85 ? "#ffd400" : "#ff2d2d";
+// Left bars: regen (blue, rises from the bottom). Right bars: power (green, yellow, red near the top).
 function paintTicks(now) {
-  const el = $("ticks").children; if (!el.length) return;
+  const L = $("ticks").querySelectorAll(".bl"), R = $("ticks").querySelectorAll(".br"); if (!R.length) return;
   const sw = now < sweepEnd ? Math.sin(Math.PI * (now - sweepStart) / (sweepEnd - sweepStart)) : -1;
-  const cp = TK.charging ? (now % 2600) / 2600 : 0;
-  for (let i = 0; i < el.length; i++) {
-    const e = el[i], s = e.style; let f, rl = false;
-    if (sw >= 0) f = i < Math.round(sw * 60) ? tickColour(i) : (i < 12 ? "#12294a" : "#202020");                          // start-up sweep
-    else if (TK.charging) { const j = i - 12; f = j < 0 ? "#12294a" : j < Math.round(cp * TK.socN) ? "#00e060" : j < TK.socN ? "#0f4a26" : "#202020"; } // charging: fills to the battery level
-    else { const dl = i >= 12 && i < 12 + TK.nd; rl = i < 12 && 11 - i < TK.nr; f = dl ? tickColour(i) : rl ? "#1e9bff" : i < 12 ? "#12294a" : "#202020"; }
-    s.fill = f; s.stroke = "none"; e.classList.toggle("rl", rl);
-  }
+  const cp = TK.charging ? (now % 2600) / 2600 : 0, socN = Math.round(Math.max(0, Math.min(100, TK.soc)) / 100 * NB);
+  R.forEach((e, i) => { let c;
+    if (sw >= 0) c = i < Math.round(sw * NB) ? barColour(i) : OFF;                                            // start-up sweep
+    else if (TK.charging) c = i < Math.round(cp * socN) ? "#00e060" : i < socN ? "#0f4a26" : OFF;              // charging: fills to the battery level
+    else c = i < TK.nd ? barColour(i) : OFF;
+    e.style.stroke = c; e.classList.toggle("lit", c !== OFF && c !== "#0f4a26"); });
+  L.forEach((e, i) => { const on = sw >= 0 ? i < Math.round(sw * NB) : !TK.charging && i < TK.nr;
+    e.style.stroke = on ? "#1e9bff" : OFFB; e.classList.toggle("rl", on && sw < 0); e.classList.toggle("lit", on); });
+}
+// Lays out both brackets from the real page size and the safe areas (Dynamic Island, rounded corners, home bar).
+let geo = null;
+function bracketPoint(right, f) {
+  if (!geo) return null; const { W, xL, xR, yT, yB, r, g } = geo, cx = W / 2, dir = right ? 1 : -1, xo = right ? xR : xL;
+  const a = Math.abs(xo - dir * r - (cx + dir * g)), q = Math.PI * r / 2, v = (yB - r) - (yT + r), L = 2 * a + 2 * q + v; let d = Math.max(0, Math.min(1, f)) * L;
+  if (d <= a) return { x: cx + dir * (g + d), y: yB }; d -= a;
+  if (d <= q) { const t = d / r; return { x: xo - dir * r + dir * r * Math.sin(t), y: yB - r + r * Math.cos(t) }; } d -= q;
+  if (d <= v) return { x: xo, y: yB - r - d }; d -= v;
+  if (d <= q) { const t = d / r; return { x: xo - dir * r + dir * r * Math.cos(t), y: yT + r - r * Math.sin(t) }; } d -= q;
+  return { x: xo - dir * r - dir * d, y: yT };
+}
+function layoutDash() {
+  const sec = $("p-hud"), W = sec.clientWidth, H = sec.clientHeight; if (!W || !H) return;
+  const pr = getComputedStyle($("saprobe")), sl = parseFloat(pr.paddingLeft) || 0, sr = parseFloat(pr.paddingRight) || 0, st = parseFloat(pr.paddingTop) || 0, sb = parseFloat(pr.paddingBottom) || 0;
+  const podW = $("gwrap").offsetWidth || Math.min(0.34 * H, 146), cx = W / 2;
+  const bw = Math.round(Math.max(14, Math.min(0.058 * H, 28))), tlen = Math.max(9, 0.032 * H), tmaj = tlen * 1.5, tg = 7, col = bw / 2 + tg + tmaj;
+  let xL = sl + 12 + podW + 16 + col, xR = W - sr - 12 - podW - 16 - col;
+  const minHalf = 0.34 * H + bw / 2; if (cx - xL < minHalf) { xL = cx - minHalf; xR = cx + minHalf; }        // keep the middle wide enough for the speed
+  const yT = st + Math.max(50, 0.12 * H), yB = H - sb - Math.max(24, 0.066 * H), r = Math.min(0.1 * H, 42), g = Math.max(44, 0.11 * H);
+  const dL = "M" + (cx - g) + " " + yB + "H" + (xL + r) + "A" + r + " " + r + " 0 0 1 " + xL + " " + (yB - r) + "V" + (yT + r) + "A" + r + " " + r + " 0 0 1 " + (xL + r) + " " + yT + "H" + (cx - g);
+  const dR = "M" + (cx + g) + " " + yB + "H" + (xR - r) + "A" + r + " " + r + " 0 0 0 " + xR + " " + (yB - r) + "V" + (yT + r) + "A" + r + " " + r + " 0 0 0 " + (xR - r) + " " + yT + "H" + (cx + g);
+  ["edgL", "trkL", "regb", "brkb"].forEach(id => $(id).setAttribute("d", dL)); ["edgR", "trkR", "accb"].forEach(id => $(id).setAttribute("d", dR));
+  const svg = $("dash"); svg.setAttribute("viewBox", "0 0 " + W + " " + H); $("gauge").style.setProperty("--bw", bw + "px");
+  // bar meters on the outside of each upright
+  const g0 = $("ticks"); g0.innerHTML = ""; const thin = store.get("ticks") === "thin", y0 = yB - r * 0.55, y1 = yT + r * 0.55, step = (y0 - y1) / (NB - 1), sw = Math.max(2, step * (thin ? 0.3 : 0.56));
+  for (let i = 0; i < NB; i++) { const y = y0 - i * step, major = i % 5 === 4, len = major ? tmaj : tlen;
+    [["bl", xL - bw / 2 - tg, -1], ["br", xR + bw / 2 + tg, 1]].forEach(([cls, x, dir]) => { const l = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      l.setAttribute("x1", x); l.setAttribute("x2", x + dir * len); l.setAttribute("y1", y); l.setAttribute("y2", y); l.setAttribute("stroke-width", sw); l.setAttribute("class", cls); l.style.stroke = cls === "bl" ? OFFB : OFF; g0.appendChild(l); }); }
+  // turn-signal light strips just outside the bars
+  const ex = bw / 2 + tg + tmaj + 7; $("tel").setAttribute("d", "M" + (xL - ex) + " " + (yT + r) + "V" + (yB - r)); $("ter").setAttribute("d", "M" + (xR + ex) + " " + (yT + r) + "V" + (yB - r));
+  // cruise readout sits in the gap at the top of the frame
+  const cp = $("crpill"); cp.style.left = cx + "px"; cp.style.top = yT + "px";
+  geo = { W, H, xL, xR, yT, yB, bw, r, g }; paintTicks(performance.now()); scheduleRender(); // redraw the tip and fills on the new geometry straight away
 }
 function writeSpeed() {
   const e = $("speed"), t = parkedView ? (socView == null ? "--" : String(socView)) : spShown == null ? "--" : String(Math.round(spShown));
@@ -755,29 +830,28 @@ function driveFx(sp, pw, acc, charging, eff) {
   if (inP && (sp == null || sp < 1)) { if (!parkedSince) parkedSince = now; } else parkedSince = 0;
   const bl = num(S.BatteryLevel); writeSpeed();
   // charging sweep, breathing ring when parked, regen pulse
-  TK.charging = !!charging && !moving; TK.socN = Math.round(Math.max(0, Math.min(100, bl || 0)) / 100 * 48); if (TK.charging) fxKick();
+  TK.charging = !!charging && !moving; TK.soc = bl || 0; if (TK.charging) fxKick();
   $("ticks").classList.toggle("breath", inP && !TK.charging && !REDUCED);
   $("ticks").classList.toggle("rpulse", pw != null && pw < -40);
   // gear strip: light the active gear; nothing lit until the car has sent a gear
   { const g = $("gearv").textContent, known = S.Gear != null, pr = $("prnd"); pr.dataset.g = known ? g : "";
     [...pr.children].forEach(b => { const on = known && b.textContent === g; if (on && !b.classList.contains("on")) { b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop"); } b.classList.toggle("on", on); }); }
-  // turn signals also light the matching edge of the ring
+  // turn signals also light a strip beside the matching bars
   { const t = String(S.LightsTurnSignal || ""); $("tel").classList.toggle("on", /Left|Both/.test(t)); $("ter").classList.toggle("on", /Right|Both/.test(t)); }
-  // accelerator tip: a bright dot at the end of the green band
-  { const a = Math.max(0, Math.min(100, acc || 0)), ang = (90 - 180 * a / 100) * Math.PI / 180, tip = $("acctip");
-    tip.setAttribute("cx", (100 + 71.5 * Math.cos(ang)).toFixed(2)); tip.setAttribute("cy", (100 + 71.5 * Math.sin(ang)).toFixed(2)); tip.setAttribute("opacity", a > 3 ? 1 : 0); }
+  // accelerator tip: a bright dot at the end of the green fill
+  { const a = Math.max(0, Math.min(100, acc || 0)), tip = $("acctip"), q = bracketPoint(true, a / 100);
+    if (q) { tip.setAttribute("cx", q.x.toFixed(1)); tip.setAttribute("cy", q.y.toFixed(1)); } tip.setAttribute("opacity", a > 3 && q ? 1 : 0); }
   // hard braking: the red band glows brighter
   { const br = truthy(S.BrakePedal), lon = num(S.LongitudinalAcceleration), dec = lon == null ? 0 : lon - gBase[1], hard = br && (dec < -0.35 || (pw != null && pw < -45)), b = $("brkb");
-    if (hard) { b.setAttribute("filter", "url(#gl)"); b.setAttribute("stroke", "#ff5c5c"); } else { b.removeAttribute("filter"); b.setAttribute("stroke", "#ff2d2d"); } }
+    b.setAttribute("stroke", hard ? "#ff6a6a" : "#ff2d2d"); b.style.strokeWidth = hard ? "calc(var(--bw) + 4px)" : ""; }
   // a door or boot opening while in Park: the band flashes amber for 3 s
   { const ds = doorSet(S.DoorState), c = ds == null ? null : ds.size;
     if (c != null && doorsWas != null && c > doorsWas && inP) { ["trkL", "trkR"].forEach(id => { const e = $(id); e.classList.remove("dalert"); void e.getBBox(); e.classList.add("dalert"); }); clearTimeout(doorAlertTo); doorAlertTo = setTimeout(() => ["trkL", "trkR"].forEach(id => $(id).classList.remove("dalert")), 3000); }
     if (c != null) doorsWas = c; }
-  // cruise: a marker on the ring at the set speed (0 to 200 km/h around the ring), green while holding it, with a dot for the current speed
-  { const cr = num(S.CruiseSetSpeed), crK = cr == null ? null : cr * MI, on = crK != null && crK > 0 && gear === "D" && sp != null && sp > 5;
-    const rot = v => "rotate(" + (-135 + Math.max(0, Math.min(200, v)) / 200 * 270).toFixed(2) + " 100 100)";
-    const m = $("crm"), d = $("spdot"); m.setAttribute("opacity", on ? 1 : 0); d.setAttribute("opacity", on ? 0.9 : 0);
-    if (on) { m.setAttribute("transform", rot(crK)); d.setAttribute("transform", rot(sp)); m.setAttribute("fill", Math.abs(sp - crK) <= 2.5 ? "#00e060" : "#fff"); } }
+  // cruise: the set speed in the gap at the top of the frame, green while holding it
+  { const cr = num(S.CruiseSetSpeed), crK = cr == null ? null : cr * MI, on = crK != null && crK > 0 && gear === "D" && sp != null && sp > 5, pl = $("crpill");
+    pl.hidden = !on; if (on) { $("crv").textContent = Math.round(crK); pl.classList.toggle("hold", Math.abs(sp - crK) <= 2.5); } }
+  { const rg = $("roadg"), go = sp != null && sp > 1 && !REDUCED; rg.classList.toggle("go", go); if (go) rg.style.animationDuration = Math.max(0.12, Math.min(3, 18 / sp)).toFixed(2) + "s"; } // road lines scroll faster as you go faster
   // top bar hides while driving (tap the top to see it for 5 s); it stays if something needs attention
   { const okChip = $("chip").classList.contains("dotonly") || !liveMode, away = moving && okChip && now > topPeek && $("offl").hidden;
     $("top").classList.toggle("away", away); $("hud").classList.toggle("toph", away); }
@@ -931,16 +1005,16 @@ document.addEventListener("visibilitychange", () => { if (document.visibilitySta
 function show(app) { $("setup").hidden = app; $("app").hidden = !app; }
 function flag(id, lvl) { const t = $(id).closest(".t"); if (t) { t.classList.remove("ok", "warn", "bad"); if (lvl) t.classList.add(lvl); } }
 // Each tick is a small rounded block (no outline).
-function buildTicks() { const g = $("ticks"); if (g.children.length) return; for (let i = 0; i < 60; i++) { const r = document.createElementNS("http://www.w3.org/2000/svg", "rect"), major = i % 5 === 0; const thin = store.get("ticks") === "thin"; r.setAttribute("x", thin ? 98.9 : 98.2); r.setAttribute("y", 2); r.setAttribute("width", thin ? 2.2 : 3.6); r.setAttribute("height", major ? 17 : 13); r.setAttribute("rx", 0.8); r.setAttribute("transform", "rotate(" + (-135 + i * 270 / 59).toFixed(2) + " 100 100)"); r.style.fill = i < 12 ? "#12294a" : "#202020"; r.style.stroke = "none"; g.appendChild(r); } }
+function buildTicks() { layoutDash(); } // the bars are drawn with the brackets
 let curPage = null; // the page being shown, so a resize (for example Safari's toolbar) never throws you back to the middle
 function home() { const p = $("pages"); p.style.scrollBehavior = "auto"; if (curPage == null) { const q = new URLSearchParams(location.search).get("page"); curPage = q == null ? 2 : +q; /* five pages: charging, car, drive (the middle one, opened first), map, info */ } p.scrollLeft = p.clientWidth * curPage; }
 function startApp(demo) {
-  show(true); buildTicks(); keepAwake(); home(); startSweep();
+  show(true); buildTicks(); keepAwake(); home(); startSweep(); requestAnimationFrame(layoutDash);
   let dotsTo = null; const dots = () => { const p = $("pages"), i = Math.round(p.scrollLeft / p.clientWidth); [...$("dots").children].forEach((d, j) => d.classList.toggle("on", j === i)); $("dots").classList.remove("fade"); clearTimeout(dotsTo); dotsTo = setTimeout(() => $("dots").classList.add("fade"), 3000); }; // page dots fade 3 s after a swipe
   let lockUntil = 0;
   $("pages").addEventListener("scroll", () => { dots(); if (Date.now() > lockUntil) { const p = $("pages"); curPage = Math.round(p.scrollLeft / p.clientWidth); } if (map) map.invalidateSize(); }, { passive: true });
   const back = () => { lockUntil = Date.now() + 400; home(); dots(); };
-  addEventListener("resize", back); addEventListener("pageshow", back); addEventListener("orientationchange", back); dots();
+  addEventListener("resize", () => { back(); layoutDash(); }); addEventListener("orientationchange", () => setTimeout(layoutDash, 250)); addEventListener("pageshow", back); addEventListener("orientationchange", back); dots();
   setInterval(() => { render(); }, 1000);
   setInterval(() => timerTick(performance.now()), 100);
   const tick = () => { $("clock").textContent = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); }; tick(); setInterval(tick, 10000);
@@ -949,7 +1023,7 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "v10 · 22 Nov 2026"; $("build").textContent = BUILD;
+const BUILD = "v11 · 22 Nov 2026"; $("build").textContent = BUILD;
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {}); // opens with no signal; the network copy always wins when online
 $("upd").onclick = () => { location.href = location.pathname + "?v=" + Date.now(); }; // reloads a fresh copy; the saved token stays in this browser
 $("rside").onclick = toggleArm;
