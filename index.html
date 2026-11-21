@@ -246,7 +246,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #p-hud #main{display:block;height:100%}
 /* the ring hugs the centre cluster: a little cropped top and bottom, and never wide enough to run under the two circles */
 /* ring size B: oversized, only its sides visible. The centre stack (speed, km/h, gear, kW, pedals) is spread evenly top to bottom, clear of the page dots. */
-#p-hud #gauge{--ring:152vh;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);height:auto;width:var(--ring);aspect-ratio:1;z-index:1;max-width:none}
+#p-hud #gauge{--ring:118vh;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);height:auto;width:var(--ring);aspect-ratio:1;z-index:1;max-width:none}
 #gauge svg{overflow:visible}
 #p-hud #gwrap,#p-hud #rside{position:absolute;z-index:4;width:min(40vh,172px);height:auto;aspect-ratio:1;margin:0;bottom:calc(var(--sb) + 22px);box-shadow:inset 0 0 0 2px #2a2a2a}
 #p-hud #gwrap{left:calc(var(--sl) + 12px)}
@@ -255,8 +255,12 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #gauge svg #zero text{display:inline}
 #gauge svg path{stroke-width:6px}
 #gauge svg path.pb{stroke-width:15px}#gauge svg path.f{transition:stroke-dasharray .12s ease-out,opacity .12s ease-out}
-#cstack{position:absolute;left:50%;transform:translateX(-50%);top:calc(var(--st) + 30px);bottom:calc(var(--sb) + 30px);z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;pointer-events:none}
-#speed{font-size:min(49vh,218px);line-height:.88;color:#fff}
+#cstack{position:absolute;left:50%;transform:translateX(-50%);top:calc(50% - 33vh);bottom:calc(50% - 33vh);z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;pointer-events:none}
+#speed{font-size:min(37vh,166px);line-height:.88;color:#fff}
+.tsig{position:absolute;z-index:3;top:calc(50% + 14vh);width:0;height:0;border-top:3.4vh solid transparent;border-bottom:3.4vh solid transparent;opacity:0;pointer-events:none}
+#tsl{left:calc(50% - 22vh);border-right:4.4vh solid #00e060}#tsr{right:calc(50% - 22vh);border-left:4.4vh solid #00e060}
+.tsig.on{animation:tblink .8s steps(1) infinite}@keyframes tblink{0%,49%{opacity:1}50%,100%{opacity:.12}}
+#speed.d3{font-size:min(28vh,124px)}
 #cstack .u{font-size:22px;line-height:1}
 #gearv{font-size:34px;padding:0 .8em;border:3px solid #ffd400;color:#ffd400;border-radius:10px;clip-path:none;line-height:1.2;margin:0}
 #gearv[data-g="R"]{color:#ff2d2d;border-color:#ff2d2d}
@@ -353,7 +357,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
     </div>
     <div class="t" style="grid-column:span 2"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span class="l">Charging power</span></div><div class="v" id="chkw">-</div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="l">Time to full</span></div><div class="v" id="chtm">-</div><div class="u" id="chfull"></div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 12h4l2-6 4 12 2-6h8"/></svg><span class="l">Charge state</span></div><div class="v" id="chst" style="font-size:22px">-</div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 12h4l2-6 4 12 2-6h8"/></svg><span class="l">Charge state</span></div><div class="v" id="chst" style="font-size:22px">-</div><div class="u" id="btemp"></div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span class="l">Pack voltage</span></div><div class="v"><span id="pv">-</span> V</div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span class="l">Pack current</span></div><div class="v"><span id="pa">-</span> A</div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M8 3 5 21M16 3l3 18M12 5v3M12 11v3M12 17v3"/></svg><span class="l">Efficiency now</span></div><div class="v"><span id="eff">-</span> <span class="u">Wh/km</span></div></div>
@@ -430,6 +434,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
             <path id="regb" class="pb f" d="M100 171.5A71.5 71.5 0 0 1 100 28.5" pathLength="100" stroke="#1e9bff" stroke-dasharray="0 100" opacity="0"/>
             <path id="brkb" class="pb f" d="M100 171.5A71.5 71.5 0 0 1 100 28.5" pathLength="100" stroke="#ff2d2d" stroke-dasharray="0 100" opacity="0"/></g></svg>
       </div>
+      <i id="tsl" class="tsig"></i><i id="tsr" class="tsig"></i>
       <div id="cstack">
         <div id="speed">-</div><div class="u" id="kmh">km/h</div><div id="gearv">-</div>
         <div id="kw"><span id="pwr">-</span> kW<span id="regen"></span><span id="effw"> · <span id="effh">-</span> Wh/km</span></div>
@@ -584,11 +589,13 @@ function toggleArm() { if (T.state === "idle" || T.state === "done") { T.state =
 // ---- drawing ----
 function render() {
   const sp = speedKmh(), pw = powerKw(), acc = num(S.PedalPosition);
-  $("speed").textContent = sp == null ? "--" : fmt(sp, 0); $("speed").classList.toggle("nd", sp == null); $("gearv").classList.toggle("nd", S.Gear == null);
+  $("speed").textContent = sp == null ? "--" : fmt(sp, 0); $("speed").classList.toggle("nd", sp == null); $("speed").classList.toggle("d3", $("speed").textContent.length >= 3); // 100+ uses a smaller size so it stays inside the band $("gearv").classList.toggle("nd", S.Gear == null);
   $("gearv").textContent = S.Gear == null ? "P" : (GEAR_NAMES[String(S.Gear).replace(/^ShiftState/, "")] || "-"); { const g0 = $("gearv").dataset.g; $("gearv").dataset.g = $("gearv").textContent; if (g0 && g0 !== $("gearv").dataset.g) { $("gearv").classList.remove("pop"); void $("gearv").offsetWidth; $("gearv").classList.add("pop"); } } // short pop when the gear changes
   // Status comes from the stream itself. A parked car only sends when something changes, so silence while parked is normal.
   if (liveMode && streamOpen) { const quiet = Date.now() - lastEvt, parked = S.Gear == null || /P$/.test(String(S.Gear));
     if (!parked && quiet > 30000) setChip("No data from car", "var(--warn)"); else if (parked && quiet > 8000) setChip("Live · parked", "var(--ok)"); else setChip("Live", "var(--ok)"); }
+  { const t = String(S.LightsTurnSignal || ""); $("tsl").classList.toggle("on", /Left|Both/.test(t)); $("tsr").classList.toggle("on", /Right|Both/.test(t)); } // only if the stream sends LightsTurnSignal
+  { const lo = num(S.ModuleTempMin), hi = num(S.ModuleTempMax), heat = S.BatteryHeaterOn === true || S.BatteryHeaterOn === "true"; $("btemp").textContent = hi == null ? (heat ? "Battery heating" : "") : "Battery " + (lo != null && Math.round(lo) !== Math.round(hi) ? Math.round(lo) + "–" : "") + Math.round(hi) + " °C" + (heat ? " · heating" : ""); } // only if the stream sends module temps
   $("pwr").textContent = fmt(pw, 0);
   $("regen").textContent = pw != null && pw < -1 ? " regen" : "";
   { const a = Math.max(0, Math.min(100, acc || 0)); $("accb").setAttribute("stroke-dasharray", a + " 100"); $("accb").setAttribute("opacity", a > 0.5 ? 1 : 0); } // inner band, right half: accelerator fills from the bottom up
@@ -800,7 +807,7 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "Build 22 Nov 2026 · 5 pages · v6"; $("build").textContent = BUILD;
+const BUILD = "Build 22 Nov 2026 · 5 pages · v7"; $("build").textContent = BUILD;
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {}); // opens with no signal; the network copy always wins when online
 $("upd").onclick = () => { location.href = location.pathname + "?v=" + Date.now(); }; // reloads a fresh copy; the saved token stays in this browser
 $("rside").onclick = toggleArm;
