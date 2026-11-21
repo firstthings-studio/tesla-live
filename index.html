@@ -344,10 +344,10 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 /* ===== v9: pure driving. One number, one gear, the ring does the rest. ===== */
 #p-hud #batt,#p-hud #tr>span:has(#tout3){display:none}
 #tout3wrap{display:none}
-#speed{font-size:min(44vh,190px);letter-spacing:-.02em;line-height:.82}
-#speed.d3{font-size:min(31vh,134px)}
+#speed{font-size:min(50vh,215px);letter-spacing:-.02em;line-height:1.04;padding:0 .1em;margin:-.08em 0 -.12em}
+#speed.d3{font-size:min(37vh,160px)}
 #kmh{font-style:italic;font-weight:600;letter-spacing:.08em;color:#8e8e93}
-#cstack{top:calc(50% - 31vh);bottom:calc(50% - 29vh);justify-content:center;gap:2.2vh}
+#cstack{top:calc(var(--st) + 15vh);bottom:calc(var(--sb) + 11vh);justify-content:center;gap:1.8vh}
 #p-hud #tr{margin-left:auto}
 #gearrow{display:flex;align-items:center;gap:2.6vh}
 #gearv{display:none}
@@ -518,7 +518,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
         </defs>
           <g id="ticks"></g>
           <path id="tel" class="tedge"/><path id="ter" class="tedge"/>
-          <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <g fill="none" stroke-linecap="butt" stroke-linejoin="miter">
             <path id="edgL" class="pe"/><path id="edgR" class="pe"/>
             <path id="trkL" class="pb" pathLength="100" stroke="url(#gTrk)" stroke-dasharray="100 100"/>
             <path id="trkR" class="pb" pathLength="100" stroke="url(#gTrk)" stroke-dasharray="100 100"/>
@@ -776,37 +776,39 @@ function paintTicks(now) {
 }
 // Lays out both brackets from the real page size and the safe areas (Dynamic Island, rounded corners, home bar).
 let geo = null;
+// A point along one half of the frame, from the bottom centre (0) round to the top centre (1).
 function bracketPoint(right, f) {
-  if (!geo) return null; const { W, xL, xR, yT, yB, r, g } = geo, cx = W / 2, dir = right ? 1 : -1, xo = right ? xR : xL;
-  const a = Math.abs(xo - dir * r - (cx + dir * g)), q = Math.PI * r / 2, v = (yB - r) - (yT + r), L = 2 * a + 2 * q + v; let d = Math.max(0, Math.min(1, f)) * L;
-  if (d <= a) return { x: cx + dir * (g + d), y: yB }; d -= a;
-  if (d <= q) { const t = d / r; return { x: xo - dir * r + dir * r * Math.sin(t), y: yB - r + r * Math.cos(t) }; } d -= q;
-  if (d <= v) return { x: xo, y: yB - r - d }; d -= v;
-  if (d <= q) { const t = d / r; return { x: xo - dir * r + dir * r * Math.cos(t), y: yT + r - r * Math.sin(t) }; } d -= q;
-  return { x: xo - dir * r - dir * d, y: yT };
+  if (!geo) return null; const { W, xL, xR, yT, yB } = geo, cx = W / 2, dir = right ? 1 : -1, xo = right ? xR : xL, a = Math.abs(xo - cx), v = yB - yT;
+  let d = Math.max(0, Math.min(1, f)) * (2 * a + v);
+  if (d <= a) return { x: cx + dir * d, y: yB }; d -= a;
+  if (d <= v) return { x: xo, y: yB - d }; d -= v;
+  return { x: xo - dir * d, y: yT };
 }
+// One straight-edged frame using the whole screen inside the safe areas (Dynamic Island, corners, home bar).
+// Left half = slowing (regen, brake), right half = going (accelerator); both fill from the bottom centre.
+// Bar meters and the two pods sit inside the frame.
 function layoutDash() {
   const sec = $("p-hud"), W = sec.clientWidth, H = sec.clientHeight; if (!W || !H) return;
   const pr = getComputedStyle($("saprobe")), sl = parseFloat(pr.paddingLeft) || 0, sr = parseFloat(pr.paddingRight) || 0, st = parseFloat(pr.paddingTop) || 0, sb = parseFloat(pr.paddingBottom) || 0;
-  const podW = $("gwrap").offsetWidth || Math.min(0.34 * H, 146), cx = W / 2;
-  const bw = Math.round(Math.max(14, Math.min(0.058 * H, 28))), tlen = Math.max(9, 0.032 * H), tmaj = tlen * 1.5, tg = 7, col = bw / 2 + tg + tmaj;
-  let xL = sl + 12 + podW + 16 + col, xR = W - sr - 12 - podW - 16 - col;
-  const minHalf = 0.34 * H + bw / 2; if (cx - xL < minHalf) { xL = cx - minHalf; xR = cx + minHalf; }        // keep the middle wide enough for the speed
-  const yT = st + Math.max(50, 0.12 * H), yB = H - sb - Math.max(24, 0.066 * H), r = Math.min(0.1 * H, 42), g = Math.max(44, 0.11 * H);
-  const dL = "M" + (cx - g) + " " + yB + "H" + (xL + r) + "A" + r + " " + r + " 0 0 1 " + xL + " " + (yB - r) + "V" + (yT + r) + "A" + r + " " + r + " 0 0 1 " + (xL + r) + " " + yT + "H" + (cx - g);
-  const dR = "M" + (cx + g) + " " + yB + "H" + (xR - r) + "A" + r + " " + r + " 0 0 0 " + xR + " " + (yB - r) + "V" + (yT + r) + "A" + r + " " + r + " 0 0 0 " + (xR - r) + " " + yT + "H" + (cx + g);
+  const cx = W / 2, bw = Math.round(Math.max(12, Math.min(0.044 * H, 22))), m = 8;
+  const xL = sl + m + bw / 2, xR = W - sr - m - bw / 2, yT = st + Math.max(42, 0.1 * H) + bw / 2, yB = H - sb - Math.max(22, 0.055 * H) - bw / 2;
+  const dL = "M" + cx + " " + yB + "H" + xL + "V" + yT + "H" + cx, dR = "M" + cx + " " + yB + "H" + xR + "V" + yT + "H" + cx;
   ["edgL", "trkL", "regb", "brkb"].forEach(id => $(id).setAttribute("d", dL)); ["edgR", "trkR", "accb"].forEach(id => $(id).setAttribute("d", dR));
-  const svg = $("dash"); svg.setAttribute("viewBox", "0 0 " + W + " " + H); $("gauge").style.setProperty("--bw", bw + "px");
-  // bar meters on the outside of each upright
-  const g0 = $("ticks"); g0.innerHTML = ""; const thin = store.get("ticks") === "thin", y0 = yB - r * 0.55, y1 = yT + r * 0.55, step = (y0 - y1) / (NB - 1), sw = Math.max(2, step * (thin ? 0.3 : 0.56));
-  for (let i = 0; i < NB; i++) { const y = y0 - i * step, major = i % 5 === 4, len = major ? tmaj : tlen;
-    [["bl", xL - bw / 2 - tg, -1], ["br", xR + bw / 2 + tg, 1]].forEach(([cls, x, dir]) => { const l = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  $("dash").setAttribute("viewBox", "0 0 " + W + " " + H); $("gauge").style.setProperty("--bw", bw + "px");
+  // bar meters just inside each upright
+  const tlen = Math.max(10, 0.034 * H), tmaj = tlen * 1.5, tg = 7, inL = xL + bw / 2 + tg, inR = xR - bw / 2 - tg;
+  const g0 = $("ticks"); g0.innerHTML = ""; const thin = store.get("ticks") === "thin", y0 = yB - bw / 2 - 10, y1 = yT + bw / 2 + 10, step = (y0 - y1) / (NB - 1), sw = Math.max(2, step * (thin ? 0.3 : 0.56));
+  for (let i = 0; i < NB; i++) { const y = y0 - i * step, len = i % 5 === 4 ? tmaj : tlen;
+    [["bl", inL, 1], ["br", inR, -1]].forEach(([cls, x, dir]) => { const l = document.createElementNS("http://www.w3.org/2000/svg", "line");
       l.setAttribute("x1", x); l.setAttribute("x2", x + dir * len); l.setAttribute("y1", y); l.setAttribute("y2", y); l.setAttribute("stroke-width", sw); l.setAttribute("class", cls); l.style.stroke = cls === "bl" ? OFFB : OFF; g0.appendChild(l); }); }
-  // turn-signal light strips just outside the bars
-  const ex = bw / 2 + tg + tmaj + 7; $("tel").setAttribute("d", "M" + (xL - ex) + " " + (yT + r) + "V" + (yB - r)); $("ter").setAttribute("d", "M" + (xR + ex) + " " + (yT + r) + "V" + (yB - r));
-  // cruise readout sits in the gap at the top of the frame
+  // turn-signal light strips just inside the bars
+  const ts = tmaj + 8; $("tel").setAttribute("d", "M" + (inL + ts) + " " + y1 + "V" + y0); $("ter").setAttribute("d", "M" + (inR - ts) + " " + y1 + "V" + y0);
+  // the two pods sit in the bottom corners inside the frame
+  const P = Math.round(Math.min(0.34 * H, 146, (yB - yT) * 0.46)), podIn = tmaj + 20, podBottom = H - (yB - bw / 2) + 10;
+  const gw = $("gwrap"), rs = $("rside"); gw.style.width = rs.style.width = P + "px"; gw.style.left = (inL + podIn) + "px"; rs.style.right = (W - inR + podIn) + "px"; gw.style.bottom = rs.style.bottom = podBottom + "px";
+  // cruise readout sits on the top edge, in the middle
   const cp = $("crpill"); cp.style.left = cx + "px"; cp.style.top = yT + "px";
-  geo = { W, H, xL, xR, yT, yB, bw, r, g }; paintTicks(performance.now()); scheduleRender(); // redraw the tip and fills on the new geometry straight away
+  geo = { W, H, xL, xR, yT, yB, bw }; paintTicks(performance.now()); scheduleRender(); // redraw the tip and fills on the new geometry straight away
 }
 function writeSpeed() {
   const e = $("speed"), t = parkedView ? (socView == null ? "--" : String(socView)) : spShown == null ? "--" : String(Math.round(spShown));
@@ -1023,7 +1025,7 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "v11 · 22 Nov 2026"; $("build").textContent = BUILD;
+const BUILD = "v12 · 22 Nov 2026"; $("build").textContent = BUILD;
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {}); // opens with no signal; the network copy always wins when online
 $("upd").onclick = () => { location.href = location.pathname + "?v=" + Date.now(); }; // reloads a fresh copy; the saved token stays in this browser
 $("rside").onclick = toggleArm;
