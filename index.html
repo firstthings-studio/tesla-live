@@ -310,6 +310,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #batt b.lw{color:#ff9f0a}#batt b.lb{color:#ff453a}
 #night{position:fixed;inset:0;z-index:9999;pointer-events:none;background:#ffdcbe;mix-blend-mode:multiply}#night[hidden]{display:none}
 #dots{transition:opacity .5s ease}
+.leaflet-bottom.leaflet-left{left:var(--sl);bottom:var(--sb)} /* keep the map credit clear of the rounded corners and the island */
 /* ===== v11: rectangular gauges, rendered look ===== */
 #saprobe{position:fixed;visibility:hidden;pointer-events:none;width:0;height:0;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
 #p-hud{background:radial-gradient(110% 95% at 50% 42%,#0e141b 0%,#06090d 52%,#000 100%)}
@@ -317,14 +318,14 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #p-hud #gauge{position:absolute;left:0!important;top:0!important;right:auto!important;bottom:auto!important;width:100%!important;height:100%!important;transform:none!important;aspect-ratio:auto!important;max-width:none;z-index:1;pointer-events:none} /* full page: older ring rules pinned it to the centre */
 #p-hud #gauge #dash{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 #p-hud #dash path.pb{stroke-width:var(--t,32px);fill:none;stroke-opacity:0;stroke-linecap:round}
-#p-hud #dash path.pb.amb{stroke-linecap:butt;stroke-opacity:.05;filter:url(#soft)}
+#p-hud #dash path.pb.amb{stroke-linecap:butt;stroke-opacity:.035;filter:url(#soft)}
 #p-hud #dash path.pb.hard{stroke-opacity:0}
 #p-hud #dash path.halo{stroke-width:var(--hw,40px);fill:none;stroke-opacity:1;stroke-linecap:round;filter:url(#halo);mask:url(#bandMask)}
 #p-hud #dash path.halo.hard{stroke-width:calc(var(--hw,40px) * 1.25)}
 #p-hud #dash path.core,#p-hud #dash #acctip{display:none}
 #p-hud #dash path.core{stroke-width:var(--cw,3px);fill:none;stroke-linecap:round;filter:url(#bloom)}
 #p-hud #dash path.core.hard{stroke-width:calc(var(--cw,3px) * 1.8)}
-#p-hud #dash path.amb{stroke-opacity:.05}
+#p-hud #dash path.amb{stroke-opacity:.035}
 #p-hud #dash #acctip{filter:url(#bloom)}
 #p-hud #dash path.pe{display:none}
 #p-hud #dash path.tedge{fill:none;stroke:#00e060;stroke-width:var(--hw,40px);stroke-linecap:round;opacity:0;filter:url(#halo);mask:url(#bandMask)}
@@ -582,7 +583,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M3 13l2-5a2 2 0 0 1 2-1.5h10a2 2 0 0 1 2 1.5l2 5v4H3zM6 17v2M18 17v2"/></svg><span class="l">Vehicle</span></div><div class="v" style="font-size:20px;white-space:normal;line-height:1.15">Model 3 Long Range</div><div class="u" id="vehsub">2024</div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg><span class="l">Connection</span></div><div class="v" id="conn" style="font-size:17px;white-space:normal">-</div><p id="log">OK</p></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="l">Last data</span></div><div class="v" id="lastdata">--</div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span class="l">Settings</span></div><div style="width:100%"><button id="upd" style="margin:0 0 8px;padding:10px;font-size:17px;font-weight:600;background:var(--acc)">Check for update</button><button id="gear" style="margin:0;padding:10px;font-size:17px;font-weight:600">Clear token</button><div class="brow"><button id="thin" class="linkbtn">Thin ticks: off</button><span class="u" id="build"></span></div></div></div>
+    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span class="l">Settings</span></div><div style="width:100%"><button id="upd" style="margin:0 0 8px;padding:10px;font-size:17px;font-weight:600;background:var(--acc)">Check for update</button><button id="gear" style="margin:0;padding:10px;font-size:17px;font-weight:600">Clear token</button><div class="brow"><button id="thin" class="linkbtn">Thin bars: off</button><span class="u" id="build"></span></div></div></div>
    </div>
   </section>
 
@@ -817,7 +818,9 @@ const halfPath = (W, H, k, rad, right) => { const cx = W / 2, x = right ? W - k 
 function layoutDash() {
   const sec = $("p-hud"), W = sec.clientWidth, H = sec.clientHeight; if (!W || !H) return;
   const pr = getComputedStyle($("saprobe")), sl = parseFloat(pr.paddingLeft) || 0, sr = parseFloat(pr.paddingRight) || 0, st = parseFloat(pr.paddingTop) || 0, sb = parseFloat(pr.paddingBottom) || 0;
-  const cx = W / 2, t = Math.round(Math.max(24, 0.1 * H)), ri = Math.round(Math.max(12, 0.05 * H)), rc = ri + t / 2, cw = Math.max(2.5, 0.0065 * H);
+  // Band thickness = the phone's side safe margin: the gap outside the Dynamic Island + the island + the same gap inside it, so the
+  // island sits centred in the band and the band's inner edge lines up with where content starts. No margin (desktop): 10% of height.
+  const side = Math.max(sl, sr), cx = W / 2, t = Math.round(side > 20 ? side : Math.max(24, 0.1 * H)), ri = Math.round(Math.max(12, 0.05 * H)), rc = ri + t / 2, cw = Math.max(2.5, 0.0065 * H);
   const bodyL = halfPath(W, H, t / 2, rc, false), bodyR = halfPath(W, H, t / 2, rc, true), coreL = halfPath(W, H, t, ri, false), coreR = halfPath(W, H, t, ri, true);
   ["trkL", "regb", "brkb"].forEach(id => $(id).setAttribute("d", bodyL)); ["trkR", "accb"].forEach(id => $(id).setAttribute("d", bodyR));
   ["regc", "brkc", "regh", "brkh"].forEach(id => $(id).setAttribute("d", coreL)); ["accc", "acch"].forEach(id => $(id).setAttribute("d", coreR));
@@ -1059,13 +1062,13 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "v15 · 22 Nov 2026"; $("build").textContent = BUILD;
+const BUILD = "v16 · 22 Nov 2026"; $("build").textContent = BUILD;
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {}); // opens with no signal; the network copy always wins when online
 $("upd").onclick = () => { location.href = location.pathname + "?v=" + Date.now(); }; // reloads a fresh copy; the saved token stays in this browser
 $("rside").onclick = toggleArm;
 $("topzone").onclick = () => { topPeek = Date.now() + 5000; render(); };
 $("czl").onclick = $("czr").onclick = () => { circPeek = Date.now() + 8000; render(); };
-const thinLabel = () => { $("thin").textContent = "Thin ticks: " + (store.get("ticks") === "thin" ? "on" : "off"); }; thinLabel();
+const thinLabel = () => { $("thin").textContent = "Thin bars: " + (store.get("ticks") === "thin" ? "on" : "off"); }; thinLabel();
 $("thin").onclick = () => { store.set("ticks", store.get("ticks") === "thin" ? "" : "thin"); $("ticks").innerHTML = ""; buildTicks(); thinLabel(); render(); };
 $("ver").onclick = () => { if (confirm("Read the software version from Teslemetry? This can use up to 2 credits (500 a month are included). It never wakes the car.")) readVersion(); };
 $("demo").onclick = () => startApp(true);
