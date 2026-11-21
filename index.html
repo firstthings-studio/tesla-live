@@ -242,7 +242,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #sheet #nav{font-size:17px;line-height:1.25}
 #sheet{padding:8px 16px}
 /* ===== drive page, variant B: an oversized dial (only its sides show), huge centred speed, circles in the bottom corners, racing palette ===== */
-#p-hud{--acc:#ffd400;--racey:#ffd400;background:#000}
+#p-hud{--acc:#ffd60a;--racey:#ffd60a;background:#000}
 #p-hud #main{display:block;height:100%}
 /* the ring hugs the centre cluster: a little cropped top and bottom, and never wide enough to run under the two circles */
 /* ring size B: oversized, only its sides visible. The centre stack (speed, km/h, gear, kW, pedals) is spread evenly top to bottom, clear of the page dots. */
@@ -258,42 +258,42 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #cstack{position:absolute;left:50%;transform:translateX(-50%);top:calc(50% - 33vh);bottom:calc(50% - 33vh);z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;pointer-events:none}
 #speed{font-size:min(37vh,166px);line-height:.88;color:#fff}
 .tsig{position:absolute;z-index:3;top:calc(50% + 14vh);width:0;height:0;border-top:3.4vh solid transparent;border-bottom:3.4vh solid transparent;opacity:0;pointer-events:none}
-#tsl{left:calc(50% - 22vh);border-right:4.4vh solid #00e060}#tsr{right:calc(50% - 22vh);border-left:4.4vh solid #00e060}
+#tsl{left:calc(50% - 22vh);border-right:4.4vh solid #30d158}#tsr{right:calc(50% - 22vh);border-left:4.4vh solid #30d158}
 .tsig.on{animation:tblink .8s steps(1) infinite}@keyframes tblink{0%,49%{opacity:1}50%,100%{opacity:.12}}
 #speed.d3{font-size:min(28vh,124px)}
 #cstack .u{font-size:22px;line-height:1}
-#gearv{font-size:34px;padding:0 .8em;border:3px solid #ffd400;color:#ffd400;border-radius:10px;clip-path:none;line-height:1.2;margin:0}
-#gearv[data-g="R"]{color:#ff2d2d;border-color:#ff2d2d}
+#gearv{font-size:34px;padding:0 .8em;border:3px solid #ffd60a;color:#ffd60a;border-radius:10px;clip-path:none;line-height:1.2;margin:0}
+#gearv[data-g="R"]{color:#ff453a;border-color:#ff453a}
 #kw{font-size:22px;line-height:1;margin:0}
 #pedhtml{display:grid;grid-template-columns:1fr 1fr;column-gap:40px;width:min(440px,calc(100vw - 2*min(40vh,172px) - 64px));font-size:clamp(13px,3.6vh,16px);font-weight:700;white-space:nowrap;line-height:1}
 #pedhtml .pg2{text-align:right}#pedhtml .pr2{text-align:left}
-#pedhtml .pg2{color:#00e060}#pedhtml .pr2{color:#ff2d2d}
+#pedhtml .pg2{color:#30d158}#pedhtml .pr2{color:#ff453a}
 #p-hud #tm{font-size:clamp(34px,10vh,44px)}
 #p-hud #tm.txt{font-size:clamp(14px,4.6vh,22px);font-style:normal;font-weight:700;line-height:1.1;letter-spacing:0}
-#p-hud #tm.armed{color:#ffd400}
+#p-hud #tm.armed{color:#ffd60a}
 #tsub{font-size:clamp(9px,2.9vh,12px);line-height:1.25;max-width:80%}
-#tsub.armed{color:#ffd400;font-weight:600}
-#tnote{white-space:nowrap;font-size:clamp(8px,2.4vh,11px);line-height:1.2;color:#ffd400;opacity:.85;max-width:80%}
+#tsub.armed{color:#ffd60a;font-weight:600}
+#tnote{white-space:nowrap;font-size:clamp(8px,2.4vh,11px);line-height:1.2;color:#ffd60a;opacity:.85;max-width:80%}
 #tnote:empty{display:none}
 #tlast{font-size:clamp(8px,2.6vh,11px)}
 #p-hud #lap{gap:4px;width:100%}
-#p-hud #rside.armedring{box-shadow:inset 0 0 0 3px #ffd400}
-#p-hud #crt{position:absolute;z-index:5;right:calc(var(--sr) + 20px);bottom:calc(var(--sb) + 22px + min(40vh,172px) + 8px);width:min(40vh,172px);margin:0;padding:0;display:block;background:none;box-shadow:none;text-align:center;font-size:15px;font-weight:700;color:#ffd400;white-space:nowrap}
+#p-hud #rside.armedring{box-shadow:inset 0 0 0 3px #ffd60a}
+#p-hud #crt{position:absolute;z-index:5;right:calc(var(--sr) + 20px);bottom:calc(var(--sb) + 22px + min(40vh,172px) + 8px);width:min(40vh,172px);margin:0;padding:0;display:block;background:none;box-shadow:none;text-align:center;font-size:15px;font-weight:700;color:#ffd60a;white-space:nowrap}
 #p-hud #crt[hidden]{display:none}
 #p-hud #crt .u,#p-hud #crt #cru{display:inline;color:var(--dim);font-weight:600}
 #chip{z-index:5}
 /* ===== v8 drive screen ===== */
 #p-hud #gauge svg path.f{transition:stroke-dasharray .12s ease-out,opacity .12s ease-out!important} /* the drive page turns transitions off; the pedal band keeps its smooth fill */
-#gauge svg path.tedge{fill:none;stroke:#00e060;stroke-width:3.2px;stroke-linecap:round;opacity:0;filter:url(#gl)}
+#gauge svg path.tedge{fill:none;stroke:#30d158;stroke-width:3.2px;stroke-linecap:round;opacity:0;filter:url(#gl)}
 #gauge svg path.tedge.on{animation:tblink .8s steps(1) infinite}
 #trkL.dalert,#trkR.dalert{stroke:#ff9f0a;stroke-opacity:.6;opacity:1;animation:dpulse .5s ease-in-out 3 alternate}@keyframes dpulse{from{opacity:1}to{opacity:.35}}
 #ticks.breath{animation:breath 5s ease-in-out infinite}@keyframes breath{0%,100%{opacity:1}50%{opacity:.45}}
 #ticks.rpulse rect.rl{animation:rpulse .9s ease-in-out infinite}@keyframes rpulse{0%,100%{opacity:1}50%{opacity:.4}}
 #gearv{border-color:currentColor;box-shadow:0 0 18px -4px currentColor,inset 0 0 12px -6px currentColor;text-shadow:0 0 14px currentColor}
-#gearv[data-g="P"]{color:#ffd400}#gearv[data-g="D"]{color:#00e060}#gearv[data-g="N"]{color:#9a9aa0}#gearv[data-g="R"]{color:#ff2d2d}
-#speed{transition:none}#speed.sg{color:#00e060}#speed.sy{color:#ffd400}#speed.sr{color:#ff2d2d}
+#gearv[data-g="P"]{color:#ffd60a}#gearv[data-g="D"]{color:#30d158}#gearv[data-g="N"]{color:#9a9aa0}#gearv[data-g="R"]{color:#ff453a}
+#speed{transition:none}#speed.sg{color:#30d158}#speed.sy{color:#ffd60a}#speed.sr{color:#ff453a}
 #cstack #kw{pointer-events:auto;cursor:pointer;padding:8px 14px;margin:-8px -14px;-webkit-tap-highlight-color:transparent}
-#kw.eg{color:#00e060}#kw.ea{color:#ffb340}#kw.eb{color:#5ac8fa}
+#kw.eg{color:#30d158}#kw.ea{color:#ffb340}#kw.eb{color:#5ac8fa}
 #kw #regen{color:inherit}#kw #regen:empty{margin-left:0}
 #ktr{display:none;width:0;height:0;margin-left:0;vertical-align:3px;border-left:5px solid transparent;border-right:5px solid transparent}
 #ktr.up,#ktr.dn{display:inline-block;margin-left:6px}#ktr.up{border-bottom:8px solid currentColor}#ktr.dn{border-top:8px solid currentColor}
@@ -328,13 +328,13 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #p-hud #dash path.amb{stroke-opacity:.035}
 #p-hud #dash #acctip{filter:url(#bloom)}
 #p-hud #dash path.pe{display:none}
-#p-hud #dash path.tedge{fill:none;stroke:#00e060;stroke-width:var(--hw,40px);stroke-linecap:round;opacity:0;filter:url(#halo);mask:url(#bandMask)}
+#p-hud #dash path.tedge{fill:none;stroke:#30d158;stroke-width:var(--hw,40px);stroke-linecap:round;opacity:0;filter:url(#halo);mask:url(#bandMask)}
 #p-hud #dash path.tedge.on{animation:tblink .8s steps(1) infinite}
 #ticks line{stroke-linecap:round}
 #ticks line.lit{filter:url(#glu)}
 #ticks.rpulse .rl{animation:rpulse .9s ease-in-out infinite}
 #crpill{position:absolute;transform:translate(-50%,-50%);padding:3px 14px;border-radius:999px;background:#0b0e12;box-shadow:inset 0 0 0 1.5px #3a3f47;font:italic 800 clamp(15px,4.6vh,20px)/1.1 -apple-system,system-ui,sans-serif;color:#fff;letter-spacing:.02em;white-space:nowrap}
-#crpill.hold{color:#00e060;box-shadow:inset 0 0 0 1.5px #00e060,0 0 14px -2px #00e060}
+#crpill.hold{color:#30d158;box-shadow:inset 0 0 0 1.5px #30d158,0 0 14px -2px #30d158}
 #crpill[hidden]{display:none}
 #crpill::before{content:"";display:inline-block;width:.62em;height:.62em;margin-right:.45em;border:2px solid currentColor;border-radius:50%;vertical-align:-.04em}
 #road{position:absolute;left:0;right:0;bottom:0;height:58%;z-index:0;pointer-events:none;overflow:hidden;perspective:300px;perspective-origin:50% 0;opacity:.6;-webkit-mask-image:radial-gradient(55% 110% at 50% 100%,#000 25%,transparent 72%);mask-image:radial-gradient(55% 110% at 50% 100%,#000 25%,transparent 72%)}
@@ -348,7 +348,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #speed{background:linear-gradient(180deg,#fff 35%,#aeb8c3);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 8px 22px rgba(0,0,0,.7)) drop-shadow(0 0 26px rgba(150,190,255,.10))}
 #speed.nd{background:linear-gradient(180deg,#5a5f66,#3a3e44);-webkit-background-clip:text;background-clip:text}
 #p-hud #gwrap,#p-hud #rside{width:min(34vh,146px);background:radial-gradient(circle at 50% 28%,#161a20 0%,#08090b 68%);box-shadow:inset 0 0 0 1.5px #2c3037,inset 0 1.5px 0 0 rgba(255,255,255,.07),0 14px 34px rgba(0,0,0,.65)}
-#p-hud #rside.armedring{box-shadow:inset 0 0 0 2.5px #ffd400,0 0 18px -4px #ffd400,0 14px 34px rgba(0,0,0,.65)}
+#p-hud #rside.armedring{box-shadow:inset 0 0 0 2.5px #ffd60a,0 0 18px -4px #ffd60a,0 14px 34px rgba(0,0,0,.65)}
 #p-hud #crt{display:none!important}
 #cstack{z-index:3}
 @media (prefers-reduced-motion:reduce){#roadg{animation:none}#ticks.rpulse .rl{animation:none}}
@@ -357,13 +357,13 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #tout3wrap{display:none}
 #speed{font-size:min(50vh,215px);letter-spacing:-.02em;line-height:1.04;padding:0 .1em;margin:-.08em 0 -.12em}
 #speed.d3{font-size:min(37vh,160px)}
-#kmh{font-style:italic;font-weight:600;letter-spacing:.08em;color:#8e8e93}
-#cstack{top:calc(var(--st) + 15vh);bottom:calc(var(--sb) + 11vh);justify-content:center;gap:1.8vh}
+#kmh{font-style:italic;font-weight:600;letter-spacing:.08em;color:#8e8e93;margin-top:-.6vh}
+#cstack{top:calc(var(--st) + 15vh);bottom:calc(var(--sb) + 11vh);justify-content:center;gap:2.6vh}
 #p-hud #tr{margin-left:auto}
 #gearrow{display:flex;align-items:center;gap:2.6vh}
 #gearv{display:none}
-#prnd{display:flex;align-items:flex-end;gap:1.5vh;font-style:italic;font-weight:800;line-height:1;--gc:#ffd400}
-#prnd[data-g="R"]{--gc:#ff2d2d}#prnd[data-g="N"]{--gc:#c7c7cc}#prnd[data-g="D"]{--gc:#00e060}
+#prnd{display:flex;align-items:flex-end;gap:1.5vh;font-style:italic;font-weight:800;line-height:1;--gc:#ffd60a}
+#prnd[data-g="R"]{--gc:#ff453a}#prnd[data-g="N"]{--gc:#c7c7cc}#prnd[data-g="D"]{--gc:#30d158}
 #prnd b{font-size:min(5.4vh,23px);color:#3a3a3c;position:relative;padding:0 .1em 1.3vh}
 #prnd b.on{font-size:min(10.5vh,46px);color:var(--gc)}
 #prnd b.on::after{content:"";position:absolute;left:12%;right:12%;bottom:0;height:3px;border-radius:2px;background:currentColor;box-shadow:0 0 8px currentColor}
@@ -371,7 +371,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #tlast:empty{display:none}
 #gearrow .tsig{position:static;top:auto;left:auto;right:auto}
 #p-hud #gwrap,#p-hud #rside{border-radius:50%;background:#060606;box-shadow:inset 0 0 0 1.5px #2c2c2e}
-#p-hud #rside.armedring{box-shadow:inset 0 0 0 2.5px #ffd400}
+#p-hud #rside.armedring{box-shadow:inset 0 0 0 2.5px #ffd60a}
 #p-hud #tm.info{font-size:clamp(30px,9.5vh,42px)}#dots.fade{opacity:0}
 #p-hud #tm.info{font-style:normal}
 .brow{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-top:4px;font-size:12px;white-space:nowrap}.brow .u{font-size:12px}
@@ -538,15 +538,15 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
             <path id="edgL" class="pe"/><path id="edgR" class="pe"/>
             <path id="trkL" class="pb amb" pathLength="100" stroke="#2a3a4e" stroke-dasharray="100 100"/>
             <path id="trkR" class="pb amb" pathLength="100" stroke="#2a3a4e" stroke-dasharray="100 100"/>
-            <path id="regb" class="pb f" pathLength="100" stroke="#1e9bff" stroke-dasharray="0 100" opacity="0"/>
-            <path id="brkb" class="pb f" pathLength="100" stroke="#e8262b" stroke-dasharray="0 100" opacity="0"/>
-            <path id="accb" class="pb f" pathLength="100" stroke="#00e060" stroke-dasharray="0 100" opacity="0"/>
-            <path id="regh" class="halo f" pathLength="100" stroke="#1e9bff" stroke-dasharray="0 100" opacity="0"/>
-            <path id="brkh" class="halo f" pathLength="100" stroke="#e8262b" stroke-dasharray="0 100" opacity="0"/>
-            <path id="acch" class="halo f" pathLength="100" stroke="#00e060" stroke-dasharray="0 100" opacity="0"/>
-            <path id="regc" class="core f" data-m="regb" pathLength="100" stroke="#1e9bff" stroke-dasharray="0 100" opacity="0"/>
-            <path id="brkc" class="core f" data-m="brkb" pathLength="100" stroke="#e8262b" stroke-dasharray="0 100" opacity="0"/>
-            <path id="accc" class="core f" data-m="accb" pathLength="100" stroke="#00e060" stroke-dasharray="0 100" opacity="0"/>
+            <path id="regb" class="pb f" pathLength="100" stroke="#0a84ff" stroke-dasharray="0 100" opacity="0"/>
+            <path id="brkb" class="pb f" pathLength="100" stroke="#ff3b30" stroke-dasharray="0 100" opacity="0"/>
+            <path id="accb" class="pb f" pathLength="100" stroke="#30d158" stroke-dasharray="0 100" opacity="0"/>
+            <path id="regh" class="halo f" pathLength="100" stroke="#0a84ff" stroke-dasharray="0 100" opacity="0"/>
+            <path id="brkh" class="halo f" pathLength="100" stroke="#ff3b30" stroke-dasharray="0 100" opacity="0"/>
+            <path id="acch" class="halo f" pathLength="100" stroke="#30d158" stroke-dasharray="0 100" opacity="0"/>
+            <path id="regc" class="core f" data-m="regb" pathLength="100" stroke="#0a84ff" stroke-dasharray="0 100" opacity="0"/>
+            <path id="brkc" class="core f" data-m="brkb" pathLength="100" stroke="#ff3b30" stroke-dasharray="0 100" opacity="0"/>
+            <path id="accc" class="core f" data-m="accb" pathLength="100" stroke="#30d158" stroke-dasharray="0 100" opacity="0"/>
           </g>
           <g id="ticks"></g>
           <circle id="acctip" cx="0" cy="0" r="4" fill="#effff5" opacity="0"/>
@@ -782,8 +782,8 @@ const TK = { nd: 0, nr: 0, charging: false, soc: 0 };     // what the bars shoul
 let spTarget = null, spShown = null, parkedView = false, parkedSince = 0, socView = null;
 let sweepStart = 0, sweepEnd = 0, fxOn = false, fxLast = 0, chgLast = 0;
 const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
-const NB = 30, OFF = "#2a2e35", OFFB = "#18304f";
-const barColour = i => i < NB * 0.6 ? "#00e060" : i < NB * 0.85 ? "#ffd400" : "#ff2d2d";
+const NB = 20, OFF = "#1d2026", OFFB = "#1d2026"; // 20 thicker bars a side; unlit is one neutral on both sides
+const barColour = i => i < NB * 0.6 ? "#30d158" : i < NB * 0.85 ? "#ffd60a" : "#ff453a";
 // Left bars: regen (blue, rises from the bottom). Right bars: power (green, yellow, red near the top).
 function paintTicks(now) {
   const L = $("ticks").querySelectorAll(".bl"), R = $("ticks").querySelectorAll(".br"); if (!R.length) return;
@@ -791,11 +791,11 @@ function paintTicks(now) {
   const cp = TK.charging ? (now % 2600) / 2600 : 0, socN = Math.round(Math.max(0, Math.min(100, TK.soc)) / 100 * NB);
   R.forEach((e, i) => { let c;
     if (sw >= 0) c = i < Math.round(sw * NB) ? barColour(i) : OFF;                                            // start-up sweep
-    else if (TK.charging) c = i < Math.round(cp * socN) ? "#00e060" : i < socN ? "#0f4a26" : OFF;              // charging: fills to the battery level
+    else if (TK.charging) c = i < Math.round(cp * socN) ? "#30d158" : i < socN ? "#174d2a" : OFF;              // charging: fills to the battery level
     else c = i < TK.nd ? barColour(i) : OFF;
-    e.style.stroke = c; e.classList.toggle("lit", c !== OFF && c !== "#0f4a26"); });
+    e.style.stroke = c; e.classList.toggle("lit", c !== OFF && c !== "#174d2a"); });
   L.forEach((e, i) => { const on = sw >= 0 ? i < Math.round(sw * NB) : !TK.charging && i < TK.nr;
-    e.style.stroke = on ? "#1e9bff" : OFFB; e.classList.toggle("rl", on && sw < 0); e.classList.toggle("lit", on); });
+    e.style.stroke = on ? "#0a84ff" : OFFB; e.classList.toggle("rl", on && sw < 0); e.classList.toggle("lit", on); });
 }
 // Lays out both brackets from the real page size and the safe areas (Dynamic Island, rounded corners, home bar).
 let geo = null;
@@ -828,19 +828,20 @@ function layoutDash() {
   { const o = $("bmOuter"), i = $("bmInner"); o.setAttribute("width", W); o.setAttribute("height", H); i.setAttribute("x", t); i.setAttribute("y", t); i.setAttribute("width", W - 2 * t); i.setAttribute("height", H - 2 * t); i.setAttribute("rx", ri); }
   $("bloom").firstElementChild.setAttribute("stdDeviation", Math.round(Math.max(16, 0.075 * H)));
   // bar meters just inside the band, inside the safe area
-  const tlen = Math.max(10, 0.034 * H), tmaj = tlen * 1.5, inL = Math.max(sl, t) + 14, inR = W - Math.max(sr, t) - 14;
-  const yTop = Math.max(st, t) + Math.max(40, 0.1 * H), yBot = H - Math.max(sb, t) - Math.max(18, 0.045 * H);
-  const g0 = $("ticks"); g0.innerHTML = ""; const thin = store.get("ticks") === "thin", step = (yBot - yTop) / (NB - 1), sw = Math.max(2, step * (thin ? 0.3 : 0.56));
+  const tlen = Math.max(16, 0.06 * H), tmaj = tlen, inL = Math.max(sl, t) + 12, inR = W - Math.max(sr, t) - 12;
+  const yTop = Math.max(st, t, 44) + 14, yBot = H - Math.max(sb, t) - 14;
+  const g0 = $("ticks"); g0.innerHTML = ""; const thin = store.get("ticks") === "thin", step = (yBot - yTop) / (NB - 1), sw = Math.max(3, step * (thin ? 0.32 : 0.62));
   for (let i = 0; i < NB; i++) { const y = yBot - i * step, len = i % 5 === 4 ? tmaj : tlen;
     [["bl", inL, 1], ["br", inR, -1]].forEach(([cls, x, dir]) => { const l = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      l.setAttribute("x1", x); l.setAttribute("x2", x + dir * len); l.setAttribute("y1", y); l.setAttribute("y2", y); l.setAttribute("stroke-width", sw); l.setAttribute("class", cls); l.style.stroke = cls === "bl" ? OFFB : OFF; g0.appendChild(l); }); }
+      l.setAttribute("x1", x); l.setAttribute("x2", x + dir * len); l.setAttribute("y1", y); l.setAttribute("y2", y); l.style.strokeWidth = sw + "px"; /* inline: old ring CSS (#ticks line) would otherwise cap it at 3.6 */ l.setAttribute("class", cls); l.style.stroke = cls === "bl" ? OFFB : OFF; g0.appendChild(l); }); }
   // turn signals: the inner edge of that side pulses green
   $("tel").setAttribute("d", "M" + t + " " + (H * 0.2) + "V" + (H * 0.8)); $("ter").setAttribute("d", "M" + (W - t) + " " + (H * 0.2) + "V" + (H * 0.8));
   // the two pods sit in the bottom corners, inside the bars
-  const P = Math.round(Math.min(0.34 * H, 146)), podIn = tmaj + 20, podBottom = Math.max(sb, t) + Math.max(22, 0.055 * H);
+  const P = Math.round(Math.min(0.34 * H, 146)), podIn = tmaj + 16, podBottom = H - yBot - sw / 2;
   const gwp = $("gwrap"), rs = $("rside"); gwp.style.width = rs.style.width = P + "px"; gwp.style.left = (inL + podIn) + "px"; rs.style.right = (W - inR + podIn) + "px"; gwp.style.bottom = rs.style.bottom = podBottom + "px";
+  { const cs = $("cstack").style; cs.top = (yTop - 4) + "px"; cs.bottom = (H - yBot) + "px"; } // centre stack lives inside the band
   // cruise readout at the top centre, just inside the band
-  const cp = $("crpill"); cp.style.left = cx + "px"; cp.style.top = (Math.max(st, t) + Math.max(18, 0.045 * H)) + "px";
+  const cp = $("crpill"); cp.style.left = cx + "px"; cp.style.top = Math.max(st + 20, Math.max(st, t) / 2) + "px"; /* centred in the top band, above everything */
   geo = { W, H, xL: t, xR: W - t, yT: t, yB: H - t, ri }; paintTicks(performance.now()); scheduleRender();
 }
 // The core lines copy the fill, visibility, colour and hard-brake state of their band (set in render), so the JS above stays the only writer.
@@ -882,7 +883,7 @@ function driveFx(sp, pw, acc, charging, eff) {
     if (q) { tip.setAttribute("cx", q.x.toFixed(1)); tip.setAttribute("cy", q.y.toFixed(1)); } tip.setAttribute("opacity", a > 3 && q ? 1 : 0); }
   // hard braking: the red band glows brighter
   { const br = truthy(S.BrakePedal), lon = num(S.LongitudinalAcceleration), dec = lon == null ? 0 : lon - gBase[1], hard = br && (dec < -0.35 || (pw != null && pw < -45)), b = $("brkb");
-    b.setAttribute("stroke", hard ? "#ff1a1a" : "#e8262b"); b.classList.toggle("hard", hard); if (br) $("regb").setAttribute("opacity", 0); } // braking: red replaces the blue regen light instead of mixing with it (the bars still show regen)
+    b.setAttribute("stroke", "#ff3b30"); /* brake light: one pure red; hard braking shows as a wider glow */ b.classList.toggle("hard", hard); if (br) $("regb").setAttribute("opacity", 0); } // braking: red replaces the blue regen light instead of mixing with it (the bars still show regen)
   // a door or boot opening while in Park: the band flashes amber for 3 s
   { const ds = doorSet(S.DoorState), c = ds == null ? null : ds.size;
     if (c != null && doorsWas != null && c > doorsWas && inP) { ["trkL", "trkR"].forEach(id => { const e = $(id); e.classList.remove("dalert"); void e.getBBox(); e.classList.add("dalert"); }); clearTimeout(doorAlertTo); doorAlertTo = setTimeout(() => ["trkL", "trkR"].forEach(id => $(id).classList.remove("dalert")), 3000); }
@@ -1062,7 +1063,7 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "v16 · 22 Nov 2026"; $("build").textContent = BUILD;
+const BUILD = "v17 · 22 Nov 2026"; $("build").textContent = BUILD;
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {}); // opens with no signal; the network copy always wins when online
 $("upd").onclick = () => { location.href = location.pathname + "?v=" + Date.now(); }; // reloads a fresh copy; the saved token stays in this browser
 $("rside").onclick = toggleArm;
