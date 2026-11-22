@@ -427,16 +427,116 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #nomap{position:absolute;left:0;right:calc(var(--sr) + 290px);top:50%;transform:translateY(-50%);text-align:center;color:var(--dim);font-size:20px;font-weight:600;z-index:2;padding:0 24px}
 #log{font-size:14px;line-height:1.25;max-height:4.8em;overflow:hidden;word-break:break-word}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* ===== v20: one system app-wide ===== */
+/* 19, 20: one type scale (13 / 17 / 22 / 28), one spacing grid (8 / 12 / 16), one radius family (20 tiles, 12 controls, 6 marks, round pills) */
+:root{--r:20px;--r2:12px;--r3:6px;--fs-l:13px;--fs-b:17px;--fs-v2:22px;--fs-v:clamp(22px,6.6vh,28px);--gap:12px}
+button,input{border-radius:var(--r2)}
+.t{border-radius:var(--r);padding:10px 14px}
+#ch,#inf,.side3,#carpg{gap:var(--gap)}
+.t .l,.gh,.bl .l{font-size:var(--fs-l)}
+.t .u,.bl .u{font-size:var(--fs-l)}
+#ch .v,#inf .v,.side3 .v,#sheet .v{font-size:var(--fs-v);line-height:1.2}
+#chst,#doors{font-size:var(--fs-v2)!important}
+#inf .v.sm,#sheet #nav{font-size:var(--fs-b)!important;line-height:1.25}
+#sheet{border-radius:var(--r)}
+/* 9: tiles read like Apple Settings: icon and label in a row, value under it, left-aligned */
+#ch .t:not(.bat),#inf .t,.side3 .t{align-items:flex-start;text-align:left;justify-content:space-between}
+#ch .t:not(.bat) .hd,#inf .t .hd,.side3 .t .hd{flex-direction:row;gap:8px;align-items:center}
+#ch .t:not(.bat) .ic,#inf .t .ic,.side3 .t .ic{width:20px;height:20px}
+/* 16: info page, three groups of three */
+#inf{max-width:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:minmax(0,1fr);gap:var(--gap);height:100%}
+.grp{display:grid;grid-template-rows:auto repeat(3,minmax(0,1fr));gap:8px;min-height:0;min-width:0}
+.gh{font-weight:600;color:var(--dim);padding:0 4px;line-height:1.2}
+#inf .t{padding:8px 14px;gap:4px}
+#inf .v.sm{white-space:nowrap}
+#inf button{margin:0;padding:7px 12px;font-size:var(--fs-l);font-weight:600;width:100%}
+#inf #log{margin:0;font-size:var(--fs-l);line-height:1.3;max-height:3.9em}
+#inf #build{font-size:12px}
+.pri{background:var(--acc)!important;color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+#inf .chip,.chip{width:auto;margin:0;padding:5px 11px;font-size:var(--fs-l);font-weight:600;border-radius:999px;background:var(--card2);color:var(--dim)}
+.chip.on{background:var(--acc)!important;color:#fff!important}
+#inf #ver{width:auto}
+/* 1: inactive gears readable in sunlight */
+#prnd b{color:#636366}
+/* 4: gear change fades instead of snapping */
+#prnd b.pop{animation:none}
+#prnd b.gin{animation:gin .3s ease-out}@keyframes gin{from{opacity:0;transform:translateY(.12em)}to{opacity:1;transform:none}}
+#prnd b.gout{animation:gout .3s ease-out}@keyframes gout{from{opacity:0}to{opacity:1}}
+/* 2: cruise readout drawn like the tick track: square ends, tick grey edge, a tick mark for its icon */
+#crpill{border-radius:var(--r3);background:rgba(6,8,11,.86);box-shadow:inset 0 0 0 2px #2b2f37;padding:2px 12px 2px 10px;letter-spacing:0}
+#crpill::before{width:3px;height:.8em;border:0;border-radius:0;background:currentColor;margin-right:.5em;vertical-align:-.06em}
+#crpill.hold{box-shadow:inset 0 0 0 2px #30d158,0 0 12px -3px #30d158}
+/* 3: stale data while moving */
+#hud.stale #speed,#hud.stale #gearrow,#hud.stale #dash,#hud.stale #gwrap,#hud.stale #rside,#hud.stale #crpill{opacity:.3}
+#hud.stale #kmh{color:#ff9f0a;font-style:normal;letter-spacing:0;font-weight:600}
+/* 5: invisible tap areas round the pods */
+#ghit,#rhit{position:absolute;z-index:5;border-radius:50%;cursor:pointer;-webkit-tap-highlight-color:transparent}
+#hud.moving #ghit,#hud.moving #rhit{pointer-events:none}
+/* 6, 8: charge limit marker and charging shimmer */
+#bbar{position:relative}
+#blim{position:absolute;top:0;bottom:0;width:3px;margin-left:-1.5px;background:#fff;box-shadow:0 0 0 1.5px rgba(0,0,0,.55)}#blim[hidden]{display:none}
+#bbar.chg #bfill{background-image:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.38) 50%,transparent 70%);background-size:220% 100%;background-repeat:no-repeat;animation:shim 2.4s linear infinite}
+@keyframes shim{from{background-position:160% 0}to{background-position:-60% 0}}
+#limt:empty,#chadd:empty{display:none}
+/* 11, 12: tappable car parts; tyre colours */
+.tp.warn{fill:var(--warn)}
+#carsum.peek{color:#fff}
+#car .hit{cursor:pointer}
+/* 13: follow button on the map */
+#follow{position:absolute;z-index:600;left:calc(var(--sl) + 16px);top:calc(var(--st) + 12px);width:auto;margin:0;display:flex;align-items:center;gap:6px;padding:8px 14px 8px 10px;border-radius:999px;font-size:var(--fs-l);font-weight:600;color:var(--dim);background:rgba(44,44,46,.72);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:0 4px 18px rgba(0,0,0,.4)}
+#follow svg{width:16px;height:16px;fill:currentColor}
+#follow.on{color:#fff}#follow.on svg{color:var(--acc)}
+#follow[hidden]{display:none}
+/* 14: the map dims and warms at night */
+html.night .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.6) contrast(.9) saturate(.4) sepia(.2)}
+/* 22: first-launch page hint */
+#hint{position:fixed;z-index:700;bottom:max(4px,calc(var(--sb) - 2px));left:50%;transform:translateX(-50%);display:flex;gap:14px;padding:6px 16px;border-radius:999px;background:rgba(28,28,30,.86);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);font-size:var(--fs-l);font-weight:600;color:var(--dim);white-space:nowrap;transition:opacity .6s ease;pointer-events:none}
+#app.hinting #dots{opacity:0}
+#hint span.on{color:#fff}#hint.fade{opacity:0}#hint[hidden]{display:none}
+#dots i{position:relative;cursor:pointer}#dots i::after{content:"";position:absolute;inset:-9px}#dots.fade{pointer-events:none}
+/* 18: in-app confirm sheet */
+#ask{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center;padding:0 calc(var(--sr) + 16px) calc(var(--sb) + 16px) calc(var(--sl) + 16px)}
+#ask[hidden]{display:none}
+#ask .box{width:min(440px,100%);background:var(--card);border-radius:var(--r);padding:20px 16px 16px;box-shadow:0 10px 40px rgba(0,0,0,.6)}
+#ask p{margin:0 0 16px;font-size:var(--fs-b);line-height:1.35;text-align:center}
+#ask .row{display:flex;gap:var(--gap)}#ask .row button{margin:0;font-weight:600;font-size:var(--fs-b)}
+#askok{background:var(--acc);color:#fff}#askok.danger{background:var(--bad)}
+/* 24: high contrast, larger text */
+html.hc{--dim:rgba(235,235,245,.86);--dim2:rgba(235,235,245,.55);--fs-l:15px;--fs-v:clamp(24px,7.4vh,31px)}
+html.hc .t{box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}
+html.hc #prnd b{color:#8e8e93}
+html.hc #kmh{color:#c7c7cc}
+/* 25: setup screen in the app's style */
+#setup{position:fixed;inset:0;max-width:none;margin:0;display:flex;align-items:center;justify-content:center;padding:calc(var(--st) + 16px) calc(var(--sr) + 16px) calc(var(--sb) + 16px) calc(var(--sl) + 16px);background:radial-gradient(110% 95% at 50% 42%,#0e141b 0%,#06090d 52%,#000 100%);overflow:auto}
+#setup[hidden]{display:none}
+.sbox{width:min(780px,100%);display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:center;background:var(--card);border-radius:var(--r);padding:24px;box-shadow:0 14px 40px rgba(0,0,0,.6)}
+.slogo{width:30px;height:30px;fill:none;stroke:var(--acc);stroke-width:1.9;stroke-linejoin:round}
+.sintro h2{margin:8px 0 8px;font-size:28px;font-weight:700;letter-spacing:-.3px}
+.sintro p{margin:0;font-size:var(--fs-b);line-height:1.4;color:var(--dim)}
+.sform{display:flex;flex-direction:column;gap:8px}
+.sform input,.sform button{margin:0;font-size:var(--fs-b)}
+.sform button{font-weight:600}
+@media (orientation:portrait){.sbox{grid-template-columns:1fr}}
+@media (max-width:760px){#ch .t:not(.bat) .hd,#inf .t .hd,.side3 .t .hd{gap:6px}#ch .t:not(.bat) .ic,#inf .t .ic,.side3 .t .ic{width:18px;height:18px}#ch #chtm{font-size:var(--fs-v2)}}
+@media (prefers-reduced-motion:reduce){#bbar.chg #bfill{animation:none}#prnd b.gin,#prnd b.gout{animation:none}}
 </style>
 </head>
 <body>
 <div id="setup" hidden>
-  <h2>Set up</h2>
-  <p>Paste your Teslemetry token once. It stays on this phone only.</p>
-  <input id="tok" placeholder="Teslemetry token" autocomplete="off">
-  <input id="base" placeholder="Relay address (leave empty to connect directly)" autocomplete="off">
-  <button id="save" style="background:var(--acc)">Save and start</button>
-  <button id="demo">Try with sample data</button>
+ <div class="sbox">
+  <div class="sintro">
+   <svg class="slogo" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>
+   <h2>Car live</h2>
+   <p>Live readings from your Model 3 through Teslemetry. Paste your token once. It stays on this phone only.</p>
+  </div>
+  <div class="sform">
+   <input id="tok" placeholder="Teslemetry token" autocomplete="off" autocapitalize="off" spellcheck="false">
+   <input id="base" placeholder="Relay address (optional)" autocomplete="off" autocapitalize="off" spellcheck="false">
+   <button id="save" class="pri">Save and start</button>
+   <button id="demo">Try with sample data</button>
+  </div>
+ </div>
 </div>
 
 <div id="app" hidden>
@@ -446,12 +546,12 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
    <div id="ch">
     <div class="t bat">
      <div class="batrow">
-      <div class="bl"><div class="l">Battery</div><div class="big"><span id="soc2">-</span> %</div></div>
-      <div id="bbar"><i id="bfill"></i></div>
+      <div class="bl"><div class="l">Battery</div><div class="big"><span id="soc2">-</span> %</div><div class="u" id="limt"></div></div>
+      <div id="bbar"><i id="bfill"></i><i id="blim" hidden></i></div>
       <div class="bl"><div class="l">Range</div><div class="big2"><span id="rng2">-</span> km</div></div>
      </div>
     </div>
-    <div class="t" style="grid-column:span 2"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span class="l">Charging power</span></div><div class="v" id="chkw">-</div></div>
+    <div class="t" style="grid-column:span 2"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span class="l">Charging power</span></div><div class="v" id="chkw">-</div><div class="u" id="chadd"></div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="l">Time to full</span></div><div class="v" id="chtm">-</div><div class="u" id="chfull"></div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 12h4l2-6 4 12 2-6h8"/></svg><span class="l">Charge state</span></div><div class="v" id="chst" style="font-size:22px">-</div><div class="u" id="btemp"></div></div>
     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span class="l">Pack voltage</span></div><div class="v"><span id="pv">-</span> V</div></div>
@@ -495,8 +595,8 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
       <g id="padlock" transform="translate(160 186)"><path d="M-8 -3v-6a8 8 0 0 1 16 0v6" fill="none" stroke-width="3.5" stroke-linecap="round"/><rect x="-12" y="-3" width="24" height="19" rx="5"/></g>
       <text id="t-fl" class="tp" x="40" y="76" text-anchor="end">-</text><text id="t-fr" class="tp" x="280" y="76">-</text>
       <text id="t-rl" class="tp" x="40" y="274" text-anchor="end">-</text><text id="t-rr" class="tp" x="280" y="274">-</text>
-      <text class="tu" x="40" y="92" text-anchor="end">psi</text><text class="tu" x="280" y="92">psi</text>
-      <text class="tu" x="40" y="290" text-anchor="end">psi</text><text class="tu" x="280" y="290">psi</text>
+      <text class="tu pu" x="40" y="92" text-anchor="end">psi</text><text class="tu pu" x="280" y="92">psi</text>
+      <text class="tu pu" x="40" y="290" text-anchor="end">psi</text><text class="tu pu" x="280" y="290">psi</text>
      </svg>
      <div id="carsum">Waiting for the car</div>
     </div>
@@ -554,7 +654,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
         </svg>
         <div id="crpill" hidden><span id="crv">--</span></div>
       </div>
-      <div id="topzone"></div><div id="czl" class="cz"></div><div id="czr" class="cz"></div>
+      <div id="ghit" aria-label="Reset G-force peak"></div><div id="rhit" aria-label="0 to 100 timer"></div><div id="topzone"></div><div id="czl" class="cz"></div><div id="czr" class="cz"></div>
       <div id="cstack">
         <div id="speed">-</div><div class="u" id="kmh">km/h</div><div id="gearrow"><i id="tsl" class="tsig"></i><div id="gearv">-</div><div id="prnd" aria-label="Gear"><b>P</b><b>R</b><b>N</b><b>D</b></div><i id="tsr" class="tsig"></i></div>
       </div>
@@ -569,6 +669,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
   <section class="pg" id="p-map">
     <div id="map"></div>
     <div id="nomap">Waiting for the car's location</div>
+    <button id="follow" class="on" hidden><svg viewBox="0 0 24 24"><path d="M12 2 4 21l8-4 8 4z"/></svg><span id="followt">Following</span></button>
     <div id="sheet">
       <div class="sw2"><div class="l" id="navl">Navigation</div><div class="v" id="nav">-</div></div>
       <div class="sh1"><div class="l">Outside</div><div class="v"><span id="tout">-</span> °C</div></div>
@@ -579,18 +680,29 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 
   <section class="pg" id="p-info">
    <div id="inf">
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M8 3 5 21M16 3l3 18M12 5v3M12 11v3M12 17v3"/></svg><span class="l">Odometer</span></div><div class="v"><span id="odo">-</span> km</div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg><span class="l">Software</span></div><div class="v" id="sw">--</div><button id="ver" style="margin:0;padding:6px 12px;font-size:13px;font-weight:600;width:auto" hidden>Read version (up to 2 credits)</button></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M3 13l2-5a2 2 0 0 1 2-1.5h10a2 2 0 0 1 2 1.5l2 5v4H3zM6 17v2M18 17v2"/></svg><span class="l">Vehicle</span></div><div class="v" style="font-size:20px;white-space:normal;line-height:1.15">Model 3 Long Range</div><div class="u" id="vehsub">2024</div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg><span class="l">Connection</span></div><div class="v" id="conn" style="font-size:17px;white-space:normal">-</div><p id="log">OK</p></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="l">Last data</span></div><div class="v" id="lastdata">--</div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span class="l">Settings</span></div><div style="width:100%"><button id="upd" style="margin:0 0 8px;padding:10px;font-size:17px;font-weight:600;background:var(--acc)">Check for update</button><button id="gear" style="margin:0;padding:10px;font-size:17px;font-weight:600">Clear token</button><div class="brow"><button id="thin" class="linkbtn">Thin bars: off</button><span class="u" id="build"></span></div></div></div>
+    <div class="grp"><div class="gh">Car</div>
+     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M3 13l2-5a2 2 0 0 1 2-1.5h10a2 2 0 0 1 2 1.5l2 5v4H3zM6 17v2M18 17v2"/></svg><span class="l">Vehicle</span></div><div class="v">Model 3</div><div class="u" id="vehsub">Long Range · 2024</div></div>
+     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M8 3 5 21M16 3l3 18M12 5v3M12 11v3M12 17v3"/></svg><span class="l">Odometer</span></div><div class="v"><span id="odo">-</span> km</div></div>
+     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg><span class="l">Software</span></div><div class="v" id="sw">--</div><button id="ver" class="chip" hidden>Read version (up to 2 credits)</button></div>
+    </div>
+    <div class="grp"><div class="gh">Connection</div>
+     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg><span class="l">Link</span></div><div class="v sm" id="conn">-</div></div>
+     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="l">Last data</span></div><div class="v" id="lastdata">--</div></div>
+     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg><span class="l">Status</span></div><p id="log">OK</p></div>
+    </div>
+    <div class="grp"><div class="gh">App</div>
+     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg><span class="l">Update</span></div><button id="upd" class="pri">Check for update</button><span class="u" id="build"></span></div>
+     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span class="l">Display</span></div><div class="chips"><button id="thin" class="chip">Thin bars</button><button id="punit" class="chip">kPa</button><button id="hc" class="chip">High contrast</button></div></div>
+     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="l">Token</span></div><button id="gear">Clear token</button></div>
+    </div>
    </div>
   </section>
 
  </div>
+ <div id="hint" hidden></div>
  <div id="dots"><i></i><i></i><i class="on"></i><i></i><i></i></div>
 </div>
+<div id="ask" hidden><div class="box"><p id="askt"></p><div class="row"><button id="askno">Cancel</button><button id="askok">OK</button></div></div></div>
 <div id="rot"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M20 8c1.5 1.2 2 2.4 2 4s-.5 2.8-2 4M3 12H2"/></svg><div>Turn your phone sideways</div></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -626,6 +738,7 @@ const powerKw = () => {
   return Math.abs(kw) < 1 ? 0 : kw; // under 1 kW is idle noise: show 0, never "-0" or a regen label
 };
 const PSI_PER_ATM = 14.696; // Teslemetry reports tyre pressure in atmospheres
+const chgE = { kwh: 0, t: 0 }, winK = {}; let carPeek = 0, carPeekId = "", follow = true; /* charge energy counter, known windows, car-part tap label, map follow */
 // ---- car page: which door, boot, window or charge port is open, shown on a top-down outline ----
 const truthy = v => v === true || v === "true" || v === 1 || v === "1";
 // Teslemetry's DoorState lists the open doors. Its exact shape isn't documented, so every likely one is accepted:
@@ -650,7 +763,7 @@ function renderCar() {
   put("frunk", false); put("trunk", false);
   if (ds) ds.forEach(c => { if (c === "ft") { put("frunk", true); open.push("Front boot open"); } else if (c === "rt") { put("trunk", true); open.push("Boot open"); } else { const p = where[c]; put("d-" + p, true); open.push(SIDE_NAME[p] + " door open"); } });
   const winOf = { Fd: "df", Fp: "pf", Rd: "dr", Rp: "pr" }, wopen = []; let wknown = 0;
-  Object.keys(winOf).forEach(k => { const v = S[k + "Window"], unk = v == null || /unknown/i.test(String(v)), p = where[winOf[k]], on = !unk && !/closed/i.test(String(v)); if (!unk) wknown++; put("w-" + p, on); if (on) { wopen.push(p); open.push(SIDE_NAME[p] + " window open"); } });
+  Object.keys(winOf).forEach(k => { const v = S[k + "Window"], unk = v == null || /unknown/i.test(String(v)), p = where[winOf[k]], on = !unk && !/closed/i.test(String(v)); if (!unk) wknown++; winK[p] = !unk; put("w-" + p, on); if (on) { wopen.push(p); open.push(SIDE_NAME[p] + " window open"); } });
   ["fl", "fr", "rl", "rr"].forEach(p => { if (!wopen.includes(p)) put("w-" + p, false); });
   const cp = S.ChargePortDoorOpen == null ? null : truthy(S.ChargePortDoorOpen); put("cport", cp === true); if (cp) open.push("Charge port open");
   $("cport").classList.toggle("known", cp != null); if ($("cportv")) { $("cportv").textContent = cp == null ? "--" : cp ? "Open" : "Closed"; flag("cportv", cp ? "warn" : cp === false ? "ok" : ""); }
@@ -660,16 +773,20 @@ function renderCar() {
   $("windows").textContent = wknown === 0 ? "-" : wopen.length ? wopen.length + " open" : "All closed"; flag("windows", wknown === 0 ? "" : wopen.length ? "warn" : "ok");
   { const m = String(S.SentryMode ?? "").replace(/^SentryModeState/, ""), off = m === "Off" || S.SentryMode === false, unk = S.SentryMode == null || m === "Unknown" || m === "";
     $("sentry").textContent = unk ? "-" : off ? "Off" : m === "Panic" ? "Alert" : "On"; flag("sentry", unk || off ? "" : m === "Panic" ? "bad" : "ok"); $("sring").classList.toggle("on", !unk && !off); }
-  let low = 0;
-  [["fl", "Fl"], ["fr", "Fr"], ["rl", "Rl"], ["rr", "Rr"]].forEach(([p, k]) => { const x = num(S["TpmsPressure" + k]), psi = x == null ? null : x * PSI_PER_ATM, e = $("t-" + p), bad = psi != null && psi < 38; e.textContent = psi == null ? "-" : psi.toFixed(0); e.classList.toggle("bad", bad); if (bad) { low++; open.push(SIDE_NAME[p] + " tyre low"); } });
+  let low = 0; const kpa = store.get("pu") === "kpa";
+  [["fl", "Fl"], ["fr", "Fr"], ["rl", "Rl"], ["rr", "Rr"]].forEach(([p, k]) => { const x = num(S["TpmsPressure" + k]), psi = x == null ? null : x * PSI_PER_ATM, e = $("t-" + p), lvl = psi == null ? "" : psi < 32 ? "bad" : psi < 38 ? "warn" : "", txt = psi == null ? "-" : kpa ? (x * 101.325).toFixed(0) : psi.toFixed(0);
+    e.textContent = txt; e.classList.toggle("bad", lvl === "bad"); e.classList.toggle("warn", lvl === "warn"); e.dataset.st = psi == null ? "not reported" : txt + (kpa ? " kPa" : " psi") + (lvl === "bad" ? ", very low" : lvl === "warn" ? ", low" : ", OK");
+    if (lvl) { low++; open.push(SIDE_NAME[p] + (lvl === "bad" ? " tyre very low" : " tyre low")); } });
+  document.querySelectorAll("#car .pu").forEach(u => { u.textContent = kpa ? "kPa" : "psi"; });
   const none = ds == null && wknown === 0 && lk == null;
   // one plain sentence: name a single open thing, count several
   const doorsOnly = open.filter(x => / door open$/.test(x)), bootsOnly = open.filter(x => /^(Front boot|Boot) open$/.test(x)).map(x => x.replace(/ open$/, "").toLowerCase());
-  const wL = open.filter(x => /window open$/.test(x)), tL = open.filter(x => /tyre low$/.test(x)), pL = open.filter(x => /port open$/.test(x));
+  const wL = open.filter(x => /window open$/.test(x)), tL = open.filter(x => /tyre (very )?low$/.test(x)), pL = open.filter(x => /port open$/.test(x));
   // doors and boots in one phrase that says exactly which, e.g. "Front-left door and front boot open"
   const dbParts = [...(doorsOnly.length > 1 ? [doorsOnly.length + " doors"] : doorsOnly.map(x => x.replace(/ open$/, ""))), ...bootsOnly];
   const dbText = dbParts.length === 0 ? null : (dbParts.length === 1 ? dbParts[0] : dbParts.slice(0, -1).join(", ") + " and " + dbParts[dbParts.length - 1]) + " open";
   const bits = [dbText && dbText.charAt(0).toUpperCase() + dbText.slice(1), wL.length > 1 ? wL.length + " windows open" : wL[0], pL[0], tL.length > 1 ? tL.length + " tyres low" : tL[0]].filter(Boolean);
+  if (Date.now() < carPeek) { $("carsum").textContent = partInfo(carPeekId); return; } $("carsum").classList.remove("peek"); /* a tapped part keeps its label for 4 s */
   $("carsum").textContent = none ? "Waiting for the car" : open.length === 0 ? (lk === true ? "All closed and locked" : lk === false ? "All closed, unlocked" : "All closed") : bits.length > 1 ? bits[0] + " · +" + (bits.length - 1) + " more" : bits[0];
   $("carsum").classList.toggle("warn", open.length > 0); $("carsum").classList.toggle("ok", !none && open.length === 0 && lk === true);
 }
@@ -723,7 +840,7 @@ function render() {
   { const r = pw != null && pw < 0 ? Math.min(100, -pw / 60 * 100) : 0; $("regb").setAttribute("stroke-dasharray", r + " 100"); $("regb").setAttribute("opacity", r > 0.5 ? 1 : 0); } // left half: regen in blue, about 60 kW at full
   $("soc").textContent = fmt(num(S.BatteryLevel), 0); $("soc2").textContent = $("soc").textContent; $("tout2").textContent = fmt(num(S.OutsideTemp), 0);
   TK.nd = pw != null && pw > 0 ? Math.round(Math.min(1, pw / 250) * NB) : 0; TK.nr = pw != null && pw < 0 ? Math.round(Math.min(1, -pw / 80) * NB) : 0; paintTicks(performance.now()); // 60 ticks: 12 regen (blue) then 48 drive
-  { const b = num(S.BatteryLevel) || 0, f = $("bfill"); f.style.width = Math.max(0, Math.min(100, b)) + "%"; f.style.background = b < 15 ? "var(--bad)" : b < 30 ? "var(--warn)" : "var(--ok)"; } // the wide battery bar on the charging page
+  { const b = num(S.BatteryLevel) || 0, f = $("bfill"); f.style.width = Math.max(0, Math.min(100, b)) + "%"; f.style.backgroundColor = b < 15 ? "var(--bad)" : b < 30 ? "var(--warn)" : "var(--ok)"; } // the wide battery bar on the charging page
   { const bl = num(S.BatteryLevel), b = bl || 0; $("socb").style.width = Math.max(0, Math.min(100, b)) + "%"; $("socb").style.background = b < 10 ? "var(--bad)" : b < 20 ? "var(--warn)" : "var(--ok)"; const bt = $("soc").parentElement; bt.classList.toggle("lb", bl != null && bl < 10); bt.classList.toggle("lw", bl != null && bl >= 10 && bl < 20); }
   { const b = (S.BrakePedal === true || S.BrakePedal === "true") ? 100 : Math.max(0, Math.min(100, num(S.BrakePedalPos) || 0)); $("brkb").setAttribute("stroke-dasharray", b + " 100"); $("brkb").setAttribute("opacity", b > 0.5 ? 1 : 0); } // brake fills the left half
   { // Range: the car's own figure when it has sent one; until then an estimate from the battery level (2024 Model 3 Long Range, 629 km WLTP).
@@ -747,10 +864,14 @@ function render() {
   $("chkw").textContent = chargingNow ? (ck == null ? "--" : ck.toFixed(1) + " kW") : "Not charging"; $("chkw").classList.toggle("quiet", !chargingNow);
   { const h = num(S.TimeToFullCharge ?? S.EstimatedHoursToChargeTermination), m = h == null ? null : Math.round(h * 60); $("chtm").textContent = !chargingNow || m == null ? "--" : m >= 60 ? Math.floor(m / 60) + " h " + (m % 60) + " min" : m + " min"; $("chtm").classList.toggle("quiet", !chargingNow || m == null); $("chfull").textContent = chargingNow && m != null ? "Full at " + new Date(Date.now() + m * 60000).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : ""; } // reported in hours
   { const cok = chargingNow ? "ok" : ""; flag("chst", cok); flag("chkw", cok); }
+  { const lim = num(S.ChargeLimitSoc), m = $("blim"); m.hidden = lim == null; if (lim != null) m.style.left = Math.max(0, Math.min(100, lim)) + "%"; $("limt").textContent = lim == null ? "" : "Limit " + Math.round(lim) + " %"; }
+  { const t = Date.now(), fe = Math.max(num(S.ACChargingEnergyIn) || 0, num(S.DCChargingEnergyIn) || 0); /* the car's own session counter when it sends one; otherwise power x time */
+    if (chargingNow && ck != null) { if (chgE.t) chgE.kwh += ck * Math.min(10, (t - chgE.t) / 1000) / 3600; chgE.t = t; } else { chgE.t = 0; if (!/^(complete|stopped)$/i.test(String(csName))) chgE.kwh = 0; }
+    const kwh = fe > 0 ? fe : chgE.kwh; $("chadd").textContent = kwh >= 0.05 ? kwh.toFixed(1) + " kWh added" : ""; }
+  $("bbar").classList.toggle("chg", chargingNow && !REDUCED);
   $("pv").textContent = fmt(num(S.PackVoltage), 0); { const pa = num(S.PackCurrent); $("pa").textContent = pa == null ? "--" : (Math.abs(pa) < 2 ? 0 : pa).toFixed(0); } // under 2 A is idle noise
   renderCar(); driveFx(sp, pw, acc, chargingNow, effKm >= 100 ? effKw * 1000 / effKm : null);
   { const lg = $("log"); if (!liveMode) { lg.textContent = "Sample mode"; lg.style.color = "var(--dim)"; } else lg.style.color = (streamOpen && /^(Connected|OK)/.test(lg.textContent)) ? "var(--ok)" : ""; } // green when live, dim in sample, orange for problems
-  $("vehsub").textContent = "2024 · " + (S.RightHandDrive === false || S.RightHandDrive === "false" ? "left-hand drive" : "right-hand drive");
   { const qs = lastEvt ? Math.round((Date.now() - lastEvt) / 60000) : 0; $("navl").textContent = liveMode && qs >= 2 ? "Navigation · last seen " + qs + " min ago" : "Navigation"; }
   { const ago = lastEvt ? Math.round((Date.now() - lastEvt) / 1000) : null; $("lastdata").textContent = !liveMode ? "Sample" : ago == null ? "--" : ago < 2 ? "Just now" : ago < 90 ? ago + " s ago" : Math.round(ago / 60) + " min ago"; $("lastdata").classList.toggle("quiet", !liveMode || ago == null); }
   const od = num(S.Odometer); $("odo").textContent = od == null ? "-" : (od * MI).toFixed(0); $("sw").textContent = S.Version || "--"; $("ver").hidden = !!S.Version || !liveMode;
@@ -760,10 +881,10 @@ function render() {
   const p = loc(S.Location);
   if (p && liveMode) { const k = p[0].toFixed(2) + "," + p[1].toFixed(2); if (store.get("loc") !== k) store.set("loc", k); }
   if (p) {
-    if (!map) { $("nomap").hidden = true; map = L.map("map", { zoomControl: false }); map.attributionControl.setPosition("bottomleft"); L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "© OpenStreetMap contributors" }).addTo(map); marker = L.circleMarker(p, { radius: 9, color: "#fff", weight: 3, fillColor: "#0a84ff", fillOpacity: 1 }).addTo(map); trail = L.polyline([], { weight: 5, color: "#0a84ff" }).addTo(map); map.setView(p, 16); new ResizeObserver(() => map.invalidateSize()).observe($("map")); }
+    if (!map) { $("nomap").hidden = true; map = L.map("map", { zoomControl: false }); map.attributionControl.setPosition("bottomleft"); L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "© OpenStreetMap contributors" }).addTo(map); marker = L.circleMarker(p, { radius: 9, color: "#fff", weight: 3, fillColor: "#0a84ff", fillOpacity: 1 }).addTo(map); trail = [0, 1, 2, 3, 4, 5].map(k => L.polyline([], { weight: 5, color: "#0a84ff", opacity: 0.15 + 0.17 * k, interactive: false }).addTo(map)); map.on("dragstart", () => { follow = false; followUi(); }); map.setView(p, 16); new ResizeObserver(() => map.invalidateSize()).observe($("map")); }
     const last = trailPts[trailPts.length - 1];
-    if (!last || last[0] !== p[0] || last[1] !== p[1]) { trailPts.push(p); if (trailPts.length > 1500) trailPts.shift(); trail.setLatLngs(trailPts); }
-    marker.setLatLng(p); map.panTo(p, { animate: false });
+    if (!last || last[0] !== p[0] || last[1] !== p[1]) { trailPts.push(p); if (trailPts.length > 1500) trailPts.shift(); setTrail(); }
+    marker.setLatLng(p); if (follow) map.panTo(p, { animate: false }); $("follow").hidden = false;
     $("amap").href = "https://maps.apple.com/?ll=" + p[0] + "," + p[1] + "&q=My%20car";
   }
   const lat = num(S.LateralAcceleration), lon = num(S.LongitudinalAcceleration);
@@ -778,12 +899,14 @@ function render() {
   }
   drawG();
 }
+function setTrail() { const k = trail.length, m = trailPts.length; trail.forEach((pl, j) => { const a = Math.floor(j * m / k), b = Math.floor((j + 1) * m / k); pl.setLatLngs(trailPts.slice(Math.max(0, a - 1), b)); }); }
+function followUi() { $("follow").classList.toggle("on", follow); $("followt").textContent = follow ? "Following" : "Follow car"; }
 // ---- drive screen effects (v8) ----
 const TK = { nd: 0, nr: 0, charging: false, soc: 0 };     // what the bars should show (30 bars a side)
 let spTarget = null, spShown = null, parkedView = false, parkedSince = 0, socView = null;
 let sweepStart = 0, sweepEnd = 0, fxOn = false, fxLast = 0, chgLast = 0;
 const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
-let NB = 40; const OFF = "#1b1e23", OFFM = "#2b2f37", OFFB = OFF; // ticks per half, set from the edge length in layoutDash; majors a shade brighter at rest
+let NB = 40, OFF = "#1b1e23", OFFM = "#2b2f37"; // ticks per half, set from the edge length in layoutDash; majors a shade brighter at rest
 const barColour = i => i < NB * 0.8 ? "#30d158" : i < NB * 0.93 ? "#ffd60a" : "#ff453a";
 // Left bars: regen (blue, rises from the bottom). Right bars: power (green, yellow, red near the top).
 function paintTicks(now) {
@@ -852,6 +975,7 @@ function layoutDash() {
   // the two pods sit in the bottom corners, inside the tick track
   const P = Math.round(Math.min(0.34 * H, 146, (H - 2 * e) * 0.62));
   const gwp = $("gwrap"), rs = $("rside"); gwp.style.width = rs.style.width = P + "px"; gwp.style.left = e + "px"; rs.style.right = e + "px"; gwp.style.bottom = rs.style.bottom = e + "px";
+  { const pad = 18; [["ghit", "left"], ["rhit", "right"]].forEach(([id, side]) => { const h = $(id).style; h.width = h.height = (P + 2 * pad) + "px"; h[side] = (e - pad) + "px"; h.bottom = (e - pad) + "px"; }); }
   // centre stack inside the track; the speed keeps its look and only scales down if a short screen would make it collide
   { const cs = $("cstack").style, avail = H - (t + 6) - (e - 4), base = Math.min(0.5 * H, 215), need = base * 0.84 + 0.24 * H; cs.top = (t + 6) + "px"; cs.bottom = (e - 4) + "px"; /* gear strip stays clear of the bottom tick row */ cs.setProperty("--spk", Math.min(1, Math.max(0.85, (avail - 0.2 * H) / (base * 0.84))).toFixed(3)); }
   // cruise readout at the top centre, just inside the band
@@ -865,8 +989,12 @@ function layoutDash() {
 function writeSpeed() {
   const e = $("speed"), t = parkedView ? (socView == null ? "--" : String(socView)) : spShown == null ? "--" : String(Math.round(spShown));
   if (e.textContent !== t) e.textContent = t; e.classList.toggle("d3", t.length >= 3);
-  $("kmh").textContent = parkedView ? "% · " + $("rng").textContent + " km" : "km/h";
+  const st = staleSecs(); $("hud").classList.toggle("stale", st > 0);
+  $("kmh").textContent = st ? "Last seen " + (st < 90 ? st + " s" : Math.round(st / 60) + " min") + " ago" : parkedView ? "% · " + $("rng").textContent + " km" : "km/h";
 }
+function staleSecs() { /* only while the car was last seen moving: a parked car goes quiet normally */
+  if (!liveMode || !lastEvt) return 0; const q = (Date.now() - lastEvt) / 1000, g = S.Gear == null ? "" : String(S.Gear), sp = speedKmh(), moving = (g !== "" && !/P$/.test(g)) || (sp != null && sp > 5);
+  return moving && q > 10 ? Math.round(q) : 0; }
 function fxKick() { if (!fxOn) { fxOn = true; requestAnimationFrame(fxFrame); } }
 function fxFrame(now) {
   let more = false; const dt = fxLast ? Math.min(100, now - fxLast) : 16; fxLast = now;
@@ -889,7 +1017,7 @@ function driveFx(sp, pw, acc, charging, eff) {
   $("ticks").classList.toggle("rpulse", pw != null && pw < -40);
   // gear strip: light the active gear; nothing lit until the car has sent a gear
   { const g = $("gearv").textContent, known = S.Gear != null, pr = $("prnd"); pr.dataset.g = known ? g : "";
-    [...pr.children].forEach(b => { const on = known && b.textContent === g; if (on && !b.classList.contains("on")) { b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop"); } b.classList.toggle("on", on); }); }
+    [...pr.children].forEach(b => { const on = known && b.textContent === g; if (on !== b.classList.contains("on")) { b.classList.remove("gin", "gout"); void b.offsetWidth; b.classList.add(on ? "gin" : "gout"); } b.classList.toggle("on", on); }); }
   // turn signals also light a strip beside the matching bars
   { const t = String(S.LightsTurnSignal || ""); $("tel").classList.toggle("on", /Left|Both/.test(t)); $("ter").classList.toggle("on", /Right|Both/.test(t)); }
   // accelerator tip: a bright dot at the end of the green fill
@@ -950,7 +1078,7 @@ function isNight(now) {
   if (k.length === 2 && isFinite(la) && isFinite(lo)) { const t = sunTimes(la, lo, now); if (t) return now < t.rise || now > t.set; }
   const h = now.getHours(); return h >= 19 || h < 6;
 }
-function nightDim() { const on = isNight(new Date()) || location.search.includes("night"); document.documentElement.style.filter = on ? "brightness(.74)" : ""; $("night").hidden = !on; } nightDim(); setInterval(nightDim, 60000); // dimmer and warmer at night; colours keep their meaning
+function nightDim() { const on = isNight(new Date()) || location.search.includes("night"); document.documentElement.style.filter = on ? "brightness(.74)" : ""; document.documentElement.classList.toggle("night", on); $("night").hidden = !on; } nightDim(); setInterval(nightDim, 60000); // dimmer and warmer at night; colours keep their meaning
 function netBanner() { $("offl").hidden = navigator.onLine !== false; } addEventListener("online", netBanner); addEventListener("offline", netBanner); netBanner();
 function setChip(t, c) { const e = $("chip"); e.textContent = t; e.title = t; e.style.color = c || ""; e.classList.toggle("dotonly", /^Live/.test(t)); }
 let liveMode = false, lastEvt = 0, streamOpen = false, wasOpen = false;
@@ -981,7 +1109,7 @@ function fillFromSnapshot(j) {
   for (const [k, v] of Object.entries(d)) { const val = v && typeof v === "object" && !Array.isArray(v) && "value" in v ? v.value : v; if (S[k] === undefined && val != null) S[k] = val; }
   const fromVd = (key, path, conv) => { const x = dig(root.vehicle_data, path) ?? dig(root, path); if (x != null && S[key] === undefined) S[key] = conv ? conv(x) : x; };
   fromVd("Version", "vehicle_state.car_version", x => String(x).split(" ")[0]);
-  fromVd("EstBatteryRange", "charge_state.est_battery_range"); fromVd("InsideTemp", "climate_state.inside_temp");
+  fromVd("EstBatteryRange", "charge_state.est_battery_range"); fromVd("ChargeLimitSoc", "charge_state.charge_limit_soc"); fromVd("InsideTemp", "climate_state.inside_temp");
   scheduleRender();
 }
 async function seedFromCache() { try { const vin = await findVin(); if (vin) fillFromSnapshot(await relayGet("/api/1/vehicles/" + vin + "/telemetry")); } catch (e) { /* optional extra: ignore */ } }
@@ -1061,14 +1189,19 @@ function flag(id, lvl) { const t = $(id).closest(".t"); if (t) { t.classList.rem
 // Each tick is a small rounded block (no outline).
 function buildTicks() { layoutDash(); } // the bars are drawn with the brackets
 let curPage = null; // the page being shown, so a resize (for example Safari's toolbar) never throws you back to the middle
-function home() { const p = $("pages"); p.style.scrollBehavior = "auto"; if (curPage == null) { const q = new URLSearchParams(location.search).get("page"); curPage = q == null ? 2 : +q; /* five pages: charging, car, drive (the middle one, opened first), map, info */ } p.scrollLeft = p.clientWidth * curPage; }
+function home() { const p = $("pages"); p.style.scrollBehavior = "auto"; if (curPage == null) { const q = new URLSearchParams(location.search).get("page"); const sv = store.get("page"); curPage = q != null ? +q : (sv !== "" && +sv >= 0 && +sv <= 4 ? +sv : 2); /* five pages: charging, car, drive (the middle one, opened first), map, info */ } p.scrollLeft = p.clientWidth * curPage; }
+const PLX = ["ch", "carpg", "main", "sheet", "inf"]; let plxOn = false;
+function plxKick() { if (REDUCED || plxOn) return; plxOn = true; requestAnimationFrame(() => { plxOn = false; const p = $("pages"), w = p.clientWidth; if (!w) return;
+  PLX.forEach((id, j) => { const d = j * w - p.scrollLeft, el = $(id); el.style.transform = Math.abs(d) < 1 || Math.abs(d) >= w ? "" : "translateX(" + (-0.12 * d).toFixed(1) + "px)"; }); }); }
 function startApp(demo) {
   show(true); buildTicks(); keepAwake(); home(); startSweep(); requestAnimationFrame(layoutDash);
-  let dotsTo = null; const dots = () => { const p = $("pages"), i = Math.round(p.scrollLeft / p.clientWidth); [...$("dots").children].forEach((d, j) => d.classList.toggle("on", j === i)); $("dots").classList.remove("fade"); clearTimeout(dotsTo); dotsTo = setTimeout(() => $("dots").classList.add("fade"), 3000); }; // page dots fade 3 s after a swipe
+  let dotsTo = null; const dots = () => { const p = $("pages"), i = Math.round(p.scrollLeft / p.clientWidth); [...$("dots").children].forEach((d, j) => d.classList.toggle("on", j === i)); [...$("hint").children].forEach((d, j) => d.classList.toggle("on", j === i)); $("dots").classList.remove("fade"); clearTimeout(dotsTo); dotsTo = setTimeout(() => $("dots").classList.add("fade"), 3000); }; // page dots fade 3 s after a swipe
   let lockUntil = 0;
-  $("pages").addEventListener("scroll", () => { dots(); if (Date.now() > lockUntil) { const p = $("pages"); curPage = Math.round(p.scrollLeft / p.clientWidth); } if (map) map.invalidateSize(); }, { passive: true });
+  $("pages").addEventListener("scroll", () => { dots(); if (Date.now() > lockUntil) { const p = $("pages"); curPage = Math.round(p.scrollLeft / p.clientWidth); if (store.get("page") !== String(curPage)) store.set("page", String(curPage)); } plxKick(); if (map) map.invalidateSize(); }, { passive: true });
   const back = () => { lockUntil = Date.now() + 400; home(); dots(); };
   addEventListener("resize", () => { back(); layoutDash(); }); addEventListener("orientationchange", () => setTimeout(layoutDash, 250)); addEventListener("pageshow", back); addEventListener("orientationchange", back); dots();
+  if (!store.get("hinted") || location.search.includes("hint")) { const h = $("hint"); h.innerHTML = ["Charging", "Car", "Drive", "Map", "Info"].map((x, j) => "<span" + (j === curPage ? ' class="on"' : "") + ">" + x + "</span>").join(""); h.hidden = false; $("app").classList.add("hinting"); setTimeout(() => h.classList.add("fade"), 5000); setTimeout(() => { h.hidden = true; $("app").classList.remove("hinting"); }, 5700); store.set("hinted", "1"); }
+  [...$("dots").children].forEach((d, j) => { d.onclick = () => { const p = $("pages"); p.style.scrollBehavior = "smooth"; p.scrollLeft = p.clientWidth * j; }; }); /* tap a dot to go to that page */
   setInterval(() => { render(); }, 1000);
   setInterval(() => timerTick(performance.now()), 100);
   const tick = () => { $("clock").textContent = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); }; tick(); setInterval(tick, 10000);
@@ -1077,17 +1210,38 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "v19 · 22 Nov 2026"; $("build").textContent = BUILD;
+const BUILD = "v20 · 22 Nov 2026"; $("build").textContent = BUILD;
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {}); // opens with no signal; the network copy always wins when online
-$("upd").onclick = () => { location.href = location.pathname + "?v=" + Date.now(); }; // reloads a fresh copy; the saved token stays in this browser
-$("rside").onclick = toggleArm;
+$("upd").onclick = async () => { const b = $("upd"); b.disabled = true; b.textContent = "Checking...";
+  try { const r = await fetch(location.pathname + "?check=" + Date.now(), { cache: "no-store" }), m = (await r.text()).match(/const BUILD = "([^"]+)"/);
+    if (m && m[1] !== BUILD) { b.textContent = "Updating to " + m[1].split(" ")[0]; setTimeout(() => { location.href = location.pathname + "?v=" + Date.now(); }, 700); return; } /* the saved token stays in this browser */
+    b.textContent = m ? "Up to date" : "Couldn't check"; } catch (e) { b.textContent = "Couldn't check"; }
+  b.disabled = false; setTimeout(() => { b.textContent = "Check for update"; }, 4000); };
+$("rside").onclick = $("rhit").onclick = toggleArm;
+$("ghit").onclick = () => { gPeak = null; gfPts = []; drawG(); }; /* tap the G pod to clear its trail and peak */
 $("topzone").onclick = () => { topPeek = Date.now() + 5000; render(); };
 $("czl").onclick = $("czr").onclick = () => { circPeek = Date.now() + 8000; render(); };
-const thinLabel = () => { $("thin").textContent = "Thin bars: " + (store.get("ticks") === "thin" ? "on" : "off"); }; thinLabel();
+const thinLabel = () => { $("thin").classList.toggle("on", store.get("ticks") === "thin"); $("punit").classList.toggle("on", store.get("pu") === "kpa"); }; thinLabel();
+function applyHc() { const on = store.get("hc") === "1"; document.documentElement.classList.toggle("hc", on); OFF = on ? "#2c3038" : "#1b1e23"; OFFM = on ? "#4a505b" : "#2b2f37"; $("hc").classList.toggle("on", on); } applyHc();
+$("punit").onclick = () => { store.set("pu", store.get("pu") === "kpa" ? "" : "kpa"); thinLabel(); render(); };
+$("hc").onclick = () => { store.set("hc", store.get("hc") === "1" ? "" : "1"); applyHc(); buildTicks(); render(); };
+$("follow").onclick = () => { follow = !follow; followUi(); if (follow && marker) map.panTo(marker.getLatLng(), { animate: true }); };
+// 11: tap a door, boot, window, tyre or the charge port to read its state
+function partInfo(id) {
+  const st = (known, on) => known ? (on ? "open" : "closed") : "not reported", isOpen = x => $(x).classList.contains("open"), ds = doorSet(S.DoorState);
+  if (id === "frunk") return "Front boot: " + st(ds != null, isOpen(id)); if (id === "trunk") return "Boot: " + st(ds != null, isOpen(id));
+  if (id === "cport") return "Charge port: " + st(S.ChargePortDoorOpen != null, isOpen(id));
+  const [k, p] = id.split("-"), side = SIDE_NAME[p];
+  return k === "d" ? side + " door: " + st(ds != null, isOpen(id)) : k === "w" ? side + " window: " + st(!!winK[p], isOpen(id)) : side + " tyre: " + ($(id).dataset.st || "not reported"); }
+["fl", "fr", "rl", "rr"].forEach(p => { const w = $("w-" + p), r = document.createElementNS("http://www.w3.org/2000/svg", "rect"); r.setAttribute("x", +w.getAttribute("x") - 7); r.setAttribute("y", w.getAttribute("y")); r.setAttribute("width", 19); r.setAttribute("height", w.getAttribute("height")); r.setAttribute("fill", "transparent"); r.setAttribute("class", "hit"); r.dataset.for = "w-" + p; $("car").appendChild(r); });
+["d-fl", "d-fr", "d-rl", "d-rr", "frunk", "trunk", "cport", "t-fl", "t-fr", "t-rl", "t-rr"].map(id => $(id)).concat([...document.querySelectorAll("#car .hit")]).forEach(e => { e.style.cursor = "pointer";
+  e.addEventListener("click", ev => { ev.stopPropagation(); const c = $("carsum"); carPeek = Date.now() + 4000; carPeekId = e.dataset.for || e.id; c.textContent = partInfo(carPeekId); c.classList.remove("warn", "ok"); c.classList.add("peek"); }); });
 $("thin").onclick = () => { store.set("ticks", store.get("ticks") === "thin" ? "" : "thin"); $("ticks").innerHTML = ""; buildTicks(); thinLabel(); render(); };
-$("ver").onclick = () => { if (confirm("Read the software version from Teslemetry? This can use up to 2 credits (500 a month are included). It never wakes the car.")) readVersion(); };
+function ask(text, ok, danger) { return new Promise(res => { $("askt").textContent = text; const o = $("askok"); o.textContent = ok; o.classList.toggle("danger", !!danger); $("ask").hidden = false;
+  const done = v => { $("ask").hidden = true; res(v); }; o.onclick = () => done(true); $("askno").onclick = () => done(false); $("ask").onclick = e => { if (e.target === $("ask")) done(false); }; }); }
+$("ver").onclick = async () => { if (await ask("Read the software version from Teslemetry? This can use up to 2 credits (500 a month are included). It never wakes the car.", "Read version")) readVersion(); };
 $("demo").onclick = () => startApp(true);
-$("gear").onclick = () => { if (confirm("Clear the saved token and settings?")) { store.set("tok", ""); store.set("base", ""); location.reload(); } };
+$("gear").onclick = async () => { if (await ask("Clear the saved token and relay address? You will need to paste the token again.", "Clear token", true)) { store.set("tok", ""); store.set("base", ""); location.reload(); } };
 if (location.search.includes("sample")) startApp(true);
 else if (store.get("tok")) startApp(false);
 else show(false);
