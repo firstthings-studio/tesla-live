@@ -751,7 +751,7 @@ const powerKw = () => {
   const kw = pcSign * v * a / 1000;
   return Math.abs(kw) < 1 ? 0 : kw; // under 1 kW is idle noise: show 0, never "-0" or a regen label
 };
-const PSI_PER_ATM = 14.696; // Teslemetry reports tyre pressure in atmospheres
+const PSI_PER_BAR = 14.5038; // Teslemetry reports tyre pressure in bar (its console shows 2.99 bar for this car)
 const chgE = { kwh: 0, t: 0 }, winK = {}; let carPeek = 0, carPeekId = "", follow = true, trailDirty = false; /* charge energy counter, known windows, car-part tap label, map follow */
 // ---- car page: which door, boot, window or charge port is open, shown on a top-down outline ----
 const truthy = v => v === true || v === "true" || v === 1 || v === "1";
@@ -788,7 +788,7 @@ function renderCar() {
   { const m = String(S.SentryMode ?? "").replace(/^SentryModeState/, ""), off = m === "Off" || S.SentryMode === false, unk = S.SentryMode == null || m === "Unknown" || m === "";
     $("sentry").textContent = unk ? "-" : off ? "Off" : m === "Panic" ? "Alert" : "On"; flag("sentry", unk || off ? "" : m === "Panic" ? "bad" : "ok"); $("sring").classList.toggle("on", !unk && !off); }
   let low = 0; const kpa = store.get("pu") === "kpa";
-  [["fl", "Fl"], ["fr", "Fr"], ["rl", "Rl"], ["rr", "Rr"]].forEach(([p, k]) => { const x = num(S["TpmsPressure" + k]), psi = x == null ? null : x * PSI_PER_ATM, e = $("t-" + p), lvl = psi == null ? "" : psi < 32 ? "bad" : psi < 38 ? "warn" : "", txt = psi == null ? "-" : kpa ? (x * 101.325).toFixed(0) : psi.toFixed(0);
+  [["fl", "Fl"], ["fr", "Fr"], ["rl", "Rl"], ["rr", "Rr"]].forEach(([p, k]) => { const x = num(S["TpmsPressure" + k]), psi = x == null ? null : x * PSI_PER_BAR, e = $("t-" + p), lvl = psi == null ? "" : psi < 32 ? "bad" : psi < 38 ? "warn" : "", txt = psi == null ? "-" : kpa ? (x * 100).toFixed(0) : psi.toFixed(0);
     e.textContent = txt; e.classList.toggle("bad", lvl === "bad"); e.classList.toggle("warn", lvl === "warn"); e.dataset.st = psi == null ? "not reported" : txt + (kpa ? " kPa" : " psi") + (lvl === "bad" ? ", very low" : lvl === "warn" ? ", low" : ", OK");
     if (lvl) { low++; open.push(SIDE_NAME[p] + (lvl === "bad" ? " tyre very low" : " tyre low")); } });
   document.querySelectorAll("#car .pu").forEach(u => { u.textContent = kpa ? "kPa" : "psi"; });
@@ -1230,7 +1230,7 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "v21 · 22 Nov 2026"; $("build").textContent = BUILD;
+const BUILD = "v22 · 22 Nov 2026"; $("build").textContent = BUILD;
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {}); // opens with no signal; the network copy always wins when online
 $("upd").onclick = async () => { const b = $("upd"); b.disabled = true; b.textContent = "Checking...";
   try { const r = await fetch(location.pathname + "?check=" + Date.now(), { cache: "no-store" }), m = (await r.text()).match(/const BUILD = "([^"]+)"/);
