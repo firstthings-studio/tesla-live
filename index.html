@@ -827,7 +827,7 @@ function layoutDash() {
   ["trkL", "regb", "brkb"].forEach(id => $(id).setAttribute("d", bodyL)); ["trkR", "accb"].forEach(id => $(id).setAttribute("d", bodyR));
   ["regc", "brkc", "regh", "brkh"].forEach(id => $(id).setAttribute("d", coreL)); ["accc", "acch"].forEach(id => $(id).setAttribute("d", coreR));
   $("dash").setAttribute("viewBox", "0 0 " + W + " " + H); const gs = $("gauge").style; gs.setProperty("--t", t + "px"); gs.setProperty("--cw", cw + "px"); gs.setProperty("--hw", Math.round(t * 0.3) + "px"); $("halo").firstElementChild.setAttribute("stdDeviation", Math.round(t * 0.5));
-  { const o = $("bmOuter"), i = $("bmInner"); o.setAttribute("width", W); o.setAttribute("height", H); i.setAttribute("x", t); i.setAttribute("y", t); i.setAttribute("width", W - 2 * t); i.setAttribute("height", H - 2 * t); i.setAttribute("rx", ri); }
+  { const o = $("bmOuter"), i = $("bmInner"); o.setAttribute("width", W); o.setAttribute("height", H); i.setAttribute("x", t); i.setAttribute("y", t); i.setAttribute("width", Math.max(0, W - 2 * t)); i.setAttribute("height", Math.max(0, H - 2 * t)); i.setAttribute("rx", ri); }
   $("bloom").firstElementChild.setAttribute("stdDeviation", Math.round(Math.max(16, 0.075 * H)));
   // tick track: evenly spaced ticks all the way along the band's inner edge, pointing inward (right half = power, left half = regen)
   geo = { W, H, xL: t, xR: W - t, yT: t, yB: H - t, ri };
