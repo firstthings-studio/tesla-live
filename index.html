@@ -310,6 +310,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #batt b.lw{color:#ff9f0a}#batt b.lb{color:#ff453a}
 #night{position:fixed;inset:0;z-index:9999;pointer-events:none;background:#ffdcbe;mix-blend-mode:multiply}#night[hidden]{display:none}
 #dots{transition:opacity .5s ease}
+#p-hud #tm,#p-hud #tsub,#speed,#crv{font-variant-numeric:tabular-nums}
 .leaflet-bottom.leaflet-left{left:var(--sl);bottom:var(--sb)} /* keep the map credit clear of the rounded corners and the island */
 /* ===== v11: rectangular gauges, rendered look ===== */
 #saprobe{position:fixed;visibility:hidden;pointer-events:none;width:0;height:0;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
@@ -337,7 +338,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #crpill.hold{color:#30d158;box-shadow:inset 0 0 0 1.5px #30d158,0 0 14px -2px #30d158}
 #crpill[hidden]{display:none}
 #crpill::before{content:"";display:inline-block;width:.62em;height:.62em;margin-right:.45em;border:2px solid currentColor;border-radius:50%;vertical-align:-.04em}
-#road{position:absolute;left:0;right:0;bottom:0;height:58%;z-index:0;pointer-events:none;overflow:hidden;perspective:300px;perspective-origin:50% 0;opacity:.6;-webkit-mask-image:radial-gradient(55% 110% at 50% 100%,#000 25%,transparent 72%);mask-image:radial-gradient(55% 110% at 50% 100%,#000 25%,transparent 72%)}
+#road{position:absolute;left:0;right:0;bottom:0;height:58%;z-index:0;pointer-events:none;overflow:hidden;perspective:300px;perspective-origin:50% 0;opacity:.35;-webkit-mask-image:radial-gradient(55% 110% at 50% 100%,#000 25%,transparent 72%);mask-image:radial-gradient(55% 110% at 50% 100%,#000 25%,transparent 72%)}
 #roadg{position:absolute;left:-60%;right:-60%;top:0;height:300%;transform:rotateX(64deg);transform-origin:50% 0;
   background-image:linear-gradient(90deg,transparent calc(50% - 132px),rgba(150,180,210,.55) calc(50% - 132px),rgba(150,180,210,.55) calc(50% - 128px),transparent calc(50% - 128px),transparent calc(50% + 128px),rgba(150,180,210,.55) calc(50% + 128px),rgba(150,180,210,.55) calc(50% + 132px),transparent calc(50% + 132px)),
   repeating-linear-gradient(0deg,rgba(150,180,210,.16) 0 2px,transparent 2px 70px),
@@ -355,8 +356,8 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 /* ===== v9: pure driving. One number, one gear, the ring does the rest. ===== */
 #p-hud #batt,#p-hud #tr>span:has(#tout3){display:none}
 #tout3wrap{display:none}
-#speed{font-size:min(50vh,215px);letter-spacing:-.02em;line-height:1.04;padding:0 .1em;margin:-.08em 0 -.12em}
-#speed.d3{font-size:min(37vh,160px)}
+#speed{font-size:calc(min(50vh,215px) * var(--spk,1));letter-spacing:-.02em;line-height:1.04;padding:0 .1em;margin:-.08em 0 -.12em}
+#speed.d3{font-size:calc(min(37vh,160px) * var(--spk,1))}
 #kmh{font-style:italic;font-weight:600;letter-spacing:.08em;color:#8e8e93;margin-top:-.6vh}
 #cstack{top:calc(var(--st) + 15vh);bottom:calc(var(--sb) + 11vh);justify-content:center;gap:2.6vh}
 #p-hud #tr{margin-left:auto}
@@ -782,20 +783,21 @@ const TK = { nd: 0, nr: 0, charging: false, soc: 0 };     // what the bars shoul
 let spTarget = null, spShown = null, parkedView = false, parkedSince = 0, socView = null;
 let sweepStart = 0, sweepEnd = 0, fxOn = false, fxLast = 0, chgLast = 0;
 const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
-const NB = 20, OFF = "#1d2026", OFFB = "#1d2026"; // 20 thicker bars a side; unlit is one neutral on both sides
-const barColour = i => i < NB * 0.6 ? "#30d158" : i < NB * 0.85 ? "#ffd60a" : "#ff453a";
+let NB = 40; const OFF = "#1b1e23", OFFM = "#2b2f37", OFFB = OFF; // ticks per half, set from the edge length in layoutDash; majors a shade brighter at rest
+const barColour = i => i < NB * 0.8 ? "#30d158" : i < NB * 0.93 ? "#ffd60a" : "#ff453a";
 // Left bars: regen (blue, rises from the bottom). Right bars: power (green, yellow, red near the top).
 function paintTicks(now) {
   const L = $("ticks").querySelectorAll(".bl"), R = $("ticks").querySelectorAll(".br"); if (!R.length) return;
   const sw = now < sweepEnd ? Math.sin(Math.PI * (now - sweepStart) / (sweepEnd - sweepStart)) : -1;
   const cp = TK.charging ? (now % 2600) / 2600 : 0, socN = Math.round(Math.max(0, Math.min(100, TK.soc)) / 100 * NB);
   R.forEach((e, i) => { let c;
-    if (sw >= 0) c = i < Math.round(sw * NB) ? barColour(i) : OFF;                                            // start-up sweep
-    else if (TK.charging) c = i < Math.round(cp * socN) ? "#30d158" : i < socN ? "#174d2a" : OFF;              // charging: fills to the battery level
-    else c = i < TK.nd ? barColour(i) : OFF;
-    e.style.stroke = c; e.classList.toggle("lit", c !== OFF && c !== "#174d2a"); });
+    const off = e.classList.contains("mj") ? OFFM : OFF;
+    if (sw >= 0) c = i < Math.round(sw * NB) ? barColour(i) : off;                                            // start-up sweep
+    else if (TK.charging) c = i < Math.round(cp * socN) ? "#30d158" : i < socN ? "#174d2a" : off;              // charging: fills to the battery level
+    else c = i < TK.nd ? barColour(i) : off;
+    e.style.stroke = c; e.classList.toggle("lit", c !== off && c !== "#174d2a"); });
   L.forEach((e, i) => { const on = sw >= 0 ? i < Math.round(sw * NB) : !TK.charging && i < TK.nr;
-    e.style.stroke = on ? "#0a84ff" : OFFB; e.classList.toggle("rl", on && sw < 0); e.classList.toggle("lit", on); });
+    e.style.stroke = on ? "#0a84ff" : (e.classList.contains("mj") ? OFFM : OFF); e.classList.toggle("rl", on && sw < 0); e.classList.toggle("lit", on); });
 }
 // Lays out both brackets from the real page size and the safe areas (Dynamic Island, rounded corners, home bar).
 let geo = null;
@@ -827,22 +829,31 @@ function layoutDash() {
   $("dash").setAttribute("viewBox", "0 0 " + W + " " + H); const gs = $("gauge").style; gs.setProperty("--t", t + "px"); gs.setProperty("--cw", cw + "px"); gs.setProperty("--hw", Math.round(t * 0.3) + "px"); $("halo").firstElementChild.setAttribute("stdDeviation", Math.round(t * 0.5));
   { const o = $("bmOuter"), i = $("bmInner"); o.setAttribute("width", W); o.setAttribute("height", H); i.setAttribute("x", t); i.setAttribute("y", t); i.setAttribute("width", W - 2 * t); i.setAttribute("height", H - 2 * t); i.setAttribute("rx", ri); }
   $("bloom").firstElementChild.setAttribute("stdDeviation", Math.round(Math.max(16, 0.075 * H)));
-  // bar meters just inside the band, inside the safe area
-  const tlen = Math.max(16, 0.06 * H), tmaj = tlen, inL = Math.max(sl, t) + 12, inR = W - Math.max(sr, t) - 12;
-  const yTop = Math.max(st, t, 44) + 14, yBot = H - Math.max(sb, t) - 14;
-  const g0 = $("ticks"); g0.innerHTML = ""; const thin = store.get("ticks") === "thin", step = (yBot - yTop) / (NB - 1), sw = Math.max(3, step * (thin ? 0.32 : 0.62));
-  for (let i = 0; i < NB; i++) { const y = yBot - i * step, len = i % 5 === 4 ? tmaj : tlen;
-    [["bl", inL, 1], ["br", inR, -1]].forEach(([cls, x, dir]) => { const l = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      l.setAttribute("x1", x); l.setAttribute("x2", x + dir * len); l.setAttribute("y1", y); l.setAttribute("y2", y); l.style.strokeWidth = sw + "px"; /* inline: old ring CSS (#ticks line) would otherwise cap it at 3.6 */ l.setAttribute("class", cls); l.style.stroke = cls === "bl" ? OFFB : OFF; g0.appendChild(l); }); }
+  // tick track: evenly spaced ticks all the way along the band's inner edge, pointing inward (right half = power, left half = regen)
+  geo = { W, H, xL: t, xR: W - t, yT: t, yB: H - t, ri };
+  const pitch = Math.max(11, 0.033 * H), tl = Math.max(9, 0.034 * H), tgap = 8, halfLen = 2 * ((W / 2 - t) - ri) + Math.PI * ri + ((H - 2 * t) - 2 * ri);
+  NB = Math.max(24, Math.round(halfLen / pitch));
+  const g0 = $("ticks"); g0.innerHTML = ""; const thin = store.get("ticks") === "thin", sw = Math.max(2.5, pitch * (thin ? 0.18 : 0.3)), ccx = W / 2, ccy = H / 2;
+  for (let i = 0; i < NB; i++) { const f = (i + 0.5) / NB;
+    [[false, "bl"], [true, "br"]].forEach(([right, cls]) => {
+      const p = bracketPoint(right, f), dx = Math.min(p.x - t, W - t - p.x), dy = Math.min(p.y - t, H - t - p.y);
+      if (dx < ri + pitch * 0.5 && dy < ri + pitch * 0.5) return; // no ticks in the rounded corners
+      let nx = 0, ny = 0; if (dx < dy) nx = p.x < ccx ? 1 : -1; else ny = p.y < ccy ? 1 : -1;                // straight inward from the nearest side
+      const l = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      l.setAttribute("x1", (p.x + nx * tgap).toFixed(1)); l.setAttribute("y1", (p.y + ny * tgap).toFixed(1)); l.setAttribute("x2", (p.x + nx * (tgap + tl)).toFixed(1)); l.setAttribute("y2", (p.y + ny * (tgap + tl)).toFixed(1));
+      l.style.strokeWidth = sw + "px"; /* inline: old ring CSS (#ticks line) would otherwise cap it at 3.6 */
+      l.setAttribute("class", cls + (i % 5 === 4 ? " mj" : "")); l.style.stroke = i % 5 === 4 ? OFFM : OFF; g0.appendChild(l); }); }
+  const e = t + tgap + tl + 12;                                                                                  // everything else lives inside the tick track
   // turn signals: the inner edge of that side pulses green
   $("tel").setAttribute("d", "M" + t + " " + (H * 0.2) + "V" + (H * 0.8)); $("ter").setAttribute("d", "M" + (W - t) + " " + (H * 0.2) + "V" + (H * 0.8));
-  // the two pods sit in the bottom corners, inside the bars
-  const P = Math.round(Math.min(0.34 * H, 146)), podIn = tmaj + 16, podBottom = H - yBot - sw / 2;
-  const gwp = $("gwrap"), rs = $("rside"); gwp.style.width = rs.style.width = P + "px"; gwp.style.left = (inL + podIn) + "px"; rs.style.right = (W - inR + podIn) + "px"; gwp.style.bottom = rs.style.bottom = podBottom + "px";
-  { const cs = $("cstack").style; cs.top = (yTop - 4) + "px"; cs.bottom = (H - yBot) + "px"; } // centre stack lives inside the band
+  // the two pods sit in the bottom corners, inside the tick track
+  const P = Math.round(Math.min(0.34 * H, 146, (H - 2 * e) * 0.62));
+  const gwp = $("gwrap"), rs = $("rside"); gwp.style.width = rs.style.width = P + "px"; gwp.style.left = e + "px"; rs.style.right = e + "px"; gwp.style.bottom = rs.style.bottom = e + "px";
+  // centre stack inside the track; the speed keeps its look and only scales down if a short screen would make it collide
+  { const cs = $("cstack").style, avail = H - (t + 6) - (e - 4), base = Math.min(0.5 * H, 215), need = base * 0.84 + 0.24 * H; cs.top = (t + 6) + "px"; cs.bottom = (e - 4) + "px"; /* gear strip stays clear of the bottom tick row */ cs.setProperty("--spk", Math.min(1, Math.max(0.85, (avail - 0.2 * H) / (base * 0.84))).toFixed(3)); }
   // cruise readout at the top centre, just inside the band
   const cp = $("crpill"); cp.style.left = cx + "px"; cp.style.top = Math.max(st + 20, Math.max(st, t) / 2) + "px"; /* centred in the top band, above everything */
-  geo = { W, H, xL: t, xR: W - t, yT: t, yB: H - t, ri }; paintTicks(performance.now()); scheduleRender();
+  paintTicks(performance.now()); scheduleRender();
 }
 // The core lines copy the fill, visibility, colour and hard-brake state of their band (set in render), so the JS above stays the only writer.
 (function mirrorCores() { const pairs = [["regb", "regc"], ["brkb", "brkc"], ["accb", "accc"], ["regb", "regh"], ["brkb", "brkh"], ["accb", "acch"]];
@@ -907,8 +918,8 @@ let gPeak = null; // peak-hold dot: the strongest recent G reading, fades over 2
 function drawG() {
   const c = $("gf"), g = c.getContext("2d"), w = c.width, h = c.height, cx = w / 2, cy = h / 2, R = h / 2 - 10, sc = R / 1.2; // 1.2 g edge
   g.clearRect(0, 0, w, h); g.strokeStyle = "rgba(235,235,245,.18)"; g.lineWidth = 2; g.fillStyle = "rgba(235,235,245,.6)"; g.font = "700 24px -apple-system, system-ui, sans-serif";
-  [0.5, 1].forEach(r => { g.beginPath(); g.arc(cx, cy, r * sc, 0, 7); g.stroke(); });
-  g.beginPath(); g.moveTo(cx - R, cy); g.lineTo(cx + R, cy); g.moveTo(cx, cy - R); g.lineTo(cx, cy + R); g.stroke();
+  g.beginPath(); g.arc(cx, cy, 0.5 * sc, 0, 7); g.strokeStyle = "rgba(235,235,245,.10)"; g.stroke();
+  for (let k = 0; k < 36; k++) { const a = k * Math.PI / 18, maj = k % 9 === 0, r1 = R - (maj ? 14 : 8); g.strokeStyle = maj ? "rgba(235,235,245,.55)" : "rgba(235,235,245,.22)"; g.lineWidth = maj ? 3 : 2; g.beginPath(); g.moveTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1); g.lineTo(cx + Math.cos(a) * (R - 2), cy + Math.sin(a) * (R - 2)); g.stroke(); }
   const tr = gfPts.slice(-6); tr.forEach((q, i) => { g.fillStyle = "rgba(255,255,255," + (0.12 + 0.88 * (i + 1) / tr.length) + ")"; g.beginPath(); g.arc(cx + q[0] * sc, cy - q[1] * sc, i === tr.length - 1 ? 15 : 5 + i, 0, 7); g.fill(); });
   const q = gfPts[gfPts.length - 1] || [0, 0], nowp = Date.now(), mg = Math.hypot(q[0], q[1]);
   if (mg > 0.15 && (!gPeak || nowp - gPeak.t > 2000 || mg >= gPeak.m)) gPeak = { x: q[0], y: q[1], m: mg, t: nowp };
@@ -1063,7 +1074,7 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "v17 · 22 Nov 2026"; $("build").textContent = BUILD;
+const BUILD = "v18 · 22 Nov 2026"; $("build").textContent = BUILD;
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {}); // opens with no signal; the network copy always wins when online
 $("upd").onclick = () => { location.href = location.pathname + "?v=" + Date.now(); }; // reloads a fresh copy; the saved token stays in this browser
 $("rside").onclick = toggleArm;
