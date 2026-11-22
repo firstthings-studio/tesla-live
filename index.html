@@ -822,7 +822,7 @@ function layoutDash() {
   const pr = getComputedStyle($("saprobe")), sl = parseFloat(pr.paddingLeft) || 0, sr = parseFloat(pr.paddingRight) || 0, st = parseFloat(pr.paddingTop) || 0, sb = parseFloat(pr.paddingBottom) || 0;
   // Band thickness = the phone's side safe margin: the gap outside the Dynamic Island + the island + the same gap inside it, so the
   // island sits centred in the band and the band's inner edge lines up with where content starts. No margin (desktop): 10% of height.
-  const side = Math.max(sl, sr), cx = W / 2, t = Math.round(side > 20 ? side : Math.max(24, 0.1 * H)), ri = Math.round(Math.max(12, 0.05 * H)), rc = ri + t / 2, cw = Math.max(2.5, 0.0065 * H);
+  const side = Math.max(sl, sr), cx = W / 2, t = Math.round(side > 20 ? side : Math.max(24, 0.1 * H)), ri = Math.round(Math.max(50, 0.15 * H)), rc = ri + t / 2, cw = Math.max(2.5, 0.0065 * H);
   const bodyL = halfPath(W, H, t / 2, rc, false), bodyR = halfPath(W, H, t / 2, rc, true), coreL = halfPath(W, H, t, ri, false), coreR = halfPath(W, H, t, ri, true);
   ["trkL", "regb", "brkb"].forEach(id => $(id).setAttribute("d", bodyL)); ["trkR", "accb"].forEach(id => $(id).setAttribute("d", bodyR));
   ["regc", "brkc", "regh", "brkh"].forEach(id => $(id).setAttribute("d", coreL)); ["accc", "acch"].forEach(id => $(id).setAttribute("d", coreR));
@@ -831,16 +831,19 @@ function layoutDash() {
   $("bloom").firstElementChild.setAttribute("stdDeviation", Math.round(Math.max(16, 0.075 * H)));
   // tick track: evenly spaced ticks all the way along the band's inner edge, pointing inward (right half = power, left half = regen)
   geo = { W, H, xL: t, xR: W - t, yT: t, yB: H - t, ri };
-  const pitch = Math.max(11, 0.033 * H), tl = Math.max(9, 0.034 * H), tgap = 8, halfLen = 2 * ((W / 2 - t) - ri) + Math.PI * ri + ((H - 2 * t) - 2 * ri);
-  NB = Math.max(24, Math.round(halfLen / pitch));
+  const pitch = Math.max(11, 0.033 * H), tl = Math.max(9, 0.034 * H), tgap = 8, dMid = tgap + tl / 2, rm = Math.max(4, ri - dMid), aS = (W / 2 - t) - ri, vS = (H - 2 * t) - 2 * ri, qM = Math.PI * rm / 2, M = 2 * aS + vS + 2 * qM;
+  NB = Math.max(24, Math.round(M / pitch));
   const g0 = $("ticks"); g0.innerHTML = ""; const thin = store.get("ticks") === "thin", sw = Math.max(2.5, pitch * (thin ? 0.18 : 0.3)), ccx = W / 2, ccy = H / 2;
   for (let i = 0; i < NB; i++) { const f = (i + 0.5) / NB;
     [[false, "bl"], [true, "br"]].forEach(([right, cls]) => {
-      const p = bracketPoint(right, f), dx = Math.min(p.x - t, W - t - p.x), dy = Math.min(p.y - t, H - t - p.y);
-      if (dx < ri + pitch * 0.5 && dy < ri + pitch * 0.5) return; // no ticks in the rounded corners
-      let nx = 0, ny = 0; if (dx < dy) nx = p.x < ccx ? 1 : -1; else ny = p.y < ccy ? 1 : -1;                // straight inward from the nearest side
+      const dir = right ? 1 : -1, xo = right ? W - t : t, kx = xo - dir * ri; let u = f * M, px, py, nx, ny;
+      if (u <= aS) { px = ccx + dir * u; py = H - t; nx = 0; ny = -1; }                                                        // bottom edge
+      else if ((u -= aS) <= qM) { const th = u / rm, ky = H - t - ri; px = kx + dir * ri * Math.sin(th); py = ky + ri * Math.cos(th); nx = -dir * Math.sin(th); ny = -Math.cos(th); } // bottom corner
+      else if ((u -= qM) <= vS) { px = xo; py = H - t - ri - u; nx = -dir; ny = 0; }                                         // side
+      else if ((u -= vS) <= qM) { const th = u / rm, ky = t + ri; px = kx + dir * ri * Math.cos(th); py = ky - ri * Math.sin(th); nx = -dir * Math.cos(th); ny = Math.sin(th); } // top corner
+      else { u -= qM; px = kx - dir * u; py = t; nx = 0; ny = 1; }                                                          // top edge
       const l = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      l.setAttribute("x1", (p.x + nx * tgap).toFixed(1)); l.setAttribute("y1", (p.y + ny * tgap).toFixed(1)); l.setAttribute("x2", (p.x + nx * (tgap + tl)).toFixed(1)); l.setAttribute("y2", (p.y + ny * (tgap + tl)).toFixed(1));
+      l.setAttribute("x1", (px + nx * tgap).toFixed(1)); l.setAttribute("y1", (py + ny * tgap).toFixed(1)); l.setAttribute("x2", (px + nx * (tgap + tl)).toFixed(1)); l.setAttribute("y2", (py + ny * (tgap + tl)).toFixed(1)); l.style.strokeLinecap = "butt";
       l.style.strokeWidth = sw + "px"; /* inline: old ring CSS (#ticks line) would otherwise cap it at 3.6 */
       l.setAttribute("class", cls + (i % 5 === 4 ? " mj" : "")); l.style.stroke = i % 5 === 4 ? OFFM : OFF; g0.appendChild(l); }); }
   const e = t + tgap + tl + 12;                                                                                  // everything else lives inside the tick track
@@ -1074,7 +1077,7 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "v18 · 22 Nov 2026"; $("build").textContent = BUILD;
+const BUILD = "v19 · 22 Nov 2026"; $("build").textContent = BUILD;
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {}); // opens with no signal; the network copy always wins when online
 $("upd").onclick = () => { location.href = location.pathname + "?v=" + Date.now(); }; // reloads a fresh copy; the saved token stays in this browser
 $("rside").onclick = toggleArm;
