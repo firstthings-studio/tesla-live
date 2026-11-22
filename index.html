@@ -520,6 +520,19 @@ html.hc #kmh{color:#c7c7cc}
 @media (orientation:portrait){.sbox{grid-template-columns:1fr}}
 @media (max-width:760px){#ch .t:not(.bat) .hd,#inf .t .hd,.side3 .t .hd{gap:6px}#ch .t:not(.bat) .ic,#inf .t .ic,.side3 .t .ic{width:18px;height:18px}#ch #chtm{font-size:var(--fs-v2)}}
 @media (prefers-reduced-motion:reduce){#bbar.chg #bfill{animation:none}#prnd b.gin,#prnd b.gout{animation:none}}
+/* ===== v21: performance ===== */
+#ticks line.lit{filter:none}#ticks.glow{filter:url(#glt)}
+#p-hud #dash path.pb.amb{filter:none}
+#p-hud #dash path.halo[opacity="0"],#p-hud #dash path.pb.f[opacity="0"],#p-hud #dash path.tedge:not(.on){display:none}
+#p-hud::before{display:none}
+#night{background:#bda48c}
+#speed{filter:drop-shadow(0 6px 14px rgba(0,0,0,.7))}
+#roadg{animation:none;background-image:linear-gradient(90deg,transparent calc(50% - 132px),rgba(150,180,210,.55) calc(50% - 132px),rgba(150,180,210,.55) calc(50% - 128px),transparent calc(50% - 128px),transparent calc(50% + 128px),rgba(150,180,210,.55) calc(50% + 128px),rgba(150,180,210,.55) calc(50% + 132px),transparent calc(50% + 132px)),repeating-linear-gradient(90deg,rgba(150,180,210,.05) 0 1px,transparent 1px 64px)}
+#roadg::before{content:"";position:absolute;left:0;right:0;top:-70px;bottom:0;background-image:repeating-linear-gradient(0deg,rgba(150,180,210,.16) 0 2px,transparent 2px 70px);animation:roadmv var(--rd,1s) linear infinite;animation-play-state:paused;will-change:transform}
+#roadg.go::before{animation-play-state:running}
+@keyframes roadmv{from{transform:translateY(0)}to{transform:translateY(70px)}}
+#ch,#carpg,#sheet,#inf{will-change:transform}
+@media (prefers-reduced-motion:reduce){#roadg::before{animation:none}}
 </style>
 </head>
 <body>
@@ -628,7 +641,8 @@ html.hc #kmh{color:#c7c7cc}
           <filter id="edge" filterUnits="userSpaceOnUse" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceGraphic" stdDeviation="26" result="b1"/><feComponentTransfer in="b1" result="b1s"><feFuncA type="linear" slope="1.7"/></feComponentTransfer><feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b2"/><feMerge><feMergeNode in="b1s"/><feMergeNode in="b2"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
           <filter id="soft" filterUnits="userSpaceOnUse" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="1.6"/></filter>
           <filter id="bloom" filterUnits="userSpaceOnUse" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceGraphic" stdDeviation="22" result="w"/><feComponentTransfer in="w" result="ws"><feFuncA type="linear" slope="3.4"/></feComponentTransfer><feGaussianBlur in="SourceGraphic" stdDeviation="6" result="m"/><feComponentTransfer in="m" result="ms"><feFuncA type="linear" slope="1.6"/></feComponentTransfer><feMerge><feMergeNode in="ws"/><feMergeNode in="ms"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          <filter id="halo" filterUnits="userSpaceOnUse" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="18"/><feComponentTransfer><feFuncA type="linear" slope="2.6"/></feComponentTransfer></filter>
+          <filter id="glt" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="2.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="halo" filterUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%"><feGaussianBlur stdDeviation="18"/><feComponentTransfer><feFuncA type="linear" slope="2.6"/></feComponentTransfer></filter>
           <filter id="feather" filterUnits="userSpaceOnUse" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="3"/></filter>
           <mask id="bandMask" maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%"><g filter="url(#feather)"><rect id="bmOuter" x="0" y="0" width="0" height="0" fill="#fff"/><rect id="bmInner" x="0" y="0" width="0" height="0" rx="0" fill="#000"/></g></mask>
           <linearGradient id="gTrk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16181c"/><stop offset=".5" stop-color="#0c0d10"/><stop offset="1" stop-color="#121418"/></linearGradient>
@@ -738,7 +752,7 @@ const powerKw = () => {
   return Math.abs(kw) < 1 ? 0 : kw; // under 1 kW is idle noise: show 0, never "-0" or a regen label
 };
 const PSI_PER_ATM = 14.696; // Teslemetry reports tyre pressure in atmospheres
-const chgE = { kwh: 0, t: 0 }, winK = {}; let carPeek = 0, carPeekId = "", follow = true; /* charge energy counter, known windows, car-part tap label, map follow */
+const chgE = { kwh: 0, t: 0 }, winK = {}; let carPeek = 0, carPeekId = "", follow = true, trailDirty = false; /* charge energy counter, known windows, car-part tap label, map follow */
 // ---- car page: which door, boot, window or charge port is open, shown on a top-down outline ----
 const truthy = v => v === true || v === "true" || v === 1 || v === "1";
 // Teslemetry's DoorState lists the open doors. Its exact shape isn't documented, so every likely one is accepted:
@@ -833,7 +847,7 @@ function render() {
   $("gearv").textContent = S.Gear == null ? "P" : (GEAR_NAMES[String(S.Gear).replace(/^ShiftState/, "")] || "-"); { const g0 = $("gearv").dataset.g; $("gearv").dataset.g = $("gearv").textContent; if (g0 && g0 !== $("gearv").dataset.g) { $("gearv").classList.remove("pop"); void $("gearv").offsetWidth; $("gearv").classList.add("pop"); } } // short pop when the gear changes
   // Status comes from the stream itself. A parked car only sends when something changes, so silence while parked is normal.
   if (liveMode && streamOpen) { const quiet = Date.now() - lastEvt, parked = S.Gear == null || /P$/.test(String(S.Gear));
-    if (!parked && quiet > 30000) setChip("No data from car", "var(--warn)"); else if (parked && quiet > 8000) setChip("Live · parked", "var(--ok)"); else setChip("Live", "var(--ok)"); }
+    if (!parked && quiet > ((speedKmh() || 0) > 5 ? 30000 : 120000)) setChip("No data from car", "var(--warn)"); else if (parked && quiet > 8000) setChip("Live · parked", "var(--ok)"); else setChip("Live", "var(--ok)"); }
   { const t = String(S.LightsTurnSignal || ""); $("tsl").classList.toggle("on", /Left|Both/.test(t)); $("tsr").classList.toggle("on", /Right|Both/.test(t)); } // only if the stream sends LightsTurnSignal
   { const lo = num(S.ModuleTempMin), hi = num(S.ModuleTempMax), heat = S.BatteryHeaterOn === true || S.BatteryHeaterOn === "true"; $("btemp").textContent = hi == null ? (heat ? "Battery heating" : "") : "Battery " + (lo != null && Math.round(lo) !== Math.round(hi) ? Math.round(lo) + "–" : "") + Math.round(hi) + " °C" + (heat ? " · heating" : ""); } // only if the stream sends module temps
   { const a = Math.max(0, Math.min(100, acc || 0)); $("accb").setAttribute("stroke-dasharray", a + " 100"); $("accb").setAttribute("opacity", a > 0.5 ? 1 : 0); } // inner band, right half: accelerator fills from the bottom up
@@ -883,8 +897,8 @@ function render() {
   if (p) {
     if (!map) { $("nomap").hidden = true; map = L.map("map", { zoomControl: false }); map.attributionControl.setPosition("bottomleft"); L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "© OpenStreetMap contributors" }).addTo(map); marker = L.circleMarker(p, { radius: 9, color: "#fff", weight: 3, fillColor: "#0a84ff", fillOpacity: 1 }).addTo(map); trail = [0, 1, 2, 3, 4, 5].map(k => L.polyline([], { weight: 5, color: "#0a84ff", opacity: 0.15 + 0.17 * k, interactive: false }).addTo(map)); map.on("dragstart", () => { follow = false; followUi(); }); map.setView(p, 16); new ResizeObserver(() => map.invalidateSize()).observe($("map")); }
     const last = trailPts[trailPts.length - 1];
-    if (!last || last[0] !== p[0] || last[1] !== p[1]) { trailPts.push(p); if (trailPts.length > 1500) trailPts.shift(); setTrail(); }
-    marker.setLatLng(p); if (follow) map.panTo(p, { animate: false }); $("follow").hidden = false;
+    if (!last || last[0] !== p[0] || last[1] !== p[1]) { trailPts.push(p); if (trailPts.length > 1500) trailPts.shift(); trailDirty = true; }
+    if (curPage === 3) { if (trailDirty) { trailDirty = false; setTrail(); } marker.setLatLng(p); if (follow) map.panTo(p, { animate: false }); } $("follow").hidden = false;
     $("amap").href = "https://maps.apple.com/?ll=" + p[0] + "," + p[1] + "&q=My%20car";
   }
   const lat = num(S.LateralAcceleration), lon = num(S.LongitudinalAcceleration);
@@ -912,15 +926,16 @@ const barColour = i => i < NB * 0.8 ? "#30d158" : i < NB * 0.93 ? "#ffd60a" : "#
 function paintTicks(now) {
   const L = $("ticks").querySelectorAll(".bl"), R = $("ticks").querySelectorAll(".br"); if (!R.length) return;
   const sw = now < sweepEnd ? Math.sin(Math.PI * (now - sweepStart) / (sweepEnd - sweepStart)) : -1;
-  const cp = TK.charging ? (now % 2600) / 2600 : 0, socN = Math.round(Math.max(0, Math.min(100, TK.soc)) / 100 * NB);
+  let any = false; const cp = TK.charging ? (now % 2600) / 2600 : 0, socN = Math.round(Math.max(0, Math.min(100, TK.soc)) / 100 * NB);
   R.forEach((e, i) => { let c;
     const off = e.classList.contains("mj") ? OFFM : OFF;
     if (sw >= 0) c = i < Math.round(sw * NB) ? barColour(i) : off;                                            // start-up sweep
     else if (TK.charging) c = i < Math.round(cp * socN) ? "#30d158" : i < socN ? "#174d2a" : off;              // charging: fills to the battery level
     else c = i < TK.nd ? barColour(i) : off;
-    e.style.stroke = c; e.classList.toggle("lit", c !== off && c !== "#174d2a"); });
+    if (e._c !== c) { e._c = c; e.style.stroke = c; } if (c !== off && c !== "#174d2a") any = true; }); /* only touch ticks whose colour changed */
   L.forEach((e, i) => { const on = sw >= 0 ? i < Math.round(sw * NB) : !TK.charging && i < TK.nr;
-    e.style.stroke = on ? "#0a84ff" : (e.classList.contains("mj") ? OFFM : OFF); e.classList.toggle("rl", on && sw < 0); e.classList.toggle("lit", on); });
+    const c = on ? "#0a84ff" : (e.classList.contains("mj") ? OFFM : OFF); if (e._c !== c) { e._c = c; e.style.stroke = c; } const rl = on && sw < 0; if (e._r !== rl) { e._r = rl; e.classList.toggle("rl", rl); } if (on) any = true; });
+  if ($("ticks")._g !== any) { $("ticks")._g = any; $("ticks").classList.toggle("glow", any); }
 }
 // Lays out both brackets from the real page size and the safe areas (Dynamic Island, rounded corners, home bar).
 let geo = null;
@@ -993,8 +1008,8 @@ function writeSpeed() {
   $("kmh").textContent = st ? "Last seen " + (st < 90 ? st + " s" : Math.round(st / 60) + " min") + " ago" : parkedView ? "% · " + $("rng").textContent + " km" : "km/h";
 }
 function staleSecs() { /* only while the car was last seen moving: a parked car goes quiet normally */
-  if (!liveMode || !lastEvt) return 0; const q = (Date.now() - lastEvt) / 1000, g = S.Gear == null ? "" : String(S.Gear), sp = speedKmh(), moving = (g !== "" && !/P$/.test(g)) || (sp != null && sp > 5);
-  return moving && q > 10 ? Math.round(q) : 0; }
+  if (!liveMode || !lastEvt) return 0; const q = (Date.now() - lastEvt) / 1000, g = S.Gear == null ? "" : String(S.Gear), sp = speedKmh(), moving = g !== "" && sp != null && sp > 5;
+  return moving && q > 15 ? Math.round(q) : 0; }
 function fxKick() { if (!fxOn) { fxOn = true; requestAnimationFrame(fxFrame); } }
 function fxFrame(now) {
   let more = false; const dt = fxLast ? Math.min(100, now - fxLast) : 16; fxLast = now;
@@ -1013,7 +1028,7 @@ function driveFx(sp, pw, acc, charging, eff) {
   const bl = num(S.BatteryLevel); writeSpeed();
   // charging sweep, breathing ring when parked, regen pulse
   TK.charging = !!charging && !moving; TK.soc = bl || 0; if (TK.charging) fxKick();
-  $("ticks").classList.toggle("breath", inP && !TK.charging && !REDUCED);
+  $("ticks").classList.toggle("breath", inP && !TK.charging && !REDUCED && now - parkedSince < 60000);
   $("ticks").classList.toggle("rpulse", pw != null && pw < -40);
   // gear strip: light the active gear; nothing lit until the car has sent a gear
   { const g = $("gearv").textContent, known = S.Gear != null, pr = $("prnd"); pr.dataset.g = known ? g : "";
@@ -1033,7 +1048,7 @@ function driveFx(sp, pw, acc, charging, eff) {
   // cruise: the set speed in the gap at the top of the frame, green while holding it
   { const cr = num(S.CruiseSetSpeed), crK = cr == null ? null : cr * MI, on = crK != null && crK > 0 && gear === "D" && sp != null && sp > 5, pl = $("crpill");
     pl.hidden = !on; if (on) { $("crv").textContent = Math.round(crK); pl.classList.toggle("hold", Math.abs(sp - crK) <= 2.5); } }
-  { const rg = $("roadg"), go = sp != null && sp > 1 && !REDUCED; rg.classList.toggle("go", go); if (go) rg.style.animationDuration = Math.max(0.12, Math.min(3, 18 / sp)).toFixed(2) + "s"; } // road lines scroll faster as you go faster
+  { const rg = $("roadg"), go = sp != null && sp > 1 && !REDUCED; rg.classList.toggle("go", go); if (go) { const d = Math.max(0.12, Math.min(3, 18 / sp)); if (!rg._d || Math.abs(d - rg._d) / rg._d > 0.08) { rg._d = d; rg.style.setProperty("--rd", d.toFixed(2) + "s"); } } } // road lines scroll faster as you go faster
   // top bar hides while driving (tap the top to see it for 5 s); it stays if something needs attention
   { const okChip = $("chip").classList.contains("dotonly") || !liveMode, away = moving && okChip && now > topPeek && $("offl").hidden;
     $("top").classList.toggle("away", away); $("hud").classList.toggle("toph", away); }
@@ -1078,10 +1093,13 @@ function isNight(now) {
   if (k.length === 2 && isFinite(la) && isFinite(lo)) { const t = sunTimes(la, lo, now); if (t) return now < t.rise || now > t.set; }
   const h = now.getHours(); return h >= 19 || h < 6;
 }
-function nightDim() { const on = isNight(new Date()) || location.search.includes("night"); document.documentElement.style.filter = on ? "brightness(.74)" : ""; document.documentElement.classList.toggle("night", on); $("night").hidden = !on; } nightDim(); setInterval(nightDim, 60000); // dimmer and warmer at night; colours keep their meaning
+function nightDim() { const on = isNight(new Date()) || location.search.includes("night"); document.documentElement.style.filter = ""; document.documentElement.classList.toggle("night", on); $("night").hidden = !on; } nightDim(); setInterval(nightDim, 60000); // dimmer and warmer at night; colours keep their meaning
 function netBanner() { $("offl").hidden = navigator.onLine !== false; } addEventListener("online", netBanner); addEventListener("offline", netBanner); netBanner();
 function setChip(t, c) { const e = $("chip"); e.textContent = t; e.title = t; e.style.color = c || ""; e.classList.toggle("dotonly", /^Live/.test(t)); }
-let liveMode = false, lastEvt = 0, streamOpen = false, wasOpen = false;
+let liveMode = false, lastEvt = 0, streamOpen = false, wasOpen = false, lastByte = 0;
+function watchdog() { if (!liveMode || !streamOpen || document.visibilityState !== "visible") return; const now = Date.now(), sp = speedKmh();
+  if ((sp != null && sp > 5 && now - lastEvt > 45000) || now - lastByte > 600000) { streamOpen = false; $("log").textContent = "Stream went quiet. Reconnecting."; clearTimeout(timer); retry = 1000; connect(); } }
+addEventListener("online", () => { if (liveMode && !streamOpen) { clearTimeout(timer); retry = 1000; connect(); } });
 function onEvent(txt) {
   lastEvt = Date.now();
   let ev; try { ev = JSON.parse(txt); } catch (e) { return; }
@@ -1143,10 +1161,10 @@ async function connect() {
     if (!r) throw lastErr;
     if (r.status === 401 || r.status === 403) { setChip("Token not accepted", "var(--bad)"); $("log").textContent = "Token not accepted. Copy it again from Teslemetry."; return; }
     if (!r.ok) throw new Error("HTTP " + r.status);
-    startSeeding(); streamOpen = true; wasOpen = true; setChip("Live", "var(--ok)"); retry = 1000; lastEvt = Date.now(); $("log").textContent = "Connected";
+    startSeeding(); streamOpen = true; wasOpen = true; setChip("Live", "var(--ok)"); retry = 1000; lastEvt = lastByte = Date.now(); $("log").textContent = "Connected";
     const rd = r.body.getReader(), dec = new TextDecoder(); let buf = "";
     for (;;) {
-      const { value, done } = await rd.read(); if (done) break;
+      const { value, done } = await rd.read(); if (done) break; lastByte = Date.now();
       buf += dec.decode(value, { stream: true });
       let i; while ((i = buf.indexOf("\n\n")) >= 0) {
         const block = buf.slice(0, i); buf = buf.slice(i + 2);
@@ -1158,7 +1176,7 @@ async function connect() {
     if (e.name === "AbortError") return;
     $("log").textContent = "Can't reach Teslemetry (" + e.message + "). Retrying.";
   }
-  streamOpen = false; setChip(wasOpen ? "Reconnecting" : "Can't connect, retrying", "var(--warn)"); retry = Math.min(retry * 2, 30000);
+  streamOpen = false; setChip(wasOpen ? "Reconnecting" : "Can't connect, retrying", "var(--warn)"); retry = Math.min(retry * 2, 15000);
   timer = setTimeout(connect, retry);
 }
 
@@ -1182,7 +1200,8 @@ function startDemo() {
 }
 
 // ---- keep awake, startup ----
-async function keepAwake() { try { if ("wakeLock" in navigator) wake = await navigator.wakeLock.request("screen"); } catch (e) {} }
+async function keepAwake() { try { if ("wakeLock" in navigator) wake = await navigator.wakeLock.request("screen"); wake.addEventListener("release", () => { if (document.visibilityState === "visible") setTimeout(keepAwake, 1000); }); } catch (e) {} }
+setInterval(() => { if (document.visibilityState === "visible" && (!wake || wake.released)) keepAwake(); }, 30000);
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") { keepAwake(); if (store.get("tok") && !location.search.includes("sample")) { clearTimeout(timer); connect(); } } });
 function show(app) { $("setup").hidden = app; $("app").hidden = !app; }
 function flag(id, lvl) { const t = $(id).closest(".t"); if (t) { t.classList.remove("ok", "warn", "bad"); if (lvl) t.classList.add(lvl); } }
@@ -1190,27 +1209,28 @@ function flag(id, lvl) { const t = $(id).closest(".t"); if (t) { t.classList.rem
 function buildTicks() { layoutDash(); } // the bars are drawn with the brackets
 let curPage = null; // the page being shown, so a resize (for example Safari's toolbar) never throws you back to the middle
 function home() { const p = $("pages"); p.style.scrollBehavior = "auto"; if (curPage == null) { const q = new URLSearchParams(location.search).get("page"); const sv = store.get("page"); curPage = q != null ? +q : (sv !== "" && +sv >= 0 && +sv <= 4 ? +sv : 2); /* five pages: charging, car, drive (the middle one, opened first), map, info */ } p.scrollLeft = p.clientWidth * curPage; }
-const PLX = ["ch", "carpg", "main", "sheet", "inf"]; let plxOn = false;
+const PLX = ["ch", "carpg", null, "sheet", "inf"]; let plxOn = false;
 function plxKick() { if (REDUCED || plxOn) return; plxOn = true; requestAnimationFrame(() => { plxOn = false; const p = $("pages"), w = p.clientWidth; if (!w) return;
-  PLX.forEach((id, j) => { const d = j * w - p.scrollLeft, el = $(id); el.style.transform = Math.abs(d) < 1 || Math.abs(d) >= w ? "" : "translateX(" + (-0.12 * d).toFixed(1) + "px)"; }); }); }
+  PLX.forEach((id, j) => { if (!id) return; const d = j * w - p.scrollLeft, el = $(id); /* the drive page is full-bleed: moving it would change its layout box */ el.style.transform = Math.abs(d) < 1 || Math.abs(d) >= w ? "" : "translateX(" + (-0.12 * d).toFixed(1) + "px)"; }); }); }
 function startApp(demo) {
   show(true); buildTicks(); keepAwake(); home(); startSweep(); requestAnimationFrame(layoutDash);
   let dotsTo = null; const dots = () => { const p = $("pages"), i = Math.round(p.scrollLeft / p.clientWidth); [...$("dots").children].forEach((d, j) => d.classList.toggle("on", j === i)); [...$("hint").children].forEach((d, j) => d.classList.toggle("on", j === i)); $("dots").classList.remove("fade"); clearTimeout(dotsTo); dotsTo = setTimeout(() => $("dots").classList.add("fade"), 3000); }; // page dots fade 3 s after a swipe
   let lockUntil = 0;
-  $("pages").addEventListener("scroll", () => { dots(); if (Date.now() > lockUntil) { const p = $("pages"); curPage = Math.round(p.scrollLeft / p.clientWidth); if (store.get("page") !== String(curPage)) store.set("page", String(curPage)); } plxKick(); if (map) map.invalidateSize(); }, { passive: true });
+  $("pages").addEventListener("scroll", () => { dots(); if (Date.now() > lockUntil) { const p = $("pages"); const was = curPage; curPage = Math.round(p.scrollLeft / p.clientWidth); if (curPage !== was) { store.set("page", String(curPage)); if (curPage === 3) { if (map) map.invalidateSize(); scheduleRender(); } } } plxKick(); }, { passive: true });
   const back = () => { lockUntil = Date.now() + 400; home(); dots(); };
   addEventListener("resize", () => { back(); layoutDash(); }); addEventListener("orientationchange", () => setTimeout(layoutDash, 250)); addEventListener("pageshow", back); addEventListener("orientationchange", back); dots();
   if (!store.get("hinted") || location.search.includes("hint")) { const h = $("hint"); h.innerHTML = ["Charging", "Car", "Drive", "Map", "Info"].map((x, j) => "<span" + (j === curPage ? ' class="on"' : "") + ">" + x + "</span>").join(""); h.hidden = false; $("app").classList.add("hinting"); setTimeout(() => h.classList.add("fade"), 5000); setTimeout(() => { h.hidden = true; $("app").classList.remove("hinting"); }, 5700); store.set("hinted", "1"); }
   [...$("dots").children].forEach((d, j) => { d.onclick = () => { const p = $("pages"); p.style.scrollBehavior = "smooth"; p.scrollLeft = p.clientWidth * j; }; }); /* tap a dot to go to that page */
   setInterval(() => { render(); }, 1000);
-  setInterval(() => timerTick(performance.now()), 100);
+  { let tt = 0; setInterval(() => { const now = performance.now(); if (T.state === "run" || T.state === "armed" || now - tt > 1000) { tt = now; timerTick(now); } }, 100); }
+  if (!demo) setInterval(watchdog, 5000);
   const tick = () => { $("clock").textContent = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); }; tick(); setInterval(tick, 10000);
   liveMode = !demo;
   if (demo) { const tmode = new URLSearchParams(location.search).get("timer"); if (tmode === "armed") { T.state = "armed"; T.armedAt = performance.now(); } if (tmode === "run") { T.state = "run"; T.t0 = performance.now() - 4300; } if (tmode === "done") { T.state = "done"; T.last = 5.8; } } // sample-mode previews of the timer states
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "v20 · 22 Nov 2026"; $("build").textContent = BUILD;
+const BUILD = "v21 · 22 Nov 2026"; $("build").textContent = BUILD;
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {}); // opens with no signal; the network copy always wins when online
 $("upd").onclick = async () => { const b = $("upd"); b.disabled = true; b.textContent = "Checking...";
   try { const r = await fetch(location.pathname + "?check=" + Date.now(), { cache: "no-store" }), m = (await r.text()).match(/const BUILD = "([^"]+)"/);
