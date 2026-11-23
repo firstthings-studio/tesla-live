@@ -533,6 +533,22 @@ html.hc #kmh{color:#c7c7cc}
 @keyframes roadmv{from{transform:translateY(0)}to{transform:translateY(70px)}}
 #ch,#carpg,#sheet,#inf{will-change:transform}
 @media (prefers-reduced-motion:reduce){#roadg::before{animation:none}}
+/* ===== v23 ===== */
+/* glows change the moment a reading arrives (no fade) */
+#p-hud #gauge #dash path.f{transition:none!important}
+/* seatbelt */
+#p-hud #hud.belt #ticks line{stroke:#ff3b30!important}#p-hud #hud.belt #ticks{animation:dpulse .6s ease-in-out infinite alternate}
+#kmh.beltw{color:#ff453a;font-style:normal;letter-spacing:0;font-weight:700}
+/* route / last drive line in the bottom band */
+#navs{position:absolute;z-index:4;left:50%;transform:translateX(-50%);bottom:max(6px,calc(var(--sb) - 2px));font-size:15px;font-weight:600;color:#c7c7cc;white-space:nowrap;letter-spacing:.01em;transition:opacity .3s ease!important;pointer-events:none}
+#navs.trip{pointer-events:auto;cursor:pointer}#navs.dim{opacity:0}#navs[hidden]{display:none}
+html.hc #navs{color:#fff}
+/* map heading arrow */
+.carico{background:none;border:0}
+.ca{width:34px;height:34px;transition:transform .4s ease}
+.ca svg{width:100%;height:100%;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
+.ca circle{fill:#0a84ff;stroke:#fff;stroke-width:2.2}.ca path{fill:#fff;opacity:0}.ca.hd path{opacity:1}
+@media (prefers-reduced-motion:reduce){#p-hud #hud.belt #ticks{animation:none}}
 </style>
 </head>
 <body>
@@ -625,6 +641,7 @@ html.hc #kmh{color:#c7c7cc}
   <section class="pg" id="p-hud">
    <div id="hud">
     <div id="offl" hidden>No internet connection</div>
+    <div id="navs" hidden></div>
     <div id="night" hidden></div>
     <div id="saprobe" aria-hidden="true"></div>
     <div id="top">
@@ -701,7 +718,7 @@ html.hc #kmh{color:#c7c7cc}
     </div>
     <div class="grp"><div class="gh">Connection</div>
      <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg><span class="l">Link</span></div><div class="v sm" id="conn">-</div></div>
-     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="l">Last data</span></div><div class="v" id="lastdata">--</div></div>
+     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="l">Last data</span></div><div class="v" id="lastdata">--</div><div class="u" id="ages"></div></div>
      <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg><span class="l">Status</span></div><p id="log">OK</p></div>
     </div>
     <div class="grp"><div class="gh">App</div>
@@ -752,7 +769,8 @@ const powerKw = () => {
   return Math.abs(kw) < 1 ? 0 : kw; // under 1 kW is idle noise: show 0, never "-0" or a regen label
 };
 const PSI_PER_BAR = 14.5038; // Teslemetry reports tyre pressure in bar (its console shows 2.99 bar for this car)
-const chgE = { kwh: 0, t: 0 }, winK = {}; let carPeek = 0, carPeekId = "", follow = true, trailDirty = false; /* charge energy counter, known windows, car-part tap label, map follow */
+const chgE = { kwh: 0, t: 0 }, winK = {}; let carPeek = 0, carPeekId = "", follow = true, trailDirty = false;
+const fieldAt = {}; let latEma = null, spH = { v: null, t: 0 }, decel = 0, decelAt = 0, trip = null, lastTrip = null, prevGear, gl = null, glOn = false, carHead = null; /* v23 */ /* charge energy counter, known windows, car-part tap label, map follow */
 // ---- car page: which door, boot, window or charge port is open, shown on a top-down outline ----
 const truthy = v => v === true || v === "true" || v === 1 || v === "1";
 // Teslemetry's DoorState lists the open doors. Its exact shape isn't documented, so every likely one is accepted:
@@ -851,12 +869,15 @@ function render() {
   { const t = String(S.LightsTurnSignal || ""); $("tsl").classList.toggle("on", /Left|Both/.test(t)); $("tsr").classList.toggle("on", /Right|Both/.test(t)); } // only if the stream sends LightsTurnSignal
   { const lo = num(S.ModuleTempMin), hi = num(S.ModuleTempMax), heat = S.BatteryHeaterOn === true || S.BatteryHeaterOn === "true"; $("btemp").textContent = hi == null ? (heat ? "Battery heating" : "") : "Battery " + (lo != null && Math.round(lo) !== Math.round(hi) ? Math.round(lo) + "–" : "") + Math.round(hi) + " °C" + (heat ? " · heating" : ""); } // only if the stream sends module temps
   { const a = Math.max(0, Math.min(100, acc || 0)); $("accb").setAttribute("stroke-dasharray", a + " 100"); $("accb").setAttribute("opacity", a > 0.5 ? 1 : 0); } // inner band, right half: accelerator fills from the bottom up
-  { const r = pw != null && pw < 0 ? Math.min(100, -pw / 60 * 100) : 0; $("regb").setAttribute("stroke-dasharray", r + " 100"); $("regb").setAttribute("opacity", r > 0.5 ? 1 : 0); } // left half: regen in blue, about 60 kW at full
+  { const v = sp, t = Date.now(); if (v != null && v !== spH.v) { if (spH.v != null && t > spH.t && t - spH.t < 4000) { decel = (spH.v - v) / ((t - spH.t) / 1000); decelAt = t; } spH = { v, t }; } } /* km/h lost per second, from speed readings 1 s apart */
+  const pFresh = !liveMode || (fieldAt.PackCurrent && Date.now() - fieldAt.PackCurrent < 3000), brOn = truthy(S.BrakePedal);
+  const regenF = pFresh ? (pw != null && pw < 0 ? Math.min(1, -pw / 60) : 0) : (!brOn && (acc == null || acc <= 1) && sp != null && sp > 5 && Date.now() - decelAt < 2500 && decel > 0.5 ? Math.min(1, decel / 7) : 0); /* about 7 km/h per s is full regen */
+  { const r = regenF * 100; $("regb").setAttribute("stroke-dasharray", r + " 100"); $("regb").setAttribute("opacity", r > 0.5 ? 1 : 0); } // left half: regen in blue, about 60 kW at full
   $("soc").textContent = fmt(num(S.BatteryLevel), 0); $("soc2").textContent = $("soc").textContent; $("tout2").textContent = fmt(num(S.OutsideTemp), 0);
-  TK.nd = pw != null && pw > 0 ? Math.round(Math.min(1, pw / 250) * NB) : 0; TK.nr = pw != null && pw < 0 ? Math.round(Math.min(1, -pw / 80) * NB) : 0; paintTicks(performance.now()); // 60 ticks: 12 regen (blue) then 48 drive
+  TK.nd = acc != null ? Math.round(Math.max(0, Math.min(1, acc / 100)) * NB) : pw != null && pw > 0 ? Math.round(Math.min(1, pw / 250) * NB) : 0; TK.nr = Math.round(regenF * NB); /* right ticks follow the accelerator (1 s); power only arrives every 5 min */ paintTicks(performance.now()); // 60 ticks: 12 regen (blue) then 48 drive
   { const b = num(S.BatteryLevel) || 0, f = $("bfill"); f.style.width = Math.max(0, Math.min(100, b)) + "%"; f.style.backgroundColor = b < 15 ? "var(--bad)" : b < 30 ? "var(--warn)" : "var(--ok)"; } // the wide battery bar on the charging page
   { const bl = num(S.BatteryLevel), b = bl || 0; $("socb").style.width = Math.max(0, Math.min(100, b)) + "%"; $("socb").style.background = b < 10 ? "var(--bad)" : b < 20 ? "var(--warn)" : "var(--ok)"; const bt = $("soc").parentElement; bt.classList.toggle("lb", bl != null && bl < 10); bt.classList.toggle("lw", bl != null && bl >= 10 && bl < 20); }
-  { const b = (S.BrakePedal === true || S.BrakePedal === "true") ? 100 : Math.max(0, Math.min(100, num(S.BrakePedalPos) || 0)); $("brkb").setAttribute("stroke-dasharray", b + " 100"); $("brkb").setAttribute("opacity", b > 0.5 ? 1 : 0); } // brake fills the left half
+  { const bp = num(S.BrakePedalPos), b = truthy(S.BrakePedal) ? (bp != null && bp > 0 ? Math.max(25, Math.min(100, bp)) : 100) : 0; $("brkb").setAttribute("stroke-dasharray", b + " 100"); $("brkb").setAttribute("opacity", b > 0.5 ? 1 : 0); } // brake fills the left half
   { // Range: the car's own figure when it has sent one; until then an estimate from the battery level (2024 Model 3 Long Range, 629 km WLTP).
     const r = num(S.EstBatteryRange ?? S.RatedRange ?? S.IdealBatteryRange), bl = num(S.BatteryLevel), est = r == null && bl != null;
     const km = r != null ? r * MI : est ? bl * 6.29 : null;
@@ -888,6 +909,9 @@ function render() {
   { const lg = $("log"); if (!liveMode) { lg.textContent = "Sample mode"; lg.style.color = "var(--dim)"; } else lg.style.color = (streamOpen && /^(Connected|OK)/.test(lg.textContent)) ? "var(--ok)" : ""; } // green when live, dim in sample, orange for problems
   { const qs = lastEvt ? Math.round((Date.now() - lastEvt) / 60000) : 0; $("navl").textContent = liveMode && qs >= 2 ? "Navigation · last seen " + qs + " min ago" : "Navigation"; }
   { const ago = lastEvt ? Math.round((Date.now() - lastEvt) / 1000) : null; $("lastdata").textContent = !liveMode ? "Sample" : ago == null ? "--" : ago < 2 ? "Just now" : ago < 90 ? ago + " s ago" : Math.round(ago / 60) + " min ago"; $("lastdata").classList.toggle("quiet", !liveMode || ago == null); }
+  { const a = k => { const t = fieldAt[k]; if (!t) return null; const q = (Date.now() - t) / 1000; return q < 90 ? Math.round(q) + " s" : Math.round(q / 60) + " min"; }, parts = [];
+    if (latEma != null) parts.push("Delay about " + (latEma / 1000).toFixed(1) + " s"); [["Pedal", "PedalPosition"], ["Speed", "VehicleSpeed"], ["Power", "PackCurrent"]].forEach(([l, k]) => { const x = a(k); if (x) parts.push(l + " " + x); });
+    $("ages").textContent = liveMode ? parts.join(" · ") : ""; }
   const od = num(S.Odometer); $("odo").textContent = od == null ? "-" : (od * MI).toFixed(0); $("sw").textContent = S.Version || "--"; $("ver").hidden = !!S.Version || !liveMode;
   { const ago = lastEvt ? Math.round((Date.now() - lastEvt) / 1000) : null; $("conn").textContent = !liveMode ? "Sample data" : (DEFAULT_RELAY || store.get("base") ? "Via relay" : "Direct") + (ago == null ? " · no data yet" : " · data " + (ago < 2 ? "just now" : ago + " s ago")); }
   const mi = num(S.MilesToArrival), mn = num(S.MinutesToArrival), asoc = num(S.ExpectedEnergyPercentAtTripArrival);
@@ -895,10 +919,10 @@ function render() {
   const p = loc(S.Location);
   if (p && liveMode) { const k = p[0].toFixed(2) + "," + p[1].toFixed(2); if (store.get("loc") !== k) store.set("loc", k); }
   if (p) {
-    if (!map) { $("nomap").hidden = true; map = L.map("map", { zoomControl: false }); map.attributionControl.setPosition("bottomleft"); L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "© OpenStreetMap contributors" }).addTo(map); marker = L.circleMarker(p, { radius: 9, color: "#fff", weight: 3, fillColor: "#0a84ff", fillOpacity: 1 }).addTo(map); trail = [0, 1, 2, 3, 4, 5].map(k => L.polyline([], { weight: 5, color: "#0a84ff", opacity: 0.15 + 0.17 * k, interactive: false }).addTo(map)); map.on("dragstart", () => { follow = false; followUi(); }); map.setView(p, 16); new ResizeObserver(() => map.invalidateSize()).observe($("map")); }
+    if (!map) { $("nomap").hidden = true; map = L.map("map", { zoomControl: false }); map.attributionControl.setPosition("bottomleft"); L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "© OpenStreetMap contributors" }).addTo(map); marker = L.marker(p, { icon: L.divIcon({ className: "carico", html: '<div class="ca"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 5.5 7.5 17l4.5-2.6 4.5 2.6z"/></svg></div>', iconSize: [34, 34], iconAnchor: [17, 17] }), interactive: false, keyboard: false }).addTo(map); trail = [0, 1, 2, 3, 4, 5].map(k => L.polyline([], { weight: 5, color: "#0a84ff", opacity: 0.15 + 0.17 * k, interactive: false }).addTo(map)); map.on("dragstart", () => { follow = false; followUi(); }); map.setView(p, 16); new ResizeObserver(() => map.invalidateSize()).observe($("map")); }
     const last = trailPts[trailPts.length - 1];
     if (!last || last[0] !== p[0] || last[1] !== p[1]) { trailPts.push(p); if (trailPts.length > 1500) trailPts.shift(); trailDirty = true; }
-    if (curPage === 3) { if (trailDirty) { trailDirty = false; setTrail(); } marker.setLatLng(p); if (follow) map.panTo(p, { animate: false }); } $("follow").hidden = false;
+    if (curPage === 3) { if (trailDirty) { trailDirty = false; setTrail(); } glideTo(p); } $("follow").hidden = false;
     $("amap").href = "https://maps.apple.com/?ll=" + p[0] + "," + p[1] + "&q=My%20car";
   }
   const lat = num(S.LateralAcceleration), lon = num(S.LongitudinalAcceleration);
@@ -914,6 +938,13 @@ function render() {
   drawG();
 }
 function setTrail() { const k = trail.length, m = trailPts.length; trail.forEach((pl, j) => { const a = Math.floor(j * m / k), b = Math.floor((j + 1) * m / k); pl.setLatLngs(trailPts.slice(Math.max(0, a - 1), b)); }); }
+function glideTo(p) { const c = marker.getLatLng(), from = [c.lat, c.lng]; if (from[0] === p[0] && from[1] === p[1]) return;
+  const kx = Math.cos(p[0] * Math.PI / 180), dN = p[0] - from[0], dE = (p[1] - from[1]) * kx, d = Math.hypot(dN, dE); if (d > 2e-6) carHead = Math.atan2(dE, dN) * 180 / Math.PI; /* degrees clockwise from north */
+  const ca = marker.getElement() && marker.getElement().querySelector(".ca"); if (ca && carHead != null) { ca.style.transform = "rotate(" + carHead.toFixed(0) + "deg)"; ca.classList.add("hd"); }
+  gl = { from, to: p, t0: performance.now(), dur: d > 0.01 || REDUCED ? 0 : 1000 }; /* over about 1 km away (first view, long gap): jump */
+  if (!glOn) { glOn = true; requestAnimationFrame(glideFrame); } }
+function glideFrame(now) { if (!gl) { glOn = false; return; } const k = gl.dur ? Math.min(1, (now - gl.t0) / gl.dur) : 1, q = [gl.from[0] + (gl.to[0] - gl.from[0]) * k, gl.from[1] + (gl.to[1] - gl.from[1]) * k];
+  marker.setLatLng(q); if (follow) map.panTo(q, { animate: false }); if (k < 1 && curPage === 3) requestAnimationFrame(glideFrame); else { if (k < 1) marker.setLatLng(gl.to); glOn = false; } }
 function followUi() { $("follow").classList.toggle("on", follow); $("followt").textContent = follow ? "Following" : "Follow car"; }
 // ---- drive screen effects (v8) ----
 const TK = { nd: 0, nr: 0, charging: false, soc: 0 };     // what the bars should show (30 bars a side)
@@ -1005,7 +1036,8 @@ function writeSpeed() {
   const e = $("speed"), t = parkedView ? (socView == null ? "--" : String(socView)) : spShown == null ? "--" : String(Math.round(spShown));
   if (e.textContent !== t) e.textContent = t; e.classList.toggle("d3", t.length >= 3);
   const st = staleSecs(); $("hud").classList.toggle("stale", st > 0);
-  $("kmh").textContent = st ? "Last seen " + (st < 90 ? st + " s" : Math.round(st / 60) + " min") + " ago" : parkedView ? "% · " + $("rng").textContent + " km" : "km/h";
+  const belt = $("hud").classList.contains("belt"); $("kmh").classList.toggle("beltw", belt && !st);
+  $("kmh").textContent = belt && !st ? "Fasten seatbelt" : st ? "Last seen " + (st < 90 ? st + " s" : Math.round(st / 60) + " min") + " ago" : parkedView ? "% · " + $("rng").textContent + " km" : "km/h";
 }
 function staleSecs() { /* only while the car was last seen moving: a parked car goes quiet normally */
   if (!liveMode || !lastEvt) return 0; const q = (Date.now() - lastEvt) / 1000, g = S.Gear == null ? "" : String(S.Gear), sp = speedKmh(), moving = g !== "" && sp != null && sp > 5;
@@ -1046,8 +1078,24 @@ function driveFx(sp, pw, acc, charging, eff) {
     if (c != null && doorsWas != null && c > doorsWas && inP) { ["trkL", "trkR"].forEach(id => { const e = $(id); e.classList.remove("dalert"); void e.getBBox(); e.classList.add("dalert"); }); clearTimeout(doorAlertTo); doorAlertTo = setTimeout(() => ["trkL", "trkR"].forEach(id => $(id).classList.remove("dalert")), 3000); }
     if (c != null) doorsWas = c; }
   // cruise: the set speed in the gap at the top of the frame, green while holding it
-  { const cr = num(S.CruiseSetSpeed), crK = cr == null ? null : cr * MI, on = crK != null && crK > 0 && gear === "D" && sp != null && sp > 5, pl = $("crpill");
-    pl.hidden = !on; if (on) { $("crv").textContent = Math.round(crK); pl.classList.toggle("hold", Math.abs(sp - crK) <= 2.5); } }
+  { const cr = num(S.CruiseSetSpeed), crK = cr == null ? null : cr * MI, pl = $("crpill"), near = crK != null && crK > 0 && gear === "D" && sp != null && sp > 5 ? Math.abs(sp - crK) : null;
+    const on = near != null && near <= (pl._on ? 7 : 4); pl._on = on; pl.hidden = !on; /* Teslemetry has no "cruise is on" field: near the set speed is the best sign */
+    if (on) { const fd = String(S.CruiseFollowDistance ?? "").match(/\d+/); $("crv").textContent = Math.round(crK) + (fd ? " · " + fd[0] : ""); pl.classList.toggle("hold", near <= 2.5); } }
+  // 4: seatbelt off while moving
+  { const b = S.DriverSeatBelt, unb = b != null && (b === false || b === "false" || /unbuckl|unlatch/i.test(String(b))); $("hud").classList.toggle("belt", unb && sp != null && sp > 10); }
+  // 5: leaving Park jumps to the drive page
+  { if (prevGear !== undefined && liveMode && (prevGear == null || prevGear === "P") && gear && gear !== "P" && curPage !== 2) { const pp = $("pages"); pp.style.scrollBehavior = "smooth"; pp.scrollLeft = pp.clientWidth * 2; } prevGear = gear; }
+  // 8: trip from leaving Park to parking again (memory only, nothing saved)
+  { const odo = num(S.Odometer), soc = num(S.BatteryLevel);
+    if (gear && !inP && !trip) { trip = { t0: now, o0: odo, s0: soc }; lastTrip = null; }
+    if (trip) { if (trip.o0 == null) trip.o0 = odo; if (trip.s0 == null) trip.s0 = soc; }
+    if (inP && trip) { const km = trip.o0 != null && odo != null ? (odo - trip.o0) * MI : null, min = (now - trip.t0) / 60000; if ((km != null && km >= 0.5) || min >= 2) lastTrip = { km, min, used: trip.s0 != null && soc != null ? trip.s0 - soc : null }; trip = null; } }
+  // 7 + 8: one line in the bottom band: the route while driving, the last drive once parked
+  { const ns = $("navs"), mn = num(S.MinutesToArrival), mi = num(S.MilesToArrival), asoc = num(S.ExpectedEnergyPercentAtTripArrival), route = mn != null && !/^invalid$/i.test(String(S.DestinationName));
+    let tx = "";
+    if (!inP && route) tx = Math.round(mn) + " min" + (mi != null ? " · " + (mi * MI).toFixed(0) + " km" : "") + (asoc != null ? " · arrive " + Math.round(asoc) + "%" : "");
+    else if (inP && lastTrip) { const L = lastTrip, wh = L.km >= 1 && L.used > 0 ? L.used / 100 * 75000 / L.km : null; tx = "Last drive" + (L.km != null ? " · " + L.km.toFixed(1) + " km" : "") + " · " + Math.max(1, Math.round(L.min)) + " min" + (L.used > 0 ? " · " + Math.round(L.used) + "% battery" : "") + (wh ? " · about " + Math.round(wh) + " Wh/km" : ""); }
+    if (ns.textContent !== tx) ns.textContent = tx; ns.hidden = !tx; ns.classList.toggle("trip", inP && !!lastTrip); }
   { const rg = $("roadg"), go = sp != null && sp > 1 && !REDUCED; rg.classList.toggle("go", go); if (go) { const d = Math.max(0.12, Math.min(3, 18 / sp)); if (!rg._d || Math.abs(d - rg._d) / rg._d > 0.08) { rg._d = d; rg.style.setProperty("--rd", d.toFixed(2) + "s"); } } } // road lines scroll faster as you go faster
   // top bar hides while driving (tap the top to see it for 5 s); it stays if something needs attention
   { const okChip = $("chip").classList.contains("dotonly") || !liveMode, away = moving && okChip && now > topPeek && $("offl").hidden;
@@ -1103,7 +1151,8 @@ addEventListener("online", () => { if (liveMode && !streamOpen) { clearTimeout(t
 function onEvent(txt) {
   lastEvt = Date.now();
   let ev; try { ev = JSON.parse(txt); } catch (e) { return; }
-  Object.assign(S, flatten(ev));
+  const fv = flatten(ev), tNow = Date.now(); Object.assign(S, fv); for (const k in fv) fieldAt[k] = tNow;
+  { const ts = Date.parse((ev && (ev.createdAt || ev.timestamp)) || ""); if (isFinite(ts)) { const lat = tNow - ts; if (lat > -5000 && lat < 600000) latEma = latEma == null ? lat : latEma * 0.8 + lat * 0.2; } }
   if (ev && ev.vin && !S._vin) S._vin = ev.vin;
   scheduleRender(); // show each reading as soon as it arrives instead of waiting for the 1 s tick
 }
@@ -1214,14 +1263,14 @@ function plxKick() { if (REDUCED || plxOn) return; plxOn = true; requestAnimatio
   PLX.forEach((id, j) => { if (!id) return; const d = j * w - p.scrollLeft, el = $(id); /* the drive page is full-bleed: moving it would change its layout box */ el.style.transform = Math.abs(d) < 1 || Math.abs(d) >= w ? "" : "translateX(" + (-0.12 * d).toFixed(1) + "px)"; }); }); }
 function startApp(demo) {
   show(true); buildTicks(); keepAwake(); home(); startSweep(); requestAnimationFrame(layoutDash);
-  let dotsTo = null; const dots = () => { const p = $("pages"), i = Math.round(p.scrollLeft / p.clientWidth); [...$("dots").children].forEach((d, j) => d.classList.toggle("on", j === i)); [...$("hint").children].forEach((d, j) => d.classList.toggle("on", j === i)); $("dots").classList.remove("fade"); clearTimeout(dotsTo); dotsTo = setTimeout(() => $("dots").classList.add("fade"), 3000); }; // page dots fade 3 s after a swipe
+  let dotsTo = null; const dots = () => { const p = $("pages"), i = Math.round(p.scrollLeft / p.clientWidth); [...$("dots").children].forEach((d, j) => d.classList.toggle("on", j === i)); [...$("hint").children].forEach((d, j) => d.classList.toggle("on", j === i)); $("dots").classList.remove("fade"); $("navs").classList.add("dim"); clearTimeout(dotsTo); dotsTo = setTimeout(() => { $("dots").classList.add("fade"); $("navs").classList.remove("dim"); }, 3000); }; // page dots fade 3 s after a swipe
   let lockUntil = 0;
   $("pages").addEventListener("scroll", () => { dots(); if (Date.now() > lockUntil) { const p = $("pages"); const was = curPage; curPage = Math.round(p.scrollLeft / p.clientWidth); if (curPage !== was) { store.set("page", String(curPage)); if (curPage === 3) { if (map) map.invalidateSize(); scheduleRender(); } } } plxKick(); }, { passive: true });
   const back = () => { lockUntil = Date.now() + 400; home(); dots(); };
   addEventListener("resize", () => { back(); layoutDash(); }); addEventListener("orientationchange", () => setTimeout(layoutDash, 250)); addEventListener("pageshow", back); addEventListener("orientationchange", back); dots();
   if (!store.get("hinted") || location.search.includes("hint")) { const h = $("hint"); h.innerHTML = ["Charging", "Car", "Drive", "Map", "Info"].map((x, j) => "<span" + (j === curPage ? ' class="on"' : "") + ">" + x + "</span>").join(""); h.hidden = false; $("app").classList.add("hinting"); setTimeout(() => h.classList.add("fade"), 5000); setTimeout(() => { h.hidden = true; $("app").classList.remove("hinting"); }, 5700); store.set("hinted", "1"); }
   [...$("dots").children].forEach((d, j) => { d.onclick = () => { const p = $("pages"); p.style.scrollBehavior = "smooth"; p.scrollLeft = p.clientWidth * j; }; }); /* tap a dot to go to that page */
-  setInterval(() => { render(); }, 1000);
+  { let k = 0; setInterval(() => { k++; if (parkedSince && Date.now() - parkedSince > 300000 && !TK.charging && k % 5) return; render(); }, 1000); }
   { let tt = 0; setInterval(() => { const now = performance.now(); if (T.state === "run" || T.state === "armed" || now - tt > 1000) { tt = now; timerTick(now); } }, 100); }
   if (!demo) setInterval(watchdog, 5000);
   const tick = () => { $("clock").textContent = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); }; tick(); setInterval(tick, 10000);
@@ -1230,7 +1279,7 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "v22 · 22 Nov 2026"; $("build").textContent = BUILD;
+const BUILD = "v23 · 23 Nov 2026"; $("build").textContent = BUILD;
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {}); // opens with no signal; the network copy always wins when online
 $("upd").onclick = async () => { const b = $("upd"); b.disabled = true; b.textContent = "Checking...";
   try { const r = await fetch(location.pathname + "?check=" + Date.now(), { cache: "no-store" }), m = (await r.text()).match(/const BUILD = "([^"]+)"/);
@@ -1238,6 +1287,7 @@ $("upd").onclick = async () => { const b = $("upd"); b.disabled = true; b.textCo
     b.textContent = m ? "Up to date" : "Couldn't check"; } catch (e) { b.textContent = "Couldn't check"; }
   b.disabled = false; setTimeout(() => { b.textContent = "Check for update"; }, 4000); };
 $("rside").onclick = $("rhit").onclick = toggleArm;
+$("navs").onclick = () => { if ($("navs").classList.contains("trip")) { lastTrip = null; render(); } }; /* tap the last-drive line to clear it */
 $("ghit").onclick = () => { gPeak = null; gfPts = []; drawG(); }; /* tap the G pod to clear its trail and peak */
 $("topzone").onclick = () => { topPeek = Date.now() + 5000; render(); };
 $("czl").onclick = $("czr").onclick = () => { circPeek = Date.now() + 8000; render(); };
