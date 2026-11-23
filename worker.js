@@ -5,7 +5,7 @@
 // It is never logged or stored, and a token in the address is refused so it can't end up in any log.
 const UPSTREAM = "https://api.teslemetry.com";
 const OK_PATH = /^\/(sse(\/[A-Za-z0-9]{10,20})?|api\/1\/(products|vehicles(\/[A-Za-z0-9]{10,20}(\/(vehicle_data|data|telemetry))?)?))$/;
-const CMD_PATH = /^\/api\/1\/vehicles\/[A-Za-z0-9]{10,20}\/(wake_up|command\/(auto_conditioning_start|auto_conditioning_stop|set_temps|set_preconditioning_max|remote_seat_heater_request|door_lock|door_unlock|set_sentry_mode|charge_port_door_open|charge_port_door_close|charge_start|charge_stop|set_charge_limit|window_control|flash_lights|honk_horn))$/;
+const CMD_PATH = /^\/api\/1\/vehicles\/[A-Za-z0-9]{10,20}\/(wake_up|command\/(auto_conditioning_start|auto_conditioning_stop|set_temps|set_preconditioning_max|remote_seat_heater_request|door_lock|door_unlock|set_sentry_mode|charge_port_door_open|charge_port_door_close|actuate_trunk|charge_start|charge_stop|set_charge_limit|window_control|flash_lights|honk_horn))$/;
 
 export default {
   async fetch(req, env) {

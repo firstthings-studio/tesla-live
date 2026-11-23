@@ -672,6 +672,11 @@ html.hc #navs{color:#fff}
 .shbox .pri{background:linear-gradient(180deg,color-mix(in srgb,var(--acc) 80%,#fff),var(--acc));box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 6px 16px -6px var(--acc)}
 #toast{background:linear-gradient(180deg,rgba(54,55,60,.96),rgba(30,31,34,.96));box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 10px 24px -6px rgba(0,0,0,.7)}
 .chip{box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+/* Car remote menu (tap a part of the car). */
+.shbox .carst{margin-top:2px;color:var(--dim)}
+.shbox .acts{display:flex;flex-direction:column;gap:8px;margin-top:14px}.shbox .acts button{margin:0;width:100%;font-weight:600;font-size:var(--fs-b)}
+#car .part,#car .glass,#car .hit,#padlock,#cport{transition:filter .15s ease;-webkit-tap-highlight-color:transparent}
+#car .part:active,#car .glass:active,#car .hit:active,#padlock:active,#cport:active{filter:brightness(1.6)}
 #follow,#setb{box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 8px 18px -6px rgba(0,0,0,.7)}
 /* While driving only the essentials stay: battery top left, clock top right. */
 #p-hud #top.away{opacity:1}
@@ -1548,7 +1553,7 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "v32 · 24 Nov 2026"; $("build").textContent = BUILD;
+const BUILD = "v33 · 24 Nov 2026"; $("build").textContent = BUILD;
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {}); // opens with no signal; the network copy always wins when online
 $("upd").onclick = async () => { const b = $("upd"); b.disabled = true; b.textContent = "Checking...";
   try { const r = await fetch(location.pathname + "?check=" + Date.now(), { cache: "no-store" }), m = (await r.text()).match(/const BUILD = "([^"]+)"/);
@@ -1574,8 +1579,35 @@ function partInfo(id) {
   const [k, p] = id.split("-"), side = SIDE_NAME[p];
   return k === "d" ? side + " door: " + st(ds != null, isOpen(id)) : k === "w" ? side + " window: " + st(!!winK[p], isOpen(id)) : side + " tyre: " + ($(id).dataset.st || "not reported"); }
 ["fl", "fr", "rl", "rr"].forEach(p => { const w = $("w-" + p), r = document.createElementNS("http://www.w3.org/2000/svg", "rect"); r.setAttribute("x", +w.getAttribute("x") - 7); r.setAttribute("y", w.getAttribute("y")); r.setAttribute("width", 19); r.setAttribute("height", w.getAttribute("height")); r.setAttribute("fill", "transparent"); r.setAttribute("class", "hit"); r.dataset.for = "w-" + p; $("car").appendChild(r); });
-["d-fl", "d-fr", "d-rl", "d-rr", "frunk", "trunk", "cport", "t-fl", "t-fr", "t-rl", "t-rr"].map(id => $(id)).concat([...document.querySelectorAll("#car .hit")]).forEach(e => { e.style.cursor = "pointer";
-  e.addEventListener("click", ev => { ev.stopPropagation(); const c = $("carsum"); carPeek = Date.now() + 4000; carPeekId = e.dataset.for || e.id; c.textContent = partInfo(carPeekId); c.classList.remove("warn", "ok"); c.classList.add("peek"); }); });
+// ---- the car picture is a remote: tap a part, see its state and what it can do (v33) ----
+// Every action reuses the Car page buttons (same confirmations, wake-up flow and credit counting). Nothing is sent
+// on the tap itself: the menu opens first, so a stray touch never moves the car.
+function carActions(id) {
+  const st = ctlState(), ds = doorSet(S.DoorState) || new Set(), fOpen = ds.has("ft"), rOpen = ds.has("rt"), press = b => () => { sheetClose(); $(b).click(); };
+  const lockAct = { t: st.lock === false ? "Lock the car" : "Unlock the car", f: press("c-lock"), pri: st.lock === false };
+  const lights = { t: "Flash lights", f: () => { sheetClose(); act("find", () => sendCmd("flash_lights", {}, "Lights flashed").then(ok => { if (ok) flashCar(); return ok; })); } };
+  const honk = { t: "Honk", f: () => { sheetClose(); act("find", () => sendCmd("honk_horn", {}, "Honked")); } };
+  const trunk = (front, open) => ({ t: front ? "Open front boot" : open ? "Close boot" : "Open boot", pri: true, f: async () => { sheetClose();
+    if (!open && !(await ask(front ? "Open the front boot? It can only be closed by hand. Uses 1 credit." : "Open the boot? Uses 1 credit.", front ? "Open front boot" : "Open boot", true))) return;
+    act("lock", async () => { if (await sendCmd("actuate_trunk", { which_trunk: front ? "front" : "rear" }, front ? "Front boot opened" : open ? "Boot closing" : "Boot opened")) { const set = new Set(ds); set[open ? "delete" : "add"](front ? "ft" : "rt"); S.DoorState = [...set].join("|"); render(); } }); } });
+  if (id === "frunk") return { title: "Front boot", acts: fOpen ? [lights, honk] : [trunk(true, false), lights, honk] };
+  if (id === "trunk") return { title: "Boot", acts: [trunk(false, rOpen), lockAct] };
+  if (id === "cport") return { title: "Charge port", acts: [{ t: st.port ? "Close charge port" : "Open charge port", f: press("c-port"), pri: true }] };
+  if (id === "glass" || id === "padlock") return { title: id === "padlock" ? "Doors" : "Cabin", acts: id === "padlock" ? [lockAct, { t: st.climate ? "Climate settings" : "Turn climate on", f: press("c-climate") }] : [{ t: st.climate ? "Climate settings" : "Turn climate on", f: press("c-climate"), pri: true }, lockAct] };
+  const [k] = id.split("-");
+  if (k === "d") return { title: "Doors", acts: [lockAct] };
+  if (k === "w") return { title: "Windows", acts: [{ t: st.vent ? "Close windows" : "Vent windows", f: press("c-vent"), pri: true }] };
+  return null; // tyres: information only
+}
+function openCarPart(id) {
+  const a = carActions(id), info = id === "glass" || id === "padlock" ? "" : partInfo(id);
+  if (!a) { const c = $("carsum"); carPeek = Date.now() + 4000; carPeekId = id; c.textContent = info; c.classList.remove("warn", "ok"); c.classList.add("peek"); return; }
+  const status = id === "glass" ? "Inside " + fmt(num(S.InsideTemp), 0) + " °C" + (ctlState().climate ? " · climate on" : "") : id === "padlock" ? (ctlState().lock === false ? "Unlocked" : ctlState().lock ? "Locked" : "Not reported") : info.replace(/^[^:]*:\s*/, "").replace(/^./, s => s.toUpperCase());
+  sheetOpen('<h3>' + a.title + '</h3><div class="u carst">' + status + '</div><div class="acts">' + a.acts.map((x, i) => '<button data-i="' + i + '"' + (x.pri ? ' class="pri"' : "") + ">" + x.t + "</button>").join("") + '<button data-x="1">Cancel</button></div>', e => {
+    e.querySelectorAll(".acts button").forEach(b => { b.onclick = () => { if (b.dataset.x) return sheetClose(); a.acts[+b.dataset.i].f(); }; }); });
+}
+["d-fl", "d-fr", "d-rl", "d-rr", "frunk", "trunk", "cport", "t-fl", "t-fr", "t-rl", "t-rr", "padlock"].map(id => $(id)).concat([...document.querySelectorAll("#car .hit, #car .glass")]).forEach(e => { e.style.cursor = "pointer";
+  e.addEventListener("click", ev => { ev.stopPropagation(); openCarPart(e.dataset.for || (e.classList.contains("glass") ? "glass" : e.id)); }); });
 $("thin").onclick = () => { store.set("ticks", store.get("ticks") === "thin" ? "" : "thin"); $("ticks").innerHTML = ""; buildTicks(); thinLabel(); render(); };
 // Paint: "Auto" follows the car's ExteriorColor reading (when Teslemetry sends it), otherwise the colour chosen here.
 $("paintc").onclick = () => { const i = PAINTS.indexOf(store.get("paint") || "auto"); store.set("paint", PAINTS[(i + 1) % PAINTS.length]); applyPaint(); };
