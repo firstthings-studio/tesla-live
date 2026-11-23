@@ -230,7 +230,6 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #p-hud #gauge{height:auto;width:min(calc(100vh - var(--st) - var(--sb) - 36px),calc(100vw - var(--sl) - var(--sr) - 392px));aspect-ratio:1;align-self:center}
 #trk{line-height:1.25;margin-top:2px}
 @media (max-width:780px){
-  #tr>span:nth-child(2){display:none}
   #chip{font-size:0}#chip::before{font-size:14px;margin-right:0}
   #top{font-size:17px}
   #p-hud #crt{flex-direction:column;align-items:center;gap:0}
@@ -661,7 +660,10 @@ html.hc #navs{color:#fff}
    and a soft drop shadow. Metal discs: a raised centre. All static (no blur, no animation), so frames stay cheap. */
 #p-hud #gwrap,#p-hud #rside{background:radial-gradient(circle at 50% 22%,#1b1e24 0%,#0b0c0f 58%,#050506 100%);box-shadow:inset 0 1.5px 0 rgba(255,255,255,.10),inset 0 0 0 1.5px #24262b,inset 0 -10px 18px -8px rgba(0,0,0,.8),0 16px 30px -10px rgba(0,0,0,.8)}
 #p-hud #rside.armedring{box-shadow:inset 0 0 0 2.5px #ffd60a,0 0 18px -4px #ffd60a,0 16px 30px -10px rgba(0,0,0,.8)}
-#tr{background:linear-gradient(180deg,rgba(40,42,48,.86),rgba(14,15,18,.86))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 8px 18px -6px rgba(0,0,0,.7)}
+/* Top bar: two matching glass pills. Left = the car (lock, Sentry, connection); right = battery and clock. */
+#tleft{display:flex;align-items:center;gap:12px;color:var(--dim);padding:3px 14px;border-radius:16px;pointer-events:auto}#tleft:not(:has(#pstat:not([hidden]))):has(#chip.dotonly){padding:3px 11px}
+#tleft,#tr{height:34px;box-sizing:border-box;align-items:center;background:linear-gradient(180deg,rgba(40,42,48,.86),rgba(14,15,18,.86))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 8px 18px -6px rgba(0,0,0,.7)}
+#tr #batt{order:0}#tr #clock{order:1}
 #tr #batt .glyph{border-color:rgba(235,235,245,.55)}#tr #batt .glyph:after{background:rgba(235,235,245,.55)}
 #sheet{background:linear-gradient(180deg,rgba(36,37,42,.92),rgba(18,19,22,.94));box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 18px 40px -12px rgba(0,0,0,.8)}
 #p-map .t,#sheet .sw2{background:linear-gradient(180deg,#232327,#18181b);box-shadow:inset 0 1px 0 rgba(255,255,255,.07)}
@@ -670,9 +672,9 @@ html.hc #navs{color:#fff}
 #toast{background:linear-gradient(180deg,rgba(54,55,60,.96),rgba(30,31,34,.96));box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 10px 24px -6px rgba(0,0,0,.7)}
 .chip{box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
 #follow,#setb{box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 8px 18px -6px rgba(0,0,0,.7)}
-/* While driving the top bar tidies away, but the battery stays in the top-right corner: always visible. */
+/* While driving the left pill tidies away; battery and clock stay in the top-right corner. */
 #p-hud #top.away{opacity:1}
-#p-hud #top.away>*:not(#tr),#p-hud #top.away #tr>*:not(#batt){display:none!important}
+#p-hud #top.away>*:not(#tr),#p-hud #top.away #tr>*:not(#batt):not(#clock){display:none!important}
 #p-hud #top.away #tr{background:rgba(10,11,13,.55)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
 </style>
 </head>
@@ -784,7 +786,7 @@ html.hc #navs{color:#fff}
     <div id="night" hidden></div>
     <div id="saprobe" aria-hidden="true"></div>
     <div id="top">
-      <div id="tr"><div id="batt"><div class="glyph"><div id="socb"></div></div><b><span id="soc">-</span>%</b><span class="u"><span id="rng">-</span> km</span></div><span id="pstat" hidden><svg id="ilock" class="ti" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path id="ilockarm" d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><svg id="isentry" class="ti" viewBox="0 0 24 24" hidden><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span><span id="chip">Starting</span><span id="tout3wrap"><svg id="iice" class="ti" viewBox="0 0 24 24" hidden><path d="M12 2v20M3.3 7l17.4 10M3.3 17l17.4-10M9 4l3 2 3-2M9 20l3-2 3 2"/></svg><span id="tout3">-</span> °C</span><b id="clock">-</b></div>
+      <div id="tleft"><span id="pstat" hidden><svg id="ilock" class="ti" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path id="ilockarm" d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><svg id="isentry" class="ti" viewBox="0 0 24 24" hidden><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span><span id="chip">Starting</span></div><div id="tr"><span id="tout3wrap"><svg id="iice" class="ti" viewBox="0 0 24 24" hidden><path d="M12 2v20M3.3 7l17.4 10M3.3 17l17.4-10M9 4l3 2 3-2M9 20l3-2 3 2"/></svg><span id="tout3">-</span> °C</span><div id="batt"><div class="glyph"><div id="socb"></div></div><b><span id="soc">-</span>%</b><span class="u"><span id="rng">-</span> km</span></div><b id="clock">-</b></div>
     </div>
     <div id="main">
       <div class="t hx" id="gwrap"><div class="l">G-force</div><canvas id="gf" width="260" height="260"></canvas></div>
@@ -1262,7 +1264,7 @@ function layoutDash() {
   // tick track: evenly spaced ticks all the way along the band's inner edge, pointing inward (right half = power, left half = regen)
   // Top and bottom: the tick ring sits further out than the light band (two-thirds of its depth, clear of the home bar and
   // the status pill), so the big speed number has room; the sides stay at the band edge, clear of the Dynamic Island.
-  const trR = $("tr").getBoundingClientRect(), trB = trR.height ? trR.bottom - sec.getBoundingClientRect().top : 0; // the status pill, top right
+  const secT = sec.getBoundingClientRect().top, trB = Math.max(...["tleft", "tr"].map(id => { const r = $(id).getBoundingClientRect(); return r.height ? r.bottom - secT : 0; })); // the two status pills
   const ty = Math.round(Math.max(sb + 14, st + 14, t * 0.66, trB - 2)); // ticks start 8 px inside ty: never touching the pill
   geo = { W, H, xL: t, xR: W - t, yT: ty, yB: H - ty, ri };
   const pitch = Math.max(11, 0.033 * H), tl = Math.max(9, 0.034 * H), tgap = 8, dMid = tgap + tl / 2, rm = Math.max(4, ri - dMid), aS = (W / 2 - t) - ri, vS = (H - 2 * ty) - 2 * ri, qM = Math.PI * rm / 2, M = 2 * aS + vS + 2 * qM; // (vS uses the outer top/bottom ty)
@@ -1545,7 +1547,7 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "v30 · 24 Nov 2026"; $("build").textContent = BUILD;
+const BUILD = "v31 · 24 Nov 2026"; $("build").textContent = BUILD;
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {}); // opens with no signal; the network copy always wins when online
 $("upd").onclick = async () => { const b = $("upd"); b.disabled = true; b.textContent = "Checking...";
   try { const r = await fetch(location.pathname + "?check=" + Date.now(), { cache: "no-store" }), m = (await r.text()).match(/const BUILD = "([^"]+)"/);
