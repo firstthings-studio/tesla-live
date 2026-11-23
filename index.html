@@ -354,7 +354,9 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #cstack{z-index:3}
 @media (prefers-reduced-motion:reduce){#roadg{animation:none}#ticks.rpulse .rl{animation:none}}
 /* ===== v9: pure driving. One number, one gear, the ring does the rest. ===== */
-#p-hud #batt,#p-hud #tr>span:has(#tout3){display:none}
+#p-hud #tr>span:has(#tout3){display:none}
+/* v30: the battery is always visible on the Drive screen, at the start of the top-right status pill */
+#tr #batt{background:none;padding:0;gap:7px}#p-hud #tr #batt .u{display:none}#tr #batt b{font-weight:700}
 #tout3wrap{display:none}
 #speed{font-size:calc(min(50vh,215px) * var(--spk,1));letter-spacing:-.02em;line-height:1.04;padding:0 .1em;margin:-.08em 0 -.12em}
 #speed.d3{font-size:calc(min(37vh,160px) * var(--spk,1))}
@@ -633,6 +635,8 @@ html.hc #navs{color:#fff}
 #car[data-paint="UltraRed"]{--pe:#3d0407;--pm:#860c13;--pc:#d3262e}
 #car[data-paint="MidnightSilver"]{--pe:#25292d;--pm:#43484e;--pc:#6c727a}
 #car .body,#car .mirror,#car .xbar{fill:url(#paint);stroke:none}
+/* Ceramic coat (the owner's Stealth Grey): deeper, wetter gloss: a brighter clearcoat sheen and a diagonal specular streak. */
+#car .coat{opacity:0}#car[data-paint="StealthGrey"]{--pe:#121417;--pm:#2b2f35;--pc:#5a616b}#car[data-paint="StealthGrey"] .coat{opacity:1}#car .sheen{opacity:.8}#car[data-paint="StealthGrey"] .sheen{opacity:1}
 #car .part,#car .qtr{fill:transparent;stroke:rgba(0,0,0,.5);stroke-width:1.1}
 #car .part.open{fill:var(--warn);fill-opacity:.88;stroke:#0b0b0d}
 #car .glass,#car .wind{fill:url(#glassg);stroke:rgba(0,0,0,.55);stroke-width:1.1}
@@ -653,6 +657,23 @@ html.hc #navs{color:#fff}
 .cb .o{background:radial-gradient(circle at 50% 28%,#3b3c41 0%,#1e1f22 72%);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),inset 0 -2px 4px rgba(0,0,0,.4),0 6px 14px -4px rgba(0,0,0,.7)}
 .cb.on .o{background:radial-gradient(circle at 50% 28%,color-mix(in srgb,var(--c) 55%,#fff) 0%,var(--c) 62%);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 0 20px -3px var(--c),0 6px 14px -4px rgba(0,0,0,.7)}
 @media (prefers-reduced-motion:reduce){#car.flash .lamp{animation:none}}
+/* v30: the same lit materials app wide (one key light from above). Glass panels: a bright top edge, a dark lower edge
+   and a soft drop shadow. Metal discs: a raised centre. All static (no blur, no animation), so frames stay cheap. */
+#p-hud #gwrap,#p-hud #rside{background:radial-gradient(circle at 50% 22%,#1b1e24 0%,#0b0c0f 58%,#050506 100%);box-shadow:inset 0 1.5px 0 rgba(255,255,255,.10),inset 0 0 0 1.5px #24262b,inset 0 -10px 18px -8px rgba(0,0,0,.8),0 16px 30px -10px rgba(0,0,0,.8)}
+#p-hud #rside.armedring{box-shadow:inset 0 0 0 2.5px #ffd60a,0 0 18px -4px #ffd60a,0 16px 30px -10px rgba(0,0,0,.8)}
+#tr{background:linear-gradient(180deg,rgba(40,42,48,.86),rgba(14,15,18,.86))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 8px 18px -6px rgba(0,0,0,.7)}
+#tr #batt .glyph{border-color:rgba(235,235,245,.55)}#tr #batt .glyph:after{background:rgba(235,235,245,.55)}
+#sheet{background:linear-gradient(180deg,rgba(36,37,42,.92),rgba(18,19,22,.94));box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 18px 40px -12px rgba(0,0,0,.8)}
+#p-map .t,#sheet .sw2{background:linear-gradient(180deg,#232327,#18181b);box-shadow:inset 0 1px 0 rgba(255,255,255,.07)}
+.shbox{background:linear-gradient(180deg,#26262a 0%,#19191c 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 24px 60px -10px rgba(0,0,0,.85)}
+.shbox .pri{background:linear-gradient(180deg,color-mix(in srgb,var(--acc) 80%,#fff),var(--acc));box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 6px 16px -6px var(--acc)}
+#toast{background:linear-gradient(180deg,rgba(54,55,60,.96),rgba(30,31,34,.96));box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 10px 24px -6px rgba(0,0,0,.7)}
+.chip{box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+#follow,#setb{box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 8px 18px -6px rgba(0,0,0,.7)}
+/* While driving the top bar tidies away, but the battery stays in the top-right corner: always visible. */
+#p-hud #top.away{opacity:1}
+#p-hud #top.away>*:not(#tr),#p-hud #top.away #tr>*:not(#batt){display:none!important}
+#p-hud #top.away #tr{background:rgba(10,11,13,.55)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
 </style>
 </head>
 <body>
@@ -704,6 +725,7 @@ html.hc #navs{color:#fff}
        <linearGradient id="keyl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset=".35" stop-color="#fff" stop-opacity="0"/><stop offset=".8" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></linearGradient>
        <linearGradient id="glassg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#223040"/><stop offset=".45" stop-color="#0b1016"/><stop offset="1" stop-color="#05070a"/></linearGradient>
        <linearGradient id="glassref" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#cfe3ff" stop-opacity="0"/><stop offset=".42" stop-color="#cfe3ff" stop-opacity="0"/><stop offset=".5" stop-color="#cfe3ff" stop-opacity=".16"/><stop offset=".58" stop-color="#cfe3ff" stop-opacity="0"/><stop offset="1" stop-color="#cfe3ff" stop-opacity="0"/></linearGradient>
+       <linearGradient id="coat" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".46" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".18"/><stop offset=".54" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
        <radialGradient id="cshadow"><stop offset=".55" stop-color="#000" stop-opacity=".7"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
        <radialGradient id="floorl" cx=".5" cy=".42"><stop offset="0" stop-color="#ffe9cc" stop-opacity=".10"/><stop offset="1" stop-color="#ffe9cc" stop-opacity="0"/></radialGradient>
        <radialGradient id="tyreg" cx=".5" cy=".5" r=".6"><stop offset="0" stop-color="#2c2d30"/><stop offset="1" stop-color="#0d0d0f"/></radialGradient>
@@ -724,7 +746,7 @@ html.hc #navs{color:#fff}
        <rect id="d-fr" class="part" x="203" y="92" width="47" height="92"/><rect id="d-rr" class="part" x="203" y="186" width="47" height="76"/>
        <rect class="qtr" x="70" y="262" width="180" height="22"/>
        <rect id="trunk" class="part" x="70" y="284" width="180" height="70"/>
-       <rect class="paintfx" x="70" y="-10" width="180" height="364" fill="url(#sheen)"/>
+       <rect class="paintfx sheen" x="70" y="-10" width="180" height="364" fill="url(#sheen)"/><rect class="paintfx coat" x="70" y="-10" width="180" height="364" fill="url(#coat)"/>
        <rect class="paintfx" x="70" y="-10" width="180" height="364" fill="url(#keyl)"/>
        <path class="crease" d="M138 18Q134 56 128 92M182 18Q186 56 192 92"/>
        <path class="wind" d="M108 92H212L203 128H117Z"/>
@@ -762,8 +784,7 @@ html.hc #navs{color:#fff}
     <div id="night" hidden></div>
     <div id="saprobe" aria-hidden="true"></div>
     <div id="top">
-      <div id="batt"><div class="glyph"><div id="socb"></div></div><b><span id="soc">-</span>%</b><span class="u"><span id="rng">-</span> km</span></div>
-      <div id="tr"><span id="pstat" hidden><svg id="ilock" class="ti" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path id="ilockarm" d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><svg id="isentry" class="ti" viewBox="0 0 24 24" hidden><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span><span id="chip">Starting</span><span id="tout3wrap"><svg id="iice" class="ti" viewBox="0 0 24 24" hidden><path d="M12 2v20M3.3 7l17.4 10M3.3 17l17.4-10M9 4l3 2 3-2M9 20l3-2 3 2"/></svg><span id="tout3">-</span> °C</span><b id="clock">-</b></div>
+      <div id="tr"><div id="batt"><div class="glyph"><div id="socb"></div></div><b><span id="soc">-</span>%</b><span class="u"><span id="rng">-</span> km</span></div><span id="pstat" hidden><svg id="ilock" class="ti" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path id="ilockarm" d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><svg id="isentry" class="ti" viewBox="0 0 24 24" hidden><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span><span id="chip">Starting</span><span id="tout3wrap"><svg id="iice" class="ti" viewBox="0 0 24 24" hidden><path d="M12 2v20M3.3 7l17.4 10M3.3 17l17.4-10M9 4l3 2 3-2M9 20l3-2 3 2"/></svg><span id="tout3">-</span> °C</span><b id="clock">-</b></div>
     </div>
     <div id="main">
       <div class="t hx" id="gwrap"><div class="l">G-force</div><canvas id="gf" width="260" height="260"></canvas></div>
@@ -1524,7 +1545,7 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "v29 · 24 Nov 2026"; $("build").textContent = BUILD;
+const BUILD = "v30 · 24 Nov 2026"; $("build").textContent = BUILD;
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {}); // opens with no signal; the network copy always wins when online
 $("upd").onclick = async () => { const b = $("upd"); b.disabled = true; b.textContent = "Checking...";
   try { const r = await fetch(location.pathname + "?check=" + Date.now(), { cache: "no-store" }), m = (await r.text()).match(/const BUILD = "([^"]+)"/);
