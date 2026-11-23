@@ -1022,6 +1022,7 @@ function glideFrame(now) { if (!gl) { glOn = false; return; } const k = gl.dur ?
   marker.setLatLng(q); if (follow) map.panTo(q, { animate: false }); if (k < 1 && curPage === 2) requestAnimationFrame(glideFrame); else { if (k < 1) marker.setLatLng(gl.to); glOn = false; } }
 function followUi() { $("follow").classList.toggle("on", follow); $("followt").textContent = follow ? "Following" : "Follow car"; }
 // ---- car controls (v24): commands go through the relay to Teslemetry, 1 credit each ----
+function beltWarn(b) { return b != null && (truthy(b) || /unbuckl|unlatch/i.test(String(b))); } /* Teslemetry: DriverSeatBelt is true only when the driver seat is occupied and the belt is undone; raw enum strings handled too */
 const onState = v => v == null ? null : v === true || v === "true" || (!/off|false/i.test(String(v)) && /on|precond|normal|max|true|[1-9]/i.test(String(v)));
 const CTL_COL = { climate: "#0a84ff", lock: "#30d158", sentry: "#ff453a", port: "#ff9f0a", vent: "#ff9f0a", find: "#ffd60a" };
 function cmdMonth() { const m = new Date().toISOString().slice(0, 7); let o = {}; try { o = JSON.parse(store.get("cmdc") || "{}") || {}; } catch (e) {} if (o.m !== m) o = { m, n: 0 }; return o; }
@@ -1252,7 +1253,7 @@ function driveFx(sp, pw, acc, charging, eff) {
     const on = near != null && near <= (pl._on ? 7 : 4); pl._on = on; pl.hidden = !on; /* Teslemetry has no "cruise is on" field: near the set speed is the best sign */
     if (on) { const fd = String(S.CruiseFollowDistance ?? "").match(/\d+/); $("crv").textContent = Math.round(crK) + (fd ? " · " + fd[0] : ""); pl.classList.toggle("hold", near <= 2.5); } }
   // 4: seatbelt off while moving
-  { const b = S.DriverSeatBelt, unb = b != null && (b === false || b === "false" || /unbuckl|unlatch/i.test(String(b))); $("hud").classList.toggle("belt", unb && sp != null && sp > 10); }
+  { $("hud").classList.toggle("belt", beltWarn(S.DriverSeatBelt) && sp != null && sp > 10); }
   // 5: leaving Park jumps to the drive page
   { if (prevGear !== undefined && liveMode && (prevGear == null || prevGear === "P") && gear && gear !== "P" && curPage !== 1) { const pp = $("pages"); pp.style.scrollBehavior = "smooth"; pp.scrollLeft = pp.clientWidth * 1; } prevGear = gear; }
   // 8: trip from leaving Park to parking again (memory only, nothing saved)
@@ -1450,7 +1451,7 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "v25 · 23 Nov 2026"; $("build").textContent = BUILD;
+const BUILD = "v26 · 23 Nov 2026"; $("build").textContent = BUILD;
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {}); // opens with no signal; the network copy always wins when online
 $("upd").onclick = async () => { const b = $("upd"); b.disabled = true; b.textContent = "Checking...";
   try { const r = await fetch(location.pathname + "?check=" + Date.now(), { cache: "no-store" }), m = (await r.text()).match(/const BUILD = "([^"]+)"/);
