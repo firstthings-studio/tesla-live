@@ -24,7 +24,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 #app{position:fixed;inset:0}
 #pages{display:flex;height:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 #pages::-webkit-scrollbar{display:none}
-.pg{flex:0 0 100vw;height:100%;scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden;position:relative;padding:calc(var(--st) + 8px) calc(var(--sr) + 16px) calc(var(--sb) + 24px) calc(var(--sl) + 16px)}
+.pg{background:var(--bg);flex:0 0 100vw;height:100%;scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden;position:relative;padding:calc(var(--st) + 8px) calc(var(--sr) + 16px) calc(var(--sb) + 24px) calc(var(--sl) + 16px)}
 .l{font-size:13px;color:var(--dim);font-weight:500}
 .u{font-size:13px;color:var(--dim)}
 .t{background:var(--card);border-radius:var(--r);padding:10px 14px;display:flex;flex-direction:column;justify-content:space-evenly;align-items:center;text-align:center;min-width:0;min-height:0}
@@ -1455,7 +1455,7 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "v27 · 24 Nov 2026"; $("build").textContent = BUILD;
+const BUILD = "v28 · 24 Nov 2026"; $("build").textContent = BUILD;
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {}); // opens with no signal; the network copy always wins when online
 $("upd").onclick = async () => { const b = $("upd"); b.disabled = true; b.textContent = "Checking...";
   try { const r = await fetch(location.pathname + "?check=" + Date.now(), { cache: "no-store" }), m = (await r.text()).match(/const BUILD = "([^"]+)"/);
