@@ -611,6 +611,18 @@ html.hc #navs{color:#fff}
 #askok.danger{background:var(--warn);color:#000}
 @media (max-width:760px){#p-car #carpg{grid-template-columns:200px minmax(0,1fr) 200px}.b24big{font-size:32px}.b24big small{font-size:18px}.cb .o{width:50px;height:50px}}
 @media (prefers-reduced-motion:reduce){.cb.busy .o,#bbar.busy{animation:none}}
+/* ===== v25: car drawing, panels cut from the body ===== */
+#car .body{fill:#151517;stroke:none}
+#car .part{fill:#1e1e21;stroke:#0b0b0d;stroke-width:2.4}
+#car .qtr{fill:#18181b;stroke:#0b0b0d;stroke-width:2.4}
+#car .part.open{fill:var(--warn);stroke:#0b0b0d}
+#car .glass{fill:#0d1014;stroke:#0b0b0d;stroke-width:2}
+#car .wind{fill:#1a232c;stroke:#0b0b0d;stroke-width:2}
+#car .seam{stroke:#0b0b0d;stroke-width:2}
+#car .win{fill:#2a2d33;stroke:none}#car .win.open{fill:var(--warn);stroke:none}
+#car .outline{fill:none;stroke:#5a5a60;stroke-width:1.6}
+#car .lamp{stroke:#b4b4ba;stroke-width:2}
+#cport{stroke:#0b0b0d;stroke-width:2}#cport.open{fill:var(--warn);stroke:#0b0b0d;stroke-width:2.5}#car .lamp.tail{stroke:#a33a3a;stroke-width:2.4}
 </style>
 </head>
 <body>
@@ -651,28 +663,35 @@ html.hc #navs{color:#fff}
     </div>
     <div id="carbox">
      <svg id="car" viewBox="-40 -16 400 356">
+      <defs><clipPath id="carclip"><path d="M132 10Q160 3 188 10Q212 16 220 44L226 84L227 252Q225 302 213 322Q196 337 160 337Q124 337 107 322Q95 302 93 252L94 84L100 44Q108 16 132 10Z"/></clipPath><clipPath id="glassclip"><path d="M126 116H194Q199 116 199 121V251Q199 256 194 256H126Q121 256 121 251V121Q121 116 126 116Z"/></clipPath></defs>
       <text class="tu" x="160" y="-4" text-anchor="middle" style="font-size:13px">▲ Front</text>
       <ellipse id="sring" cx="160" cy="170" rx="104" ry="172"/>
       <g class="wheels">
-       <rect x="82" y="50" width="14" height="42" rx="6"/><rect x="224" y="50" width="14" height="42" rx="6"/>
-       <rect x="82" y="248" width="14" height="42" rx="6"/><rect x="224" y="248" width="14" height="42" rx="6"/>
+       <rect x="84" y="50" width="14" height="42" rx="6"/><rect x="222" y="50" width="14" height="42" rx="6"/>
+       <rect x="84" y="250" width="14" height="42" rx="6"/><rect x="222" y="250" width="14" height="42" rx="6"/>
       </g>
-      <path class="mirror" d="M97 98L84 101Q79 105 84 110L97 108Z"/><path class="mirror" d="M223 98L236 101Q241 105 236 110L223 108Z"/>
+      <path class="mirror" d="M96 96L83 99Q78 103 83 108L96 107Z"/><path class="mirror" d="M224 96L237 99Q242 103 237 108L224 107Z"/>
       <path class="body" d="M132 10Q160 3 188 10Q212 16 220 44L226 84L227 252Q225 302 213 322Q196 337 160 337Q124 337 107 322Q95 302 93 252L94 84L100 44Q108 16 132 10Z"/>
-      <path id="frunk" class="part" d="M128 22Q160 13 192 22Q205 27 207 54L206 86H114L113 54Q115 27 128 22Z"/>
-      <path class="lamp" d="M122 22Q136 18 150 20"/><path class="lamp" d="M198 22Q184 18 170 20"/>
-      <path class="wind" d="M117 88H203L196 115H124Z"/>
-      <path class="glass" d="M124 115H196Q200 115 200 120V250Q200 256 194 256H126Q120 256 120 250V120Q120 115 124 115Z"/>
-      <path class="seam" d="M120 176H200"/>
-      <path class="wind" d="M123 258H197L190 280H130Z"/>
-      <path id="trunk" class="part" d="M130 282H190Q203 284 205 298Q205 318 191 326H129Q115 318 115 298Q117 284 130 282Z"/>
-      <path class="lamp tail" d="M112 326Q160 334 208 326"/>
-      <rect id="d-fl" class="part" x="95" y="92" width="25" height="80" rx="9"/><rect id="d-rl" class="part" x="95" y="180" width="25" height="76" rx="9"/>
-      <rect id="d-fr" class="part" x="200" y="92" width="25" height="80" rx="9"/><rect id="d-rr" class="part" x="200" y="180" width="25" height="76" rx="9"/>
-      <rect id="w-fl" class="win" x="121" y="121" width="5" height="50" rx="2.5"/><rect id="w-rl" class="win" x="121" y="181" width="5" height="68" rx="2.5"/>
-      <rect id="w-fr" class="win" x="194" y="121" width="5" height="50" rx="2.5"/><rect id="w-rr" class="win" x="194" y="181" width="5" height="68" rx="2.5"/>
-      <circle id="cport" cx="108" cy="316" r="6"/>
-      <circle id="wheel-driver" cx="187" cy="140" r="7"/>
+      <g clip-path="url(#carclip)">
+       <rect id="frunk" class="part" x="70" y="-10" width="180" height="97"/>
+       <rect id="d-fl" class="part" x="70" y="89" width="51" height="88"/><rect id="d-rl" class="part" x="70" y="179" width="51" height="79"/>
+       <rect id="d-fr" class="part" x="199" y="89" width="51" height="88"/><rect id="d-rr" class="part" x="199" y="179" width="51" height="79"/>
+       <rect class="qtr" x="70" y="260" width="180" height="22"/>
+       <rect id="trunk" class="part" x="70" y="284" width="180" height="70"/>
+       <path class="wind" d="M121 89H199L194 116H126Z"/>
+       <path class="glass" d="M126 116H194Q199 116 199 121V251Q199 256 194 256H126Q121 256 121 251V121Q121 116 126 116Z"/>
+       <path class="seam" d="M121 178H199"/>
+       <path class="wind" d="M126 258H194L188 282H132Z"/>
+       <path class="lamp" d="M110 24Q128 15 148 15"/><path class="lamp" d="M210 24Q192 15 172 15"/>
+       <path class="lamp tail" d="M100 316Q160 331 220 316"/>
+      </g>
+      <g clip-path="url(#glassclip)">
+       <rect id="w-fl" class="win" x="121" y="120" width="7" height="55" rx="2"/><rect id="w-rl" class="win" x="121" y="181" width="7" height="71" rx="2"/>
+       <rect id="w-fr" class="win" x="192" y="120" width="7" height="55" rx="2"/><rect id="w-rr" class="win" x="192" y="181" width="7" height="71" rx="2"/>
+      </g>
+      <path class="outline" d="M132 10Q160 3 188 10Q212 16 220 44L226 84L227 252Q225 302 213 322Q196 337 160 337Q124 337 107 322Q95 302 93 252L94 84L100 44Q108 16 132 10Z"/>
+      <circle id="cport" cx="105" cy="300" r="6"/>
+      <circle id="wheel-driver" cx="181" cy="142" r="7"/>
       <g id="padlock" transform="translate(160 186)"><path d="M-8 -3v-6a8 8 0 0 1 16 0v6" fill="none" stroke-width="3.5" stroke-linecap="round"/><rect x="-12" y="-3" width="24" height="19" rx="5"/></g>
       <text id="t-fl" class="tp" x="40" y="76" text-anchor="end">-</text><text id="t-fr" class="tp" x="280" y="76">-</text>
       <text id="t-rl" class="tp" x="40" y="274" text-anchor="end">-</text><text id="t-rr" class="tp" x="280" y="274">-</text>
@@ -819,7 +838,7 @@ const powerKw = () => {
   const kw = pcSign * v * a / 1000;
   return Math.abs(kw) < 1 ? 0 : kw; // under 1 kW is idle noise: show 0, never "-0" or a regen label
 };
-const PSI_PER_BAR = 14.5038; // Teslemetry reports tyre pressure in bar (its console shows 2.99 bar for this car)
+const PSI_PER_ATM = 14.696; // the TpmsPressure fields are in atmospheres (Teslemetry field description; its console page labels the same number "bar")
 const chgE = { kwh: 0, t: 0 }, winK = {}; let carPeek = 0, carPeekId = "", follow = true, trailDirty = false;
 const fieldAt = {}; let latEma = null, spH = { v: null, t: 0 }, decel = 0, decelAt = 0, trip = null, lastTrip = null, prevGear, gl = null, glOn = false, carHead = null; /* v23 */ /* charge energy counter, known windows, car-part tap label, map follow */
 // ---- car page: which door, boot, window or charge port is open, shown on a top-down outline ----
@@ -839,7 +858,7 @@ const SIDE_NAME = { fl: "Front-left", fr: "Front-right", rl: "Rear-left", rr: "R
 function renderCar() {
   // Driver side: the car's own RightHandDrive flag if it has sent one; otherwise right-hand drive (Australia).
   const rhd = !(S.RightHandDrive === false || S.RightHandDrive === "false");
-  $("wheel-driver").setAttribute("cx", rhd ? 187 : 133); // steering wheel marker on the driver's side
+  $("wheel-driver").setAttribute("cx", rhd ? 181 : 139); // steering wheel marker on the driver's side
   const where = { df: rhd ? "fr" : "fl", pf: rhd ? "fl" : "fr", dr: rhd ? "rr" : "rl", pr: rhd ? "rl" : "rr" };
   const ds = doorSet(S.DoorState), open = [], put = (id, on) => { const e = $(id); if (e) e.classList.toggle("open", !!on); };
   ["fl", "fr", "rl", "rr"].forEach(p => put("d-" + p, false));
@@ -857,7 +876,7 @@ function renderCar() {
   { const m = String(S.SentryMode ?? "").replace(/^SentryModeState/, ""), off = m === "Off" || S.SentryMode === false, unk = S.SentryMode == null || m === "Unknown" || m === "";
     $("sentry").textContent = unk ? "-" : off ? "Off" : m === "Panic" ? "Alert" : "On"; flag("sentry", unk || off ? "" : m === "Panic" ? "bad" : "ok"); $("sring").classList.toggle("on", !unk && !off); }
   let low = 0; const kpa = store.get("pu") === "kpa";
-  [["fl", "Fl"], ["fr", "Fr"], ["rl", "Rl"], ["rr", "Rr"]].forEach(([p, k]) => { const x = num(S["TpmsPressure" + k]), psi = x == null ? null : x * PSI_PER_BAR, e = $("t-" + p), lvl = psi == null ? "" : psi < 32 ? "bad" : psi < 38 ? "warn" : "", txt = psi == null ? "-" : kpa ? (x * 100).toFixed(0) : psi.toFixed(0);
+  [["fl", "Fl"], ["fr", "Fr"], ["rl", "Rl"], ["rr", "Rr"]].forEach(([p, k]) => { const x = num(S["TpmsPressure" + k]), psi = x == null ? null : x * PSI_PER_ATM, e = $("t-" + p), lvl = psi == null ? "" : psi < 32 ? "bad" : psi < 38 ? "warn" : "", txt = psi == null ? "-" : kpa ? (x * 101.325).toFixed(0) : psi.toFixed(0);
     e.textContent = txt; e.classList.toggle("bad", lvl === "bad"); e.classList.toggle("warn", lvl === "warn"); e.dataset.st = psi == null ? "not reported" : txt + (kpa ? " kPa" : " psi") + (lvl === "bad" ? ", very low" : lvl === "warn" ? ", low" : ", OK");
     if (lvl) { low++; open.push(SIDE_NAME[p] + (lvl === "bad" ? " tyre very low" : " tyre low")); } });
   document.querySelectorAll("#car .pu").forEach(u => { u.textContent = kpa ? "kPa" : "psi"; });
@@ -1431,7 +1450,7 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "v24 · 23 Nov 2026"; $("build").textContent = BUILD;
+const BUILD = "v25 · 23 Nov 2026"; $("build").textContent = BUILD;
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {}); // opens with no signal; the network copy always wins when online
 $("upd").onclick = async () => { const b = $("upd"); b.disabled = true; b.textContent = "Checking...";
   try { const r = await fetch(location.pathname + "?check=" + Date.now(), { cache: "no-store" }), m = (await r.text()).match(/const BUILD = "([^"]+)"/);
