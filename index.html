@@ -355,7 +355,7 @@ button,input{font:inherit;padding:12px;border-radius:12px;border:0;background:va
 /* ===== v9: pure driving. One number, one gear, the ring does the rest. ===== */
 #p-hud #tr>span:has(#tout3){display:none}
 /* v30: the battery is always visible on the Drive screen, at the start of the top-right status pill */
-#tr #batt{background:none;padding:0;gap:7px}#p-hud #tr #batt .u{display:none}#tr #batt b{font-weight:700}
+#top #batt{background:none;padding:0;gap:7px}#p-hud #top #batt .u{display:none}#top #batt b{font-weight:700}
 #tout3wrap{display:none}
 #speed{font-size:calc(min(50vh,215px) * var(--spk,1));letter-spacing:-.02em;line-height:1.04;padding:0 .1em;margin:-.08em 0 -.12em}
 #speed.d3{font-size:calc(min(37vh,160px) * var(--spk,1))}
@@ -660,11 +660,12 @@ html.hc #navs{color:#fff}
    and a soft drop shadow. Metal discs: a raised centre. All static (no blur, no animation), so frames stay cheap. */
 #p-hud #gwrap,#p-hud #rside{background:radial-gradient(circle at 50% 22%,#1b1e24 0%,#0b0c0f 58%,#050506 100%);box-shadow:inset 0 1.5px 0 rgba(255,255,255,.10),inset 0 0 0 1.5px #24262b,inset 0 -10px 18px -8px rgba(0,0,0,.8),0 16px 30px -10px rgba(0,0,0,.8)}
 #p-hud #rside.armedring{box-shadow:inset 0 0 0 2.5px #ffd60a,0 0 18px -4px #ffd60a,0 16px 30px -10px rgba(0,0,0,.8)}
-/* Top bar: two matching glass pills. Left = the car (lock, Sentry, connection); right = battery and clock. */
-#tleft{display:flex;align-items:center;gap:12px;color:var(--dim);padding:3px 14px;border-radius:16px;pointer-events:auto}#tleft:not(:has(#pstat:not([hidden]))):has(#chip.dotonly){padding:3px 11px}
+/* Top bar: two matching glass pills. Left = battery; right = the car (lock, Sentry, connection) and the clock. */
+#tleft{display:flex;align-items:center;gap:12px;color:var(--dim);padding:3px 14px;border-radius:16px;pointer-events:auto}
 #tleft,#tr{height:34px;box-sizing:border-box;align-items:center;background:linear-gradient(180deg,rgba(40,42,48,.86),rgba(14,15,18,.86))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 8px 18px -6px rgba(0,0,0,.7)}
-#tr #batt{order:0}#tr #clock{order:1}
-#tr #batt .glyph{border-color:rgba(235,235,245,.55)}#tr #batt .glyph:after{background:rgba(235,235,245,.55)}
+#top #batt{order:0}#tr #clock{order:1}
+#tleft b{color:var(--fg)}#tleft #batt b.lw{color:#ff9f0a}#tleft #batt b.lb{color:#ff453a}
+#top #batt .glyph{border-color:rgba(235,235,245,.55)}#top #batt .glyph:after{background:rgba(235,235,245,.55)}
 #sheet{background:linear-gradient(180deg,rgba(36,37,42,.92),rgba(18,19,22,.94));box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 18px 40px -12px rgba(0,0,0,.8)}
 #p-map .t,#sheet .sw2{background:linear-gradient(180deg,#232327,#18181b);box-shadow:inset 0 1px 0 rgba(255,255,255,.07)}
 .shbox{background:linear-gradient(180deg,#26262a 0%,#19191c 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 24px 60px -10px rgba(0,0,0,.85)}
@@ -672,10 +673,10 @@ html.hc #navs{color:#fff}
 #toast{background:linear-gradient(180deg,rgba(54,55,60,.96),rgba(30,31,34,.96));box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 10px 24px -6px rgba(0,0,0,.7)}
 .chip{box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
 #follow,#setb{box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 8px 18px -6px rgba(0,0,0,.7)}
-/* While driving the left pill tidies away; battery and clock stay in the top-right corner. */
+/* While driving only the essentials stay: battery top left, clock top right. */
 #p-hud #top.away{opacity:1}
-#p-hud #top.away>*:not(#tr),#p-hud #top.away #tr>*:not(#batt):not(#clock){display:none!important}
-#p-hud #top.away #tr{background:rgba(10,11,13,.55)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+#p-hud #top.away #tr>*:not(#clock){display:none!important}
+#p-hud #top.away #tleft,#p-hud #top.away #tr{background:rgba(10,11,13,.55)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
 </style>
 </head>
 <body>
@@ -786,7 +787,7 @@ html.hc #navs{color:#fff}
     <div id="night" hidden></div>
     <div id="saprobe" aria-hidden="true"></div>
     <div id="top">
-      <div id="tleft"><span id="pstat" hidden><svg id="ilock" class="ti" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path id="ilockarm" d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><svg id="isentry" class="ti" viewBox="0 0 24 24" hidden><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span><span id="chip">Starting</span></div><div id="tr"><span id="tout3wrap"><svg id="iice" class="ti" viewBox="0 0 24 24" hidden><path d="M12 2v20M3.3 7l17.4 10M3.3 17l17.4-10M9 4l3 2 3-2M9 20l3-2 3 2"/></svg><span id="tout3">-</span> °C</span><div id="batt"><div class="glyph"><div id="socb"></div></div><b><span id="soc">-</span>%</b><span class="u"><span id="rng">-</span> km</span></div><b id="clock">-</b></div>
+      <div id="tleft"><div id="batt"><div class="glyph"><div id="socb"></div></div><b><span id="soc">-</span>%</b><span class="u"><span id="rng">-</span> km</span></div></div><div id="tr"><span id="tout3wrap"><svg id="iice" class="ti" viewBox="0 0 24 24" hidden><path d="M12 2v20M3.3 7l17.4 10M3.3 17l17.4-10M9 4l3 2 3-2M9 20l3-2 3 2"/></svg><span id="tout3">-</span> °C</span><span id="pstat" hidden><svg id="ilock" class="ti" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path id="ilockarm" d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><svg id="isentry" class="ti" viewBox="0 0 24 24" hidden><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span><span id="chip">Starting</span><b id="clock">-</b></div>
     </div>
     <div id="main">
       <div class="t hx" id="gwrap"><div class="l">G-force</div><canvas id="gf" width="260" height="260"></canvas></div>
@@ -1547,7 +1548,7 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "v31 · 24 Nov 2026"; $("build").textContent = BUILD;
+const BUILD = "v32 · 24 Nov 2026"; $("build").textContent = BUILD;
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {}); // opens with no signal; the network copy always wins when online
 $("upd").onclick = async () => { const b = $("upd"); b.disabled = true; b.textContent = "Checking...";
   try { const r = await fetch(location.pathname + "?check=" + Date.now(), { cache: "no-store" }), m = (await r.text()).match(/const BUILD = "([^"]+)"/);
