@@ -1170,31 +1170,35 @@ function layoutDash() {
   { const o = $("bmOuter"), i = $("bmInner"); o.setAttribute("width", W); o.setAttribute("height", H); i.setAttribute("x", t); i.setAttribute("y", t); i.setAttribute("width", Math.max(0, W - 2 * t)); i.setAttribute("height", Math.max(0, H - 2 * t)); i.setAttribute("rx", ri); }
   $("bloom").firstElementChild.setAttribute("stdDeviation", Math.round(Math.max(16, 0.075 * H)));
   // tick track: evenly spaced ticks all the way along the band's inner edge, pointing inward (right half = power, left half = regen)
-  geo = { W, H, xL: t, xR: W - t, yT: t, yB: H - t, ri };
-  const pitch = Math.max(11, 0.033 * H), tl = Math.max(9, 0.034 * H), tgap = 8, dMid = tgap + tl / 2, rm = Math.max(4, ri - dMid), aS = (W / 2 - t) - ri, vS = (H - 2 * t) - 2 * ri, qM = Math.PI * rm / 2, M = 2 * aS + vS + 2 * qM;
+  // Top and bottom: the tick ring sits further out than the light band (two-thirds of its depth, clear of the home bar and
+  // the status pill), so the big speed number has room; the sides stay at the band edge, clear of the Dynamic Island.
+  const trR = $("tr").getBoundingClientRect(), trB = trR.height ? trR.bottom - sec.getBoundingClientRect().top : 0; // the status pill, top right
+  const ty = Math.round(Math.max(sb + 14, st + 14, t * 0.66, trB - 2)); // ticks start 8 px inside ty: never touching the pill
+  geo = { W, H, xL: t, xR: W - t, yT: ty, yB: H - ty, ri };
+  const pitch = Math.max(11, 0.033 * H), tl = Math.max(9, 0.034 * H), tgap = 8, dMid = tgap + tl / 2, rm = Math.max(4, ri - dMid), aS = (W / 2 - t) - ri, vS = (H - 2 * ty) - 2 * ri, qM = Math.PI * rm / 2, M = 2 * aS + vS + 2 * qM; // (vS uses the outer top/bottom ty)
   NB = Math.max(24, Math.round(M / pitch));
   const g0 = $("ticks"); g0.innerHTML = ""; const thin = store.get("ticks") === "thin", sw = Math.max(2.5, pitch * (thin ? 0.18 : 0.3)), ccx = W / 2, ccy = H / 2;
   for (let i = 0; i < NB; i++) { const f = (i + 0.5) / NB;
     [[false, "bl"], [true, "br"]].forEach(([right, cls]) => {
       const dir = right ? 1 : -1, xo = right ? W - t : t, kx = xo - dir * ri; let u = f * M, px, py, nx, ny;
-      if (u <= aS) { px = ccx + dir * u; py = H - t; nx = 0; ny = -1; }                                                        // bottom edge
-      else if ((u -= aS) <= qM) { const th = u / rm, ky = H - t - ri; px = kx + dir * ri * Math.sin(th); py = ky + ri * Math.cos(th); nx = -dir * Math.sin(th); ny = -Math.cos(th); } // bottom corner
-      else if ((u -= qM) <= vS) { px = xo; py = H - t - ri - u; nx = -dir; ny = 0; }                                         // side
-      else if ((u -= vS) <= qM) { const th = u / rm, ky = t + ri; px = kx + dir * ri * Math.cos(th); py = ky - ri * Math.sin(th); nx = -dir * Math.cos(th); ny = Math.sin(th); } // top corner
-      else { u -= qM; px = kx - dir * u; py = t; nx = 0; ny = 1; }                                                          // top edge
+      if (u <= aS) { px = ccx + dir * u; py = H - ty; nx = 0; ny = -1; }                                                        // bottom edge
+      else if ((u -= aS) <= qM) { const th = u / rm, ky = H - ty - ri; px = kx + dir * ri * Math.sin(th); py = ky + ri * Math.cos(th); nx = -dir * Math.sin(th); ny = -Math.cos(th); } // bottom corner
+      else if ((u -= qM) <= vS) { px = xo; py = H - ty - ri - u; nx = -dir; ny = 0; }                                         // side
+      else if ((u -= vS) <= qM) { const th = u / rm, ky = ty + ri; px = kx + dir * ri * Math.cos(th); py = ky - ri * Math.sin(th); nx = -dir * Math.cos(th); ny = Math.sin(th); } // top corner
+      else { u -= qM; px = kx - dir * u; py = ty; nx = 0; ny = 1; }                                                          // top edge
       const l = document.createElementNS("http://www.w3.org/2000/svg", "line");
       l.setAttribute("x1", (px + nx * tgap).toFixed(1)); l.setAttribute("y1", (py + ny * tgap).toFixed(1)); l.setAttribute("x2", (px + nx * (tgap + tl)).toFixed(1)); l.setAttribute("y2", (py + ny * (tgap + tl)).toFixed(1)); l.style.strokeLinecap = "butt";
       l.style.strokeWidth = sw + "px"; /* inline: old ring CSS (#ticks line) would otherwise cap it at 3.6 */
       l.setAttribute("class", cls + (i % 5 === 4 ? " mj" : "")); l.style.stroke = i % 5 === 4 ? OFFM : OFF; g0.appendChild(l); }); }
-  const e = t + tgap + tl + 12;                                                                                  // everything else lives inside the tick track
+  const e = t + tgap + tl + 12, ey = ty + tgap + tl + 12;                                                                                  // everything else lives inside the tick track
   // turn signals: the inner edge of that side pulses green
   $("tel").setAttribute("d", "M" + t + " " + (H * 0.2) + "V" + (H * 0.8)); $("ter").setAttribute("d", "M" + (W - t) + " " + (H * 0.2) + "V" + (H * 0.8));
   // the two pods sit in the bottom corners, inside the tick track
   const P = Math.round(Math.min(0.34 * H, 146, (H - 2 * e) * 0.62));
-  const gwp = $("gwrap"), rs = $("rside"); gwp.style.width = rs.style.width = P + "px"; gwp.style.left = e + "px"; rs.style.right = e + "px"; gwp.style.bottom = rs.style.bottom = e + "px";
-  { const pad = 18; [["ghit", "left"], ["rhit", "right"]].forEach(([id, side]) => { const h = $(id).style; h.width = h.height = (P + 2 * pad) + "px"; h[side] = (e - pad) + "px"; h.bottom = (e - pad) + "px"; }); }
+  const gwp = $("gwrap"), rs = $("rside"); gwp.style.width = rs.style.width = P + "px"; gwp.style.left = e + "px"; rs.style.right = e + "px"; gwp.style.bottom = rs.style.bottom = ey + "px";
+  { const pad = 18; [["ghit", "left"], ["rhit", "right"]].forEach(([id, side]) => { const h = $(id).style; h.width = h.height = (P + 2 * pad) + "px"; h[side] = (e - pad) + "px"; h.bottom = (ey - pad) + "px"; }); }
   // centre stack inside the track; the speed keeps its look and only scales down if a short screen would make it collide
-  { const cs = $("cstack").style, avail = H - (t + 6) - (e - 4), base = Math.min(0.5 * H, 215), need = base * 0.84 + 0.24 * H; cs.top = (t + 6) + "px"; cs.bottom = (e - 4) + "px"; /* gear strip stays clear of the bottom tick row */ cs.setProperty("--spk", Math.min(1, Math.max(0.85, (avail - 0.2 * H) / (base * 0.84))).toFixed(3)); }
+  { const cs = $("cstack").style, avail = H - (ty + 6) - (ey - 4), base = Math.min(0.5 * H, 215), need = base * 0.84 + 0.24 * H; cs.top = (ty + 6) + "px"; cs.bottom = (ey - 4) + "px"; /* gear strip stays clear of the bottom tick row */ cs.setProperty("--spk", Math.min(1, Math.max(0.85, (avail - 0.2 * H) / (base * 0.84))).toFixed(3)); }
   // cruise readout at the top centre, just inside the band
   const cp = $("crpill"); cp.style.left = cx + "px"; cp.style.top = Math.max(st + 20, Math.max(st, t) / 2) + "px"; /* centred in the top band, above everything */
   paintTicks(performance.now()); scheduleRender();
@@ -1451,7 +1455,7 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "v26 · 23 Nov 2026"; $("build").textContent = BUILD;
+const BUILD = "v27 · 24 Nov 2026"; $("build").textContent = BUILD;
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {}); // opens with no signal; the network copy always wins when online
 $("upd").onclick = async () => { const b = $("upd"); b.disabled = true; b.textContent = "Checking...";
   try { const r = await fetch(location.pathname + "?check=" + Date.now(), { cache: "no-store" }), m = (await r.text()).match(/const BUILD = "([^"]+)"/);
