@@ -672,6 +672,28 @@ html.hc #navs{color:#fff}
 .shbox .pri{background:linear-gradient(180deg,color-mix(in srgb,var(--acc) 80%,#fff),var(--acc));box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 6px 16px -6px var(--acc)}
 #toast{background:linear-gradient(180deg,rgba(54,55,60,.96),rgba(30,31,34,.96));box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 10px 24px -6px rgba(0,0,0,.7)}
 .chip{box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+/* v34: the car picture animates with the car's real state (all transforms and opacity, cheap on the phone). */
+#car .beam{opacity:0;fill:url(#beamg);pointer-events:none}
+#car.flash .beam{animation:beamf .36s ease-in-out 3}@keyframes beamf{50%{opacity:1}}
+#frunklid,#trunklid{fill:var(--warn);fill-opacity:.9;stroke:#0b0b0d;stroke-width:1.2;opacity:0;pointer-events:none;transform-box:fill-box;transition:transform .9s cubic-bezier(.2,.8,.2,1),opacity .4s}
+#frunklid{transform-origin:50% 100%}#trunklid{transform-origin:50% 0%}
+#car.frunk-open #frunklid{opacity:1;transform:scaleY(.72) translateY(-8px)}#car.frunk-open #frunk.open,#car.trunk-open #trunk.open{fill-opacity:.22}
+#car.trunk-open #trunklid{opacity:1;transform:scaleY(.72) translateY(8px)}
+#car .win{transform-box:fill-box;transition:transform .8s ease,fill .5s}
+#car.vent #w-fl,#car.vent #w-rl{transform:translateX(-3px)}#car.vent #w-fr,#car.vent #w-rr{transform:translateX(3px)}
+#car.port #cport{fill:var(--ok);animation:portglow 1.4s ease-in-out infinite}@keyframes portglow{50%{filter:drop-shadow(0 0 6px var(--ok))}}
+#air{opacity:0;transition:opacity .6s;pointer-events:none}#car.climate #air{opacity:1}
+#air path{fill:none;stroke-width:2.4;stroke-linecap:round;stroke-dasharray:6 10;animation:airflow 1.1s linear infinite}#air .cool{stroke:#64d2ff}#air .warm{stroke:#ff9f5a;opacity:.7}
+@keyframes airflow{to{stroke-dashoffset:-32}}
+#car.sentry #sring{stroke:var(--bad);stroke-dasharray:none;opacity:.9;transform-box:fill-box;transform-origin:center;animation:sentryp 2s ease-out infinite}
+@keyframes sentryp{0%{transform:scale(.94);opacity:.9}100%{transform:scale(1.06);opacity:0}}
+#shackle{transform-box:fill-box;transform-origin:80% 100%;transition:transform .5s cubic-bezier(.3,1.6,.5,1)}
+#car.unlocked #shackle{transform:translateY(-4px) rotate(-28deg)}
+.carrip{position:fixed;z-index:1900;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;border:2px solid rgba(255,255,255,.8);pointer-events:none;animation:carrip .55s ease-out forwards}
+@keyframes carrip{from{transform:scale(.3);opacity:1}to{transform:scale(1.6);opacity:0}}
+#sh:not([hidden]){animation:shfade .25s ease}#sh:not([hidden]) .shbox{animation:shup .38s cubic-bezier(.2,.9,.25,1)}
+@keyframes shfade{from{background:rgba(0,0,0,0)}}@keyframes shup{from{transform:translateY(110%)}}
+@media (prefers-reduced-motion:reduce){#car.flash .beam,#car.port #cport,#air path,#car.sentry #sring,.carrip,#sh:not([hidden]),#sh:not([hidden]) .shbox{animation:none}#frunklid,#trunklid,#shackle,#car .win{transition:none}}
 /* Car remote menu (tap a part of the car). */
 .shbox .carst{margin-top:2px;color:var(--dim)}
 .shbox .acts{display:flex;flex-direction:column;gap:8px;margin-top:14px}.shbox .acts button{margin:0;width:100%;font-weight:600;font-size:var(--fs-b)}
@@ -734,12 +756,14 @@ html.hc #navs{color:#fff}
        <linearGradient id="glassg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#223040"/><stop offset=".45" stop-color="#0b1016"/><stop offset="1" stop-color="#05070a"/></linearGradient>
        <linearGradient id="glassref" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#cfe3ff" stop-opacity="0"/><stop offset=".42" stop-color="#cfe3ff" stop-opacity="0"/><stop offset=".5" stop-color="#cfe3ff" stop-opacity=".16"/><stop offset=".58" stop-color="#cfe3ff" stop-opacity="0"/><stop offset="1" stop-color="#cfe3ff" stop-opacity="0"/></linearGradient>
        <linearGradient id="coat" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".46" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".18"/><stop offset=".54" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+       <linearGradient id="beamg" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#eaf2ff" stop-opacity=".55"/><stop offset="1" stop-color="#eaf2ff" stop-opacity="0"/></linearGradient>
        <radialGradient id="cshadow"><stop offset=".55" stop-color="#000" stop-opacity=".7"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
        <radialGradient id="floorl" cx=".5" cy=".42"><stop offset="0" stop-color="#ffe9cc" stop-opacity=".10"/><stop offset="1" stop-color="#ffe9cc" stop-opacity="0"/></radialGradient>
        <radialGradient id="tyreg" cx=".5" cy=".5" r=".6"><stop offset="0" stop-color="#2c2d30"/><stop offset="1" stop-color="#0d0d0f"/></radialGradient>
       </defs>
       <text class="tu" x="160" y="-4" text-anchor="middle" style="font-size:13px">▲ Front</text>
       <ellipse class="floorl" cx="160" cy="172" rx="150" ry="190" fill="url(#floorl)"/>
+      <path class="beam" d="M104 30L60 -30H140L132 14Z"/><path class="beam" d="M216 30L260 -30H180L188 14Z"/>
       <ellipse id="sring" cx="160" cy="170" rx="104" ry="172"/>
       <ellipse class="cshadow" cx="160" cy="172" rx="80" ry="178" fill="url(#cshadow)"/>
       <g class="wheels">
@@ -764,15 +788,17 @@ html.hc #navs{color:#fff}
        <path class="duck" d="M112 300Q160 306 208 300"/>
        <path class="lamp" d="M101 36Q108 20 132 12"/><path class="lamp" d="M219 36Q212 20 188 12"/>
        <path class="lamp tail" d="M99 300Q101 322 126 331"/><path class="lamp tail" d="M221 300Q219 322 194 331"/>
+       <g id="air"><path d="M140 150Q130 175 140 200Q150 225 140 250" class="cool"/><path d="M180 150Q190 175 180 200Q170 225 180 250" class="cool"/><path d="M160 140V260" class="warm"/></g>
       </g>
       <g clip-path="url(#glassclip)">
        <rect id="w-fl" class="win" x="117" y="128" width="6" height="50" rx="2"/><rect id="w-rl" class="win" x="117" y="189" width="6" height="70" rx="2"/>
        <rect id="w-fr" class="win" x="197" y="128" width="6" height="50" rx="2"/><rect id="w-rr" class="win" x="197" y="189" width="6" height="70" rx="2"/>
       </g>
+      <path id="frunklid" d="M112 92H208L214 40Q210 14 160 8Q110 14 106 40Z"/><path id="trunklid" d="M102 262H218L216 312Q206 330 160 332Q114 330 104 312Z"/>
       <path class="outline" d="M160 3Q190 3 208 11Q221 18 225 38L227 70Q226 112 225 152Q224 192 225 222L227 262Q227 300 222 318Q216 333 196 336L124 336Q104 333 98 318Q93 300 93 262L95 222Q96 192 95 152Q94 112 93 70L95 38Q99 18 112 11Q130 3 160 3Z"/>
       <circle id="cport" cx="99" cy="292" r="5"/>
       <circle id="wheel-driver" cx="181" cy="150" r="7"/>
-      <g id="padlock" transform="translate(160 214)"><path d="M-8 -3v-6a8 8 0 0 1 16 0v6" fill="none" stroke-width="3.5" stroke-linecap="round"/><rect x="-12" y="-3" width="24" height="19" rx="5"/></g>
+      <g id="padlock" transform="translate(160 214)"><path id="shackle" d="M-8 -3v-6a8 8 0 0 1 16 0v6" fill="none" stroke-width="3.5" stroke-linecap="round"/><rect x="-12" y="-3" width="24" height="19" rx="5"/></g>
       <text id="t-fl" class="tp" x="40" y="72" text-anchor="end">-</text><text id="t-fr" class="tp" x="280" y="72">-</text>
       <text id="t-rl" class="tp" x="40" y="275" text-anchor="end">-</text><text id="t-rr" class="tp" x="280" y="275">-</text>
       <text class="tu pu" x="40" y="88" text-anchor="end">psi</text><text class="tu pu" x="280" y="88">psi</text>
@@ -949,7 +975,9 @@ function renderCar() {
   const cp = S.ChargePortDoorOpen == null ? null : truthy(S.ChargePortDoorOpen); put("cport", cp === true); if (cp) open.push("Charge port open");
   $("cport").classList.toggle("known", cp != null); if ($("cportv")) { $("cportv").textContent = cp == null ? "--" : cp ? "Open" : "Closed"; flag("cportv", cp ? "warn" : cp === false ? "ok" : ""); }
   applyPaint(); // the car drawing in the car's own colour
-  const lk = S.Locked == null ? null : truthy(S.Locked), pl = $("padlock"); $("car").classList.toggle("lit", lk === false); /* unlocked: lamps on, like the car's welcome lights */ pl.classList.toggle("ok", lk === true); pl.classList.toggle("warn", lk === false);
+  const lk = S.Locked == null ? null : truthy(S.Locked), pl = $("padlock"); $("car").classList.toggle("lit", lk === false);
+  { const c = $("car"), cs = ctlState(), dz = doorSet(S.DoorState) || new Set(), tg = (k, on) => { if (c.classList.contains(k) !== !!on) c.classList.toggle(k, !!on); }; /* v34 animations follow the real car */
+    tg("unlocked", lk === false); tg("frunk-open", dz.has("ft")); tg("trunk-open", dz.has("rt")); tg("vent", cs.vent); tg("port", cs.port); tg("climate", cs.climate); tg("sentry", cs.sentry); } /* unlocked: lamps on, like the car's welcome lights */ pl.classList.toggle("ok", lk === true); pl.classList.toggle("warn", lk === false);
   $("lock").textContent = lk == null ? "-" : lk ? "Locked" : "Unlocked"; flag("lock", lk == null ? "" : lk ? "ok" : "warn");
   const nd = ds == null ? null : [...ds].length; $("doors").textContent = ds == null ? "-" : nd === 0 ? "All closed" : nd === 1 ? "1 open" : nd + " open"; flag("doors", ds == null ? "" : nd ? "warn" : "ok"); // orange means open; red is kept for low tyres and alerts
   $("windows").textContent = wknown === 0 ? "-" : wopen.length ? wopen.length + " open" : "All closed"; flag("windows", wknown === 0 ? "" : wopen.length ? "warn" : "ok");
@@ -1553,7 +1581,7 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "v33 · 24 Nov 2026"; $("build").textContent = BUILD;
+const BUILD = "v34 · 24 Nov 2026"; $("build").textContent = BUILD;
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {}); // opens with no signal; the network copy always wins when online
 $("upd").onclick = async () => { const b = $("upd"); b.disabled = true; b.textContent = "Checking...";
   try { const r = await fetch(location.pathname + "?check=" + Date.now(), { cache: "no-store" }), m = (await r.text()).match(/const BUILD = "([^"]+)"/);
@@ -1607,7 +1635,9 @@ function openCarPart(id) {
     e.querySelectorAll(".acts button").forEach(b => { b.onclick = () => { if (b.dataset.x) return sheetClose(); a.acts[+b.dataset.i].f(); }; }); });
 }
 ["d-fl", "d-fr", "d-rl", "d-rr", "frunk", "trunk", "cport", "t-fl", "t-fr", "t-rl", "t-rr", "padlock"].map(id => $(id)).concat([...document.querySelectorAll("#car .hit, #car .glass")]).forEach(e => { e.style.cursor = "pointer";
-  e.addEventListener("click", ev => { ev.stopPropagation(); openCarPart(e.dataset.for || (e.classList.contains("glass") ? "glass" : e.id)); }); });
+  e.addEventListener("click", ev => { ev.stopPropagation(); carRipple(ev.clientX, ev.clientY); openCarPart(e.dataset.for || (e.classList.contains("glass") ? "glass" : e.id)); }); });
+// A ripple where the car picture was touched.
+function carRipple(x, y) { if (REDUCED || !x) return; const r = document.createElement("div"); r.className = "carrip"; r.style.left = x + "px"; r.style.top = y + "px"; document.body.appendChild(r); setTimeout(() => r.remove(), 600); }
 $("thin").onclick = () => { store.set("ticks", store.get("ticks") === "thin" ? "" : "thin"); $("ticks").innerHTML = ""; buildTicks(); thinLabel(); render(); };
 // Paint: "Auto" follows the car's ExteriorColor reading (when Teslemetry sends it), otherwise the colour chosen here.
 $("paintc").onclick = () => { const i = PAINTS.indexOf(store.get("paint") || "auto"); store.set("paint", PAINTS[(i + 1) % PAINTS.length]); applyPaint(); };
