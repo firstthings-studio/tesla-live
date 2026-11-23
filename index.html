@@ -549,6 +549,68 @@ html.hc #navs{color:#fff}
 .ca svg{width:100%;height:100%;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
 .ca circle{fill:#0a84ff;stroke:#fff;stroke-width:2.2}.ca path{fill:#fff;opacity:0}.ca.hd path{opacity:1}
 @media (prefers-reduced-motion:reduce){#p-hud #hud.belt #ticks{animation:none}}
+/* ===== v24: three screens, controls, full height, centred ===== */
+.pg{padding-bottom:calc(var(--sb) + 8px)}
+#dots{z-index:600;bottom:max(6px,calc(var(--sb) - 12px))}
+/* car page */
+#p-car #carpg{height:100%;display:grid;grid-template-columns:238px minmax(0,1fr) 238px;gap:12px}
+#p-car .col{display:grid;grid-template-rows:1.55fr 1fr;gap:12px;min-height:0}
+#p-car .t{justify-content:space-evenly;align-items:center;text-align:center;padding:10px 14px;min-height:0}
+#p-car .t .hd{flex-direction:row;justify-content:center;gap:8px}
+#p-car .t .ic{width:20px;height:20px}
+.b24big{font-size:40px;font-weight:700;line-height:1.05;letter-spacing:-.5px}
+.b24big small{font-size:22px;font-weight:600;color:var(--dim);margin-left:8px;letter-spacing:0}
+#p-car #bbar{flex:none;align-self:stretch;height:16px;border-radius:8px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+#p-car #bfill{border-radius:8px}
+#p-car #limt{cursor:pointer}
+#chline{font-size:14px;font-weight:600;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}#chline.on{color:var(--ok)}#chline:empty{display:none}
+.btn2{align-self:stretch;margin:0;padding:8px;border-radius:var(--r2);background:var(--card2);color:#fff;font-weight:600;font-size:14px;width:auto}
+.btn2[hidden]{display:none}
+#p-car .temps24{flex-direction:row;justify-content:space-evenly;align-items:center}
+#p-car .temps24>div{display:flex;flex-direction:column;align-items:center;gap:6px}
+#p-car .temps24 .v{font-size:var(--fs-v);font-weight:600;line-height:1.1}
+#p-car #carbox{display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;min-height:0;min-width:0}
+#p-car #car{flex:1;min-height:0;width:100%}
+#p-car #carsum{padding:2px 0 14px}
+.ctl24{display:grid!important;grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,1fr);align-items:center;justify-items:center;padding:8px 6px!important}
+.cb{background:none!important;border:0;padding:0;margin:0;width:auto;display:flex;flex-direction:column;align-items:center;color:#fff;font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;user-select:none;-webkit-user-select:none}
+.cb .o{width:58px;height:58px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;transition:background .2s ease,transform .1s ease}
+.cb:active .o{transform:scale(.93)}
+.cb .o svg{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.cb b{font-size:13px;font-weight:600;margin-top:5px;line-height:1.15}
+.cb .s{font-size:12px;color:var(--dim);line-height:1.15}
+.cb.on .o{background:var(--c)}.cb.on .s{color:var(--c)}
+.cb.busy .o{animation:busy 1s ease-in-out infinite}@keyframes busy{50%{box-shadow:0 0 0 5px rgba(255,255,255,.22)}}
+#bbar.busy{animation:busy 1s ease-in-out infinite}
+/* map panel: settings button, evenly spread, full height */
+#sheet{top:calc(var(--st) + 8px)!important;bottom:calc(var(--sb) + 8px)!important;align-content:space-evenly!important}
+#setb{position:absolute;right:10px;top:10px;width:34px;height:34px;padding:0;margin:0;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;z-index:2}
+#setb svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+#sheet>div[hidden]{display:none}
+/* settings sheet (was the info page) */
+#setov{position:fixed;inset:0;z-index:1500;background:rgba(0,0,0,.6);padding:8px calc(var(--sr) + 16px) calc(var(--sb) + 8px) calc(var(--sl) + 16px)}#setov[hidden]{display:none}
+#setov #inf{height:100%;background:#111113;border-radius:var(--r);box-shadow:inset 0 0 0 1px #2c3037,0 20px 60px rgba(0,0,0,.7);padding:12px 14px;position:relative}
+#inf #setx{width:30px;height:30px;padding:0;margin:0;font-size:14px}#setx{position:absolute;right:10px;top:8px;width:30px;height:30px;border-radius:50%;padding:0;margin:0;background:var(--card2);color:var(--dim);font-size:14px;z-index:2}
+#inf .t{align-items:center!important;text-align:center!important;justify-content:space-evenly!important}
+#inf .t .hd{justify-content:center}
+#inf .gh{text-align:center}
+#inf .chips{justify-content:center}
+/* sheets and toast */
+#sh{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center;padding:0 calc(var(--sr) + 16px) calc(var(--sb) + 10px) calc(var(--sl) + 16px)}#sh[hidden]{display:none}
+.shbox{width:min(470px,100%);background:var(--card);border-radius:var(--r);padding:14px 18px 14px;box-shadow:0 10px 40px rgba(0,0,0,.6);text-align:center}
+.shbox h3{font-size:var(--fs-b);font-weight:600;margin:0}
+.step{display:flex;align-items:center;justify-content:center;gap:24px;margin:2px 0}
+.rb{width:52px;height:52px;border-radius:50%;padding:0;margin:0;background:var(--card2);font-size:28px;line-height:1;color:#fff}
+.huge{padding:0 .14em 0 .04em;font-size:min(20vh,88px);font-style:italic;font-weight:800;line-height:1;letter-spacing:-.02em;background:linear-gradient(180deg,#fff 35%,#aeb8c3);-webkit-background-clip:text;background-clip:text;color:transparent;min-width:2.6em}
+#ltk{display:block;margin:2px auto 0;max-width:100%;height:auto}#ltk text{font-family:-apple-system,"SF Pro Text",system-ui,sans-serif}
+.chips.cen{justify-content:center;margin-top:8px}
+.shbox .row{display:flex;gap:var(--gap);margin-top:12px}.shbox .row button{margin:0;font-weight:600;font-size:var(--fs-b)}
+.shbox .pri{background:var(--acc);color:#fff}.shbox .dng{color:var(--bad)}
+#toast{position:fixed;z-index:2100;top:calc(var(--st) + 10px);left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:7px 16px 7px 12px;border-radius:999px;background:rgba(44,44,46,.94);box-shadow:0 6px 20px rgba(0,0,0,.5);font-size:14px;font-weight:600;white-space:nowrap;transition:opacity .3s ease}
+#toast i{width:8px;height:8px;border-radius:50%;background:var(--ok)}#toast.bad i{background:var(--bad)}#toast.out{opacity:0}#toast[hidden]{display:none}
+#askok.danger{background:var(--warn);color:#000}
+@media (max-width:760px){#p-car #carpg{grid-template-columns:200px minmax(0,1fr) 200px}.b24big{font-size:32px}.b24big small{font-size:18px}.cb .o{width:50px;height:50px}}
+@media (prefers-reduced-motion:reduce){.cb.busy .o,#bbar.busy{animation:none}}
 </style>
 </head>
 <body>
@@ -571,31 +633,21 @@ html.hc #navs{color:#fff}
 <div id="app" hidden>
  <div id="pages">
 
-  <section class="pg" id="p-charge">
-   <div id="ch">
-    <div class="t bat">
-     <div class="batrow">
-      <div class="bl"><div class="l">Battery</div><div class="big"><span id="soc2">-</span> %</div><div class="u" id="limt"></div></div>
-      <div id="bbar"><i id="bfill"></i><i id="blim" hidden></i></div>
-      <div class="bl"><div class="l">Range</div><div class="big2"><span id="rng2">-</span> km</div></div>
-     </div>
-    </div>
-    <div class="t" style="grid-column:span 2"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span class="l">Charging power</span></div><div class="v" id="chkw">-</div><div class="u" id="chadd"></div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="l">Time to full</span></div><div class="v" id="chtm">-</div><div class="u" id="chfull"></div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 12h4l2-6 4 12 2-6h8"/></svg><span class="l">Charge state</span></div><div class="v" id="chst" style="font-size:22px">-</div><div class="u" id="btemp"></div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span class="l">Pack voltage</span></div><div class="v"><span id="pv">-</span> V</div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span class="l">Pack current</span></div><div class="v"><span id="pa">-</span> A</div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M8 3 5 21M16 3l3 18M12 5v3M12 11v3M12 17v3"/></svg><span class="l">Efficiency now</span></div><div class="v"><span id="eff">-</span> <span class="u">Wh/km</span></div></div>
-    <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg><span class="l">Charge port</span></div><div class="v" id="cportv">-</div></div>
-   </div>
-  </section>
-
   <section class="pg" id="p-car">
    <div id="carpg">
-    <div class="side3">
-     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M10 14V5a2 2 0 0 1 4 0v9a4 4 0 1 1-4 0z"/></svg><span class="l">Inside</span></div><div class="v"><span id="tin">-</span> °C</div></div>
-     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg><span class="l">Outside</span></div><div class="v"><span id="tout2">-</span> °C</div></div>
-     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span class="l">Sentry</span></div><div class="v" id="sentry">-</div></div>
+    <div class="col">
+     <div class="t bat24">
+      <div class="hd"><svg class="ic" viewBox="0 0 24 24" style="color:var(--ok)"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span class="l">Battery</span></div>
+      <div class="b24big"><span id="soc2">-</span> %<small><span id="rng2">-</span> km</small></div>
+      <div id="bbar" role="button" aria-label="Set the charge limit"><i id="bfill"></i><i id="blim" hidden></i></div>
+      <div class="u" id="limt"></div>
+      <div id="chline"></div>
+      <button id="chbtn" class="btn2" hidden>Stop charging</button>
+     </div>
+     <div class="t temps24">
+      <div><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M10 14V5a2 2 0 0 1 4 0v9a4 4 0 1 1-4 0z"/></svg><span class="l">Inside</span></div><div class="v"><span id="tin">-</span> °C</div></div>
+      <div><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg><span class="l">Outside</span></div><div class="v"><span id="tout2">-</span> °C</div></div>
+     </div>
     </div>
     <div id="carbox">
      <svg id="car" viewBox="-40 -16 400 356">
@@ -629,14 +681,10 @@ html.hc #navs{color:#fff}
      </svg>
      <div id="carsum">Waiting for the car</div>
     </div>
-    <div class="side3">
-     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="l">Locks</span></div><div class="v" id="lock">-</div></div>
-     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M5 20V6a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v14M5 20h14M9 12h6"/></svg><span class="l">Doors and boot</span></div><div class="v" id="doors">-</div></div>
-     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 12h16M12 5v14"/></svg><span class="l">Windows</span></div><div class="v" id="windows">-</div></div>
-    </div>
+    <div class="t ctl24"><button class="cb" id="c-climate" aria-label="Climate"><span class="o"><svg viewBox="0 0 24 24"><path d="M12 3v18M5.6 6.6l12.8 10.8M18.4 6.6 5.6 17.4"/><circle cx="12" cy="12" r="3"/></svg></span><b id="l-climate">Climate</b><span class="s" id="s-climate">-</span></button><button class="cb" id="c-lock" aria-label="Lock"><span class="o"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span><b id="l-lock">Lock</b><span class="s" id="s-lock">-</span></button><button class="cb" id="c-sentry" aria-label="Sentry"><span class="o"><svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span><b id="l-sentry">Sentry</b><span class="s" id="s-sentry">-</span></button><button class="cb" id="c-port" aria-label="Charge port"><span class="o"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="9" cy="10" r="1.3"/><circle cx="15" cy="10" r="1.3"/><circle cx="12" cy="15" r="1.3"/></svg></span><b id="l-port">Charge port</b><span class="s" id="s-port">-</span></button><button class="cb" id="c-vent" aria-label="Windows"><span class="o"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M4 9h16M8 13h8M8 16h8"/></svg></span><b id="l-vent">Windows</b><span class="s" id="s-vent">-</span></button><button class="cb" id="c-find" aria-label="Find car"><span class="o"><svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.8 1 1.5 1 2.5h6c0-1 .2-1.7 1-2.5A6 6 0 0 0 12 3z"/></svg></span><b id="l-find">Find car</b><span class="s" id="s-find">-</span></button></div>
    </div>
+   <div id="legacy" hidden><div class="t"><div class="v" id="chkw"></div></div><div class="t"><div class="v" id="chadd"></div></div><div class="t"><div class="v" id="chtm"></div></div><div class="t"><div class="v" id="chfull"></div></div><div class="t"><div class="v" id="chst"></div></div><div class="t"><div class="v" id="btemp"></div></div><div class="t"><div class="v" id="pv"></div></div><div class="t"><div class="v" id="pa"></div></div><div class="t"><div class="v" id="eff"></div></div><div class="t"><div class="v" id="cportv"></div></div><div class="t"><div class="v" id="sentry"></div></div><div class="t"><div class="v" id="lock"></div></div><div class="t"><div class="v" id="doors"></div></div><div class="t"><div class="v" id="windows"></div></div><div class="t"><div class="v" id="lastdata"></div></div></div>
   </section>
-
 
   <section class="pg" id="p-hud">
    <div id="hud">
@@ -702,24 +750,28 @@ html.hc #navs{color:#fff}
     <div id="nomap">Waiting for the car's location</div>
     <button id="follow" class="on" hidden><svg viewBox="0 0 24 24"><path d="M12 2 4 21l8-4 8 4z"/></svg><span id="followt">Following</span></button>
     <div id="sheet">
+      <button id="setb" aria-label="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
       <div class="sw2"><div class="l" id="navl">Navigation</div><div class="v" id="nav">-</div></div>
+      <div class="sw2" hidden><div class="l">Last drive</div><div class="v" id="ldrive"></div></div>
       <div class="sh1"><div class="l">Outside</div><div class="v"><span id="tout">-</span> °C</div></div>
       <div class="sh1"><div class="l">Self-driving</div><div class="v"><span id="fsd">-</span> km</div></div>
       <div class="sw2"><a id="amap" href="#">Open in Maps</a></div>
     </div>
   </section>
 
-  <section class="pg" id="p-info">
-   <div id="inf">
+
+ </div>
+ <div id="setov" hidden>
+   <div id="inf"><button id="setx" aria-label="Close">✕</button>
     <div class="grp"><div class="gh">Car</div>
      <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M3 13l2-5a2 2 0 0 1 2-1.5h10a2 2 0 0 1 2 1.5l2 5v4H3zM6 17v2M18 17v2"/></svg><span class="l">Vehicle</span></div><div class="v">Model 3</div><div class="u" id="vehsub">Long Range · 2024</div></div>
      <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M8 3 5 21M16 3l3 18M12 5v3M12 11v3M12 17v3"/></svg><span class="l">Odometer</span></div><div class="v"><span id="odo">-</span> km</div></div>
      <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg><span class="l">Software</span></div><div class="v" id="sw">--</div><button id="ver" class="chip" hidden>Read version (up to 2 credits)</button></div>
     </div>
     <div class="grp"><div class="gh">Connection</div>
-     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg><span class="l">Link</span></div><div class="v sm" id="conn">-</div></div>
-     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="l">Last data</span></div><div class="v" id="lastdata">--</div><div class="u" id="ages"></div></div>
+     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg><span class="l">Link</span></div><div class="v sm" id="conn">-</div><div class="u" id="ages"></div></div>
      <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg><span class="l">Status</span></div><p id="log">OK</p></div>
+     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M4 12h3l3-7 4 14 3-7h3"/></svg><span class="l">Commands this month</span></div><div class="v" id="cmdn">0</div><div class="u">Sent from this phone · 500 included</div></div>
     </div>
     <div class="grp"><div class="gh">App</div>
      <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg><span class="l">Update</span></div><button id="upd" class="pri">Check for update</button><span class="u" id="build"></span></div>
@@ -727,11 +779,10 @@ html.hc #navs{color:#fff}
      <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="l">Token</span></div><button id="gear">Clear token</button></div>
     </div>
    </div>
-  </section>
-
  </div>
+ <div id="sh" hidden></div><div id="toast" hidden><i></i><span id="toastt"></span></div>
  <div id="hint" hidden></div>
- <div id="dots"><i></i><i></i><i class="on"></i><i></i><i></i></div>
+ <div id="dots"><i></i><i class="on"></i><i></i></div>
 </div>
 <div id="ask" hidden><div class="box"><p id="askt"></p><div class="row"><button id="askno">Cancel</button><button id="askok">OK</button></div></div></div>
 <div id="rot"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M20 8c1.5 1.2 2 2.4 2 4s-.5 2.8-2 4M3 12H2"/></svg><div>Turn your phone sideways</div></div>
@@ -904,6 +955,11 @@ function render() {
     if (chargingNow && ck != null) { if (chgE.t) chgE.kwh += ck * Math.min(10, (t - chgE.t) / 1000) / 3600; chgE.t = t; } else { chgE.t = 0; if (!/^(complete|stopped)$/i.test(String(csName))) chgE.kwh = 0; }
     const kwh = fe > 0 ? fe : chgE.kwh; $("chadd").textContent = kwh >= 0.05 ? kwh.toFixed(1) + " kWh added" : ""; }
   $("bbar").classList.toggle("chg", chargingNow && !REDUCED);
+  { const plugged = csName != null && !/^(Disconnected|Unknown)$/i.test(csName), tf = $("chfull").textContent, add = $("chadd").textContent;
+    $("chline").textContent = chargingNow ? (ck != null ? ck.toFixed(1) + " kW" : "Charging") + (tf ? " · " + tf.replace(/^Full at /, "full ") : "") : csName == null ? "" : (CS[csName] || csName) + (add ? " · " + add : "");
+    $("chline").classList.toggle("on", chargingNow);
+    const b = $("chbtn"); b.hidden = !plugged; b.textContent = chargingNow ? "Stop charging" : "Start charging"; b.dataset.on = chargingNow ? "1" : ""; }
+  ctlRender(); $("cmdn").textContent = cmdMonth().n;
   $("pv").textContent = fmt(num(S.PackVoltage), 0); { const pa = num(S.PackCurrent); $("pa").textContent = pa == null ? "--" : (Math.abs(pa) < 2 ? 0 : pa).toFixed(0); } // under 2 A is idle noise
   renderCar(); driveFx(sp, pw, acc, chargingNow, effKm >= 100 ? effKw * 1000 / effKm : null);
   { const lg = $("log"); if (!liveMode) { lg.textContent = "Sample mode"; lg.style.color = "var(--dim)"; } else lg.style.color = (streamOpen && /^(Connected|OK)/.test(lg.textContent)) ? "var(--ok)" : ""; } // green when live, dim in sample, orange for problems
@@ -922,7 +978,7 @@ function render() {
     if (!map) { $("nomap").hidden = true; map = L.map("map", { zoomControl: false }); map.attributionControl.setPosition("bottomleft"); L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "© OpenStreetMap contributors" }).addTo(map); marker = L.marker(p, { icon: L.divIcon({ className: "carico", html: '<div class="ca"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 5.5 7.5 17l4.5-2.6 4.5 2.6z"/></svg></div>', iconSize: [34, 34], iconAnchor: [17, 17] }), interactive: false, keyboard: false }).addTo(map); trail = [0, 1, 2, 3, 4, 5].map(k => L.polyline([], { weight: 5, color: "#0a84ff", opacity: 0.15 + 0.17 * k, interactive: false }).addTo(map)); map.on("dragstart", () => { follow = false; followUi(); }); map.setView(p, 16); new ResizeObserver(() => map.invalidateSize()).observe($("map")); }
     const last = trailPts[trailPts.length - 1];
     if (!last || last[0] !== p[0] || last[1] !== p[1]) { trailPts.push(p); if (trailPts.length > 1500) trailPts.shift(); trailDirty = true; }
-    if (curPage === 3) { if (trailDirty) { trailDirty = false; setTrail(); } glideTo(p); } $("follow").hidden = false;
+    if (curPage === 2) { if (trailDirty) { trailDirty = false; setTrail(); } glideTo(p); } $("follow").hidden = false;
     $("amap").href = "https://maps.apple.com/?ll=" + p[0] + "," + p[1] + "&q=My%20car";
   }
   const lat = num(S.LateralAcceleration), lon = num(S.LongitudinalAcceleration);
@@ -944,8 +1000,103 @@ function glideTo(p) { const c = marker.getLatLng(), from = [c.lat, c.lng]; if (f
   gl = { from, to: p, t0: performance.now(), dur: d > 0.01 || REDUCED ? 0 : 1000 }; /* over about 1 km away (first view, long gap): jump */
   if (!glOn) { glOn = true; requestAnimationFrame(glideFrame); } }
 function glideFrame(now) { if (!gl) { glOn = false; return; } const k = gl.dur ? Math.min(1, (now - gl.t0) / gl.dur) : 1, q = [gl.from[0] + (gl.to[0] - gl.from[0]) * k, gl.from[1] + (gl.to[1] - gl.from[1]) * k];
-  marker.setLatLng(q); if (follow) map.panTo(q, { animate: false }); if (k < 1 && curPage === 3) requestAnimationFrame(glideFrame); else { if (k < 1) marker.setLatLng(gl.to); glOn = false; } }
+  marker.setLatLng(q); if (follow) map.panTo(q, { animate: false }); if (k < 1 && curPage === 2) requestAnimationFrame(glideFrame); else { if (k < 1) marker.setLatLng(gl.to); glOn = false; } }
 function followUi() { $("follow").classList.toggle("on", follow); $("followt").textContent = follow ? "Following" : "Follow car"; }
+// ---- car controls (v24): commands go through the relay to Teslemetry, 1 credit each ----
+const onState = v => v == null ? null : v === true || v === "true" || (!/off|false/i.test(String(v)) && /on|precond|normal|max|true|[1-9]/i.test(String(v)));
+const CTL_COL = { climate: "#0a84ff", lock: "#30d158", sentry: "#ff453a", port: "#ff9f0a", vent: "#ff9f0a", find: "#ffd60a" };
+function cmdMonth() { const m = new Date().toISOString().slice(0, 7); let o = {}; try { o = JSON.parse(store.get("cmdc") || "{}") || {}; } catch (e) {} if (o.m !== m) o = { m, n: 0 }; return o; }
+function cmdAdd(k) { const o = cmdMonth(); o.n += k; store.set("cmdc", JSON.stringify(o)); }
+let toastTo = null;
+function toast(t, bad) { const e = $("toast"); $("toastt").textContent = t; e.classList.toggle("bad", !!bad); e.hidden = false; e.classList.remove("out"); clearTimeout(toastTo); toastTo = setTimeout(() => { e.classList.add("out"); setTimeout(() => { e.hidden = true; }, 300); }, bad ? 4000 : 2400); }
+function climateTemp() { const t = num(S.HvacLeftTemperatureRequest); return t != null ? t : (+store.get("ctemp") || 21); }
+function ctlState() {
+  const lk = S.Locked == null ? null : truthy(S.Locked), sm = String(S.SentryMode ?? "").replace(/^SentryModeState/, ""), sent = S.SentryMode == null || sm === "" || sm === "Unknown" ? null : !(sm === "Off" || S.SentryMode === false);
+  const port = S.ChargePortDoorOpen == null ? null : truthy(S.ChargePortDoorOpen), wins = ["Fd", "Fp", "Rd", "Rp"].map(k => S[k + "Window"]).filter(v => v != null && !/unknown/i.test(String(v)));
+  return { climate: onState(S.HvacPower), lock: lk, sentry: sent, port, vent: wins.length ? wins.some(v => !/closed/i.test(String(v))) : null };
+}
+function ctlRender() {
+  const st = ctlState(), set = (k, on, label, sub, col) => { const b = $("c-" + k); if (!b) return; b.classList.toggle("on", !!on); b.style.setProperty("--c", col || CTL_COL[k]); $("l-" + k).textContent = label; if (!b.classList.contains("busy")) $("s-" + k).textContent = sub; };
+  set("climate", st.climate, "Climate", st.climate == null ? "Tap to turn on" : st.climate ? "On · " + climateTemp() + "°" : "Off");
+  set("lock", st.lock != null, st.lock === false ? "Unlocked" : "Locked", st.lock == null ? "-" : st.lock ? "Tap to unlock" : "Tap to lock", st.lock === false ? "#ff9f0a" : "#30d158");
+  if (st.lock == null) { $("l-lock").textContent = "Lock"; $("c-lock").classList.remove("on"); }
+  set("sentry", st.sentry, "Sentry", st.sentry == null ? "-" : st.sentry ? "On" : "Off");
+  set("port", st.port, "Charge port", st.port == null ? "-" : st.port ? "Open" : "Closed");
+  set("vent", st.vent, "Windows", st.vent == null ? "-" : st.vent ? "Open" : "Closed");
+  set("find", false, "Find car", "Hold to honk");
+}
+async function relayPost(path, body) {
+  const relay = (store.get("base") || DEFAULT_RELAY).replace(/\/+$/, "");
+  const r = await fetch(relay + path, { method: "POST", headers: { Authorization: "Bearer " + store.get("tok"), "Content-Type": "application/json" }, body: JSON.stringify(body || {}), cache: "no-store" });
+  let j = null; try { j = await r.json(); } catch (e) {}
+  return { r, j };
+}
+async function wakeCar() {
+  try { const vin = await findVin(); await relayPost("/api/1/vehicles/" + vin + "/wake_up"); cmdAdd(20); toast("Waking the car...");
+    for (let i = 0; i < 12; i++) { await new Promise(res => setTimeout(res, 3000)); const j = await relayGet("/api/1/vehicles/" + vin); if (dig(j, "response.state") === "online") return true; } } catch (e) {}
+  return false;
+}
+// one command; true when the car accepted it. Sample mode pretends.
+async function sendCmd(name, body, label, woke) {
+  if (!liveMode) { await new Promise(res => setTimeout(res, 450)); toast(label + " · sample"); return true; }
+  try {
+    const vin = await findVin(); if (!vin) throw new Error("no car");
+    const { r, j } = await relayPost("/api/1/vehicles/" + vin + "/command/" + name, body), res = j && j.response, reason = String((res && res.reason) || (j && (j.error || j.message)) || ("HTTP " + r.status));
+    if (r.status !== 404 && r.status !== 401 && r.status !== 403) cmdAdd(1);
+    if (r.ok && res && res.result === true) { toast(label + " · 1 credit"); return true; }
+    if (r.status === 408 || /asleep|offline|unavailable|not online|timeout/i.test(reason)) {
+      if (!woke && await ask("The car is asleep. Wake it and send again? Waking uses 20 credits.", "Wake and send")) { if (await wakeCar()) return sendCmd(name, body, label, true); }
+      toast("The car is asleep", true); return false; }
+    if (r.status === 404 && /Not allowed/i.test(reason + JSON.stringify(j))) { toast("The relay doesn't allow this yet", true); return false; }
+    if (r.status === 401 || r.status === 403) { toast("Your token can't send commands", true); return false; }
+    toast("Didn't work: " + reason.slice(0, 50), true); return false;
+  } catch (e) { toast("Couldn't reach the car", true); return false; }
+}
+async function act(k, fn) { const b = $("c-" + k) || $(k); if (b && b.classList.contains("busy")) return; if (b) { b.classList.add("busy"); if ($("s-" + k)) $("s-" + k).textContent = "Sending..."; } try { await fn(); } finally { if (b) b.classList.remove("busy"); render(); } }
+const rhdSeat = () => (S.RightHandDrive === false || S.RightHandDrive === "false") ? 0 : 1; /* front right is the driver's seat in a right-hand-drive car */
+// ---- sheets ----
+function sheetOpen(html, wire) { const e = $("sh"); e.innerHTML = '<div class="shbox">' + html + "</div>"; e.hidden = false; e.onclick = ev => { if (ev.target === e) sheetClose(); }; wire(e); }
+function sheetClose() { $("sh").hidden = true; $("sh").innerHTML = ""; }
+function openClimate() {
+  let t = climateTemp(), tmr = null;
+  const draw = e => { const st = ctlState(); e.querySelector("#ct").textContent = (Math.round(t * 2) / 2) + "°"; const df = onState(S.DefrostMode), sl = num(S.SeatHeaterRight ?? S.SeatHeaterLeft) || 0;
+    e.querySelector("#cdf").classList.toggle("on", !!df); e.querySelector("#cse").textContent = sl ? "Seat heat " + sl : "Seat heat"; e.querySelector("#cse").classList.toggle("on", sl > 0); e.querySelector("#coff").textContent = st.climate === false ? "Turn on" : "Turn off"; };
+  sheetOpen('<h3>Climate</h3><div class="step"><button class="rb" id="cm" aria-label="Cooler">−</button><div class="huge" id="ct"></div><button class="rb" id="cp" aria-label="Warmer">+</button></div><div class="chips cen"><button class="chip" id="cdf">Defrost</button><button class="chip" id="cse">Seat heat</button></div><div class="row"><button id="cdone">Done</button><button id="coff" class="dng">Turn off</button></div>', e => {
+    draw(e);
+    const nudge = d => { t = Math.max(15, Math.min(28, t + d)); store.set("ctemp", String(t)); draw(e); clearTimeout(tmr); tmr = setTimeout(() => act("climate", async () => { if (await sendCmd("set_temps", { driver_temp: t, passenger_temp: t }, "Set to " + t + "°")) S.HvacLeftTemperatureRequest = t; }), 900); };
+    e.querySelector("#cm").onclick = () => nudge(-0.5); e.querySelector("#cp").onclick = () => nudge(0.5);
+    e.querySelector("#cdf").onclick = () => act("climate", async () => { const on = !onState(S.DefrostMode); if (await sendCmd("set_preconditioning_max", { on }, on ? "Defrost on" : "Defrost off")) S.DefrostMode = on ? "DefrostModeStateMax" : "DefrostModeStateOff"; draw(e); });
+    e.querySelector("#cse").onclick = () => act("climate", async () => { const l = ((num(S.SeatHeaterRight ?? S.SeatHeaterLeft) || 0) + 1) % 4; if (await sendCmd("remote_seat_heater_request", { seat_position: rhdSeat(), level: l }, l ? "Seat heat " + l : "Seat heat off")) S[rhdSeat() ? "SeatHeaterRight" : "SeatHeaterLeft"] = l; draw(e); });
+    e.querySelector("#cdone").onclick = sheetClose;
+    e.querySelector("#coff").onclick = () => { const turnOn = ctlState().climate === false; sheetClose(); act("climate", async () => { if (await sendCmd(turnOn ? "auto_conditioning_start" : "auto_conditioning_stop", {}, turnOn ? "Climate on" : "Climate off")) S.HvacPower = turnOn ? "HvacPowerStateOn" : "HvacPowerStateOff"; }); };
+  });
+}
+function openLimit() {
+  let v = Math.round(num(S.ChargeLimitSoc) ?? 80);
+  const draw = e => { e.querySelector("#lv").textContent = v + "%"; e.querySelector("#lset").textContent = "Set " + v + " %"; let tk = ""; for (let i = 0; i <= 50; i++) { const x = 10 + i * 7.6, maj = i % 10 === 0, on = 50 + i <= v; tk += '<rect x="' + (x - 1.6) + '" y="' + (maj ? 0 : 8) + '" width="3.2" height="' + (maj ? 34 : 26) + '" fill="' + (on ? "#30d158" : maj ? "#3a3f47" : "#23272e") + '"/>' + (maj ? '<text x="' + x + '" y="52" fill="#8e8e93" font-size="12" text-anchor="middle">' + (50 + i) + "</text>" : ""); } e.querySelector("#ltk").innerHTML = tk;
+    e.querySelector("#ld").classList.toggle("on", v === 80); e.querySelector("#lt").classList.toggle("on", v === 100); };
+  sheetOpen('<h3>Charge limit</h3><div class="step"><button class="rb" id="lm" aria-label="Lower">−</button><div class="huge" id="lv"></div><button class="rb" id="lp" aria-label="Higher">+</button></div><svg id="ltk" width="400" height="56" viewBox="0 0 400 56"></svg><div class="chips cen"><button class="chip" id="ld">Daily 80</button><button class="chip" id="lt">Trip 100</button></div><div class="row"><button id="lc">Cancel</button><button id="lset" class="pri">Set</button></div>', e => {
+    draw(e); e.querySelector("#lm").onclick = () => { v = Math.max(50, v - 1); draw(e); }; e.querySelector("#lp").onclick = () => { v = Math.min(100, v + 1); draw(e); };
+    e.querySelector("#ld").onclick = () => { v = 80; draw(e); }; e.querySelector("#lt").onclick = () => { v = 100; draw(e); }; e.querySelector("#lc").onclick = sheetClose;
+    e.querySelector("#lset").onclick = () => { sheetClose(); act("bbar", async () => { if (await sendCmd("set_charge_limit", { percent: v }, "Limit " + v + " %")) S.ChargeLimitSoc = v; }); };
+  });
+}
+function wireControls() {
+  $("c-climate").onclick = () => { const on = ctlState().climate; if (on) openClimate(); else act("climate", async () => { if (await sendCmd("auto_conditioning_start", {}, "Climate on")) S.HvacPower = "HvacPowerStateOn"; }); };
+  $("c-lock").onclick = async () => { const lk = ctlState().lock; if (lk !== false) { if (!(await ask("Unlock the car? Anyone near it will be able to open the doors. Uses 1 credit.", "Unlock", true))) return; act("lock", async () => { if (await sendCmd("door_unlock", {}, "Unlocked")) S.Locked = false; }); } else act("lock", async () => { if (await sendCmd("door_lock", {}, "Locked")) S.Locked = true; }); };
+  $("c-sentry").onclick = () => act("sentry", async () => { const on = !ctlState().sentry; if (await sendCmd("set_sentry_mode", { on }, on ? "Sentry on" : "Sentry off")) S.SentryMode = on ? "SentryModeStateArmed" : "SentryModeStateOff"; });
+  $("c-port").onclick = () => act("port", async () => { const open = !ctlState().port; if (await sendCmd(open ? "charge_port_door_open" : "charge_port_door_close", {}, open ? "Charge port open" : "Charge port closed")) S.ChargePortDoorOpen = open; });
+  $("c-vent").onclick = async () => { const open = ctlState().vent; if (!open && !(await ask("Vent the windows? They open a little and stay open until you close them. Uses 1 credit.", "Vent windows"))) return;
+    act("vent", async () => { const p = loc(S.Location) || [0, 0], cmd = open ? "close" : "vent"; if (await sendCmd("window_control", { command: cmd, lat: p[0], lon: p[1] }, open ? "Windows closed" : "Windows vented")) ["Fd", "Fp", "Rd", "Rp"].forEach(k => { S[k + "Window"] = open ? "WindowStateClosed" : "WindowStatePartiallyOpen"; }); }); };
+  { const b = $("c-find"); let tm = null, long = false;
+    b.addEventListener("pointerdown", () => { long = false; clearTimeout(tm); tm = setTimeout(() => { long = true; act("find", () => sendCmd("honk_horn", {}, "Honked")); }, 600); });
+    ["pointerup", "pointerleave", "pointercancel"].forEach(ev => b.addEventListener(ev, () => clearTimeout(tm)));
+    b.addEventListener("contextmenu", ev => ev.preventDefault());
+    b.onclick = () => { if (long) { long = false; return; } act("find", () => sendCmd("flash_lights", {}, "Lights flashed")); }; }
+  $("bbar").onclick = $("limt").onclick = openLimit;
+  $("chbtn").onclick = () => { const on = $("chbtn").dataset.on === "1"; act("chbtn", async () => { if (await sendCmd(on ? "charge_stop" : "charge_start", {}, on ? "Charging stopped" : "Charging started")) S.DetailedChargeState = on ? "DetailedChargeStateStopped" : "DetailedChargeStateStarting"; }); };
+  $("setb").onclick = () => { $("setov").hidden = false; render(); }; $("setx").onclick = () => { $("setov").hidden = true; }; $("setov").onclick = ev => { if (ev.target === $("setov")) $("setov").hidden = true; };
+}
 // ---- drive screen effects (v8) ----
 const TK = { nd: 0, nr: 0, charging: false, soc: 0 };     // what the bars should show (30 bars a side)
 let spTarget = null, spShown = null, parkedView = false, parkedSince = 0, socView = null;
@@ -1084,12 +1235,13 @@ function driveFx(sp, pw, acc, charging, eff) {
   // 4: seatbelt off while moving
   { const b = S.DriverSeatBelt, unb = b != null && (b === false || b === "false" || /unbuckl|unlatch/i.test(String(b))); $("hud").classList.toggle("belt", unb && sp != null && sp > 10); }
   // 5: leaving Park jumps to the drive page
-  { if (prevGear !== undefined && liveMode && (prevGear == null || prevGear === "P") && gear && gear !== "P" && curPage !== 2) { const pp = $("pages"); pp.style.scrollBehavior = "smooth"; pp.scrollLeft = pp.clientWidth * 2; } prevGear = gear; }
+  { if (prevGear !== undefined && liveMode && (prevGear == null || prevGear === "P") && gear && gear !== "P" && curPage !== 1) { const pp = $("pages"); pp.style.scrollBehavior = "smooth"; pp.scrollLeft = pp.clientWidth * 1; } prevGear = gear; }
   // 8: trip from leaving Park to parking again (memory only, nothing saved)
   { const odo = num(S.Odometer), soc = num(S.BatteryLevel);
     if (gear && !inP && !trip) { trip = { t0: now, o0: odo, s0: soc }; lastTrip = null; }
     if (trip) { if (trip.o0 == null) trip.o0 = odo; if (trip.s0 == null) trip.s0 = soc; }
     if (inP && trip) { const km = trip.o0 != null && odo != null ? (odo - trip.o0) * MI : null, min = (now - trip.t0) / 60000; if ((km != null && km >= 0.5) || min >= 2) lastTrip = { km, min, used: trip.s0 != null && soc != null ? trip.s0 - soc : null }; trip = null; } }
+  { const L = lastTrip, e = $("ldrive"); e.textContent = L ? (L.km != null ? L.km.toFixed(1) + " km · " : "") + Math.max(1, Math.round(L.min)) + " min" + (L.used > 0 ? " · " + Math.round(L.used) + "% battery" : "") : ""; e.parentElement.hidden = !L; }
   // 7 + 8: one line in the bottom band: the route while driving, the last drive once parked
   { const ns = $("navs"), mn = num(S.MinutesToArrival), mi = num(S.MilesToArrival), asoc = num(S.ExpectedEnergyPercentAtTripArrival), route = mn != null && !/^invalid$/i.test(String(S.DestinationName));
     let tx = "";
@@ -1257,18 +1409,18 @@ function flag(id, lvl) { const t = $(id).closest(".t"); if (t) { t.classList.rem
 // Each tick is a small rounded block (no outline).
 function buildTicks() { layoutDash(); } // the bars are drawn with the brackets
 let curPage = null; // the page being shown, so a resize (for example Safari's toolbar) never throws you back to the middle
-function home() { const p = $("pages"); p.style.scrollBehavior = "auto"; if (curPage == null) { const q = new URLSearchParams(location.search).get("page"); const sv = store.get("page"); curPage = q != null ? +q : (sv !== "" && +sv >= 0 && +sv <= 4 ? +sv : 2); /* five pages: charging, car, drive (the middle one, opened first), map, info */ } p.scrollLeft = p.clientWidth * curPage; }
-const PLX = ["ch", "carpg", null, "sheet", "inf"]; let plxOn = false;
+function home() { const p = $("pages"); p.style.scrollBehavior = "auto"; if (curPage == null) { const q = new URLSearchParams(location.search).get("page"); const sv = store.get("page3"); curPage = q != null ? +q : (sv !== "" && +sv >= 0 && +sv <= 2 ? +sv : 1); /* three pages: car, drive (opened first), map */ } p.scrollLeft = p.clientWidth * curPage; }
+const PLX = ["carpg", null, "sheet"]; let plxOn = false;
 function plxKick() { if (REDUCED || plxOn) return; plxOn = true; requestAnimationFrame(() => { plxOn = false; const p = $("pages"), w = p.clientWidth; if (!w) return;
   PLX.forEach((id, j) => { if (!id) return; const d = j * w - p.scrollLeft, el = $(id); /* the drive page is full-bleed: moving it would change its layout box */ el.style.transform = Math.abs(d) < 1 || Math.abs(d) >= w ? "" : "translateX(" + (-0.12 * d).toFixed(1) + "px)"; }); }); }
 function startApp(demo) {
   show(true); buildTicks(); keepAwake(); home(); startSweep(); requestAnimationFrame(layoutDash);
   let dotsTo = null; const dots = () => { const p = $("pages"), i = Math.round(p.scrollLeft / p.clientWidth); [...$("dots").children].forEach((d, j) => d.classList.toggle("on", j === i)); [...$("hint").children].forEach((d, j) => d.classList.toggle("on", j === i)); $("dots").classList.remove("fade"); $("navs").classList.add("dim"); clearTimeout(dotsTo); dotsTo = setTimeout(() => { $("dots").classList.add("fade"); $("navs").classList.remove("dim"); }, 3000); }; // page dots fade 3 s after a swipe
   let lockUntil = 0;
-  $("pages").addEventListener("scroll", () => { dots(); if (Date.now() > lockUntil) { const p = $("pages"); const was = curPage; curPage = Math.round(p.scrollLeft / p.clientWidth); if (curPage !== was) { store.set("page", String(curPage)); if (curPage === 3) { if (map) map.invalidateSize(); scheduleRender(); } } } plxKick(); }, { passive: true });
+  $("pages").addEventListener("scroll", () => { dots(); if (Date.now() > lockUntil) { const p = $("pages"); const was = curPage; curPage = Math.round(p.scrollLeft / p.clientWidth); if (curPage !== was) { store.set("page3", String(curPage)); if (curPage === 2) { if (map) map.invalidateSize(); scheduleRender(); } } } plxKick(); }, { passive: true });
   const back = () => { lockUntil = Date.now() + 400; home(); dots(); };
   addEventListener("resize", () => { back(); layoutDash(); }); addEventListener("orientationchange", () => setTimeout(layoutDash, 250)); addEventListener("pageshow", back); addEventListener("orientationchange", back); dots();
-  if (!store.get("hinted") || location.search.includes("hint")) { const h = $("hint"); h.innerHTML = ["Charging", "Car", "Drive", "Map", "Info"].map((x, j) => "<span" + (j === curPage ? ' class="on"' : "") + ">" + x + "</span>").join(""); h.hidden = false; $("app").classList.add("hinting"); setTimeout(() => h.classList.add("fade"), 5000); setTimeout(() => { h.hidden = true; $("app").classList.remove("hinting"); }, 5700); store.set("hinted", "1"); }
+  if (!store.get("hinted") || location.search.includes("hint")) { const h = $("hint"); h.innerHTML = ["Car", "Drive", "Map"].map((x, j) => "<span" + (j === curPage ? ' class="on"' : "") + ">" + x + "</span>").join(""); h.hidden = false; $("app").classList.add("hinting"); setTimeout(() => h.classList.add("fade"), 5000); setTimeout(() => { h.hidden = true; $("app").classList.remove("hinting"); }, 5700); store.set("hinted", "1"); }
   [...$("dots").children].forEach((d, j) => { d.onclick = () => { const p = $("pages"); p.style.scrollBehavior = "smooth"; p.scrollLeft = p.clientWidth * j; }; }); /* tap a dot to go to that page */
   { let k = 0; setInterval(() => { k++; if (parkedSince && Date.now() - parkedSince > 300000 && !TK.charging && k % 5) return; render(); }, 1000); }
   { let tt = 0; setInterval(() => { const now = performance.now(); if (T.state === "run" || T.state === "armed" || now - tt > 1000) { tt = now; timerTick(now); } }, 100); }
@@ -1279,7 +1431,7 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "v23 · 23 Nov 2026"; $("build").textContent = BUILD;
+const BUILD = "v24 · 23 Nov 2026"; $("build").textContent = BUILD;
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {}); // opens with no signal; the network copy always wins when online
 $("upd").onclick = async () => { const b = $("upd"); b.disabled = true; b.textContent = "Checking...";
   try { const r = await fetch(location.pathname + "?check=" + Date.now(), { cache: "no-store" }), m = (await r.text()).match(/const BUILD = "([^"]+)"/);
@@ -1291,6 +1443,7 @@ $("navs").onclick = () => { if ($("navs").classList.contains("trip")) { lastTrip
 $("ghit").onclick = () => { gPeak = null; gfPts = []; drawG(); }; /* tap the G pod to clear its trail and peak */
 $("topzone").onclick = () => { topPeek = Date.now() + 5000; render(); };
 $("czl").onclick = $("czr").onclick = () => { circPeek = Date.now() + 8000; render(); };
+wireControls();
 const thinLabel = () => { $("thin").classList.toggle("on", store.get("ticks") === "thin"); $("punit").classList.toggle("on", store.get("pu") === "kpa"); }; thinLabel();
 function applyHc() { const on = store.get("hc") === "1"; document.documentElement.classList.toggle("hc", on); OFF = on ? "#2c3038" : "#1b1e23"; OFFM = on ? "#4a505b" : "#2b2f37"; $("hc").classList.toggle("on", on); } applyHc();
 $("punit").onclick = () => { store.set("pu", store.get("pu") === "kpa" ? "" : "kpa"); thinLabel(); render(); };
