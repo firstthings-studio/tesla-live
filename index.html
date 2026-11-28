@@ -588,6 +588,16 @@ html.hc #navs{color:#fff}
 #setb{position:absolute;right:10px;top:10px;width:34px;height:34px;padding:0;margin:0;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;z-index:2}
 #setb svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 #sheet>div[hidden]{display:none}
+#np-t{font-size:var(--fs-b);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#np-s{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#np-s[hidden]{display:none}
+.npb{display:flex;justify-content:center;gap:16px;margin-top:8px}
+.npb button{width:46px;height:46px;flex:0 0 46px;border-radius:50%;padding:0;margin:0;display:grid;place-items:center;background:rgba(255,255,255,.08);color:var(--fg)}
+.npb button svg{width:20px;height:20px;fill:currentColor}
+#np-play{background:rgba(255,255,255,.18)}
+#np-play .pa,#np-play.playing .pl{display:none}
+#np-play.playing .pa{display:block}
+.npb button.busy{opacity:.4}
 /* settings sheet (was the info page) */
 #setov{position:fixed;inset:0;z-index:1500;background:rgba(0,0,0,.6);padding:8px calc(var(--sr) + 16px) calc(var(--sb) + 8px) calc(var(--sl) + 16px)}#setov[hidden]{display:none}
 #setov #inf{height:100%;background:#111113;border-radius:var(--r);box-shadow:inset 0 0 0 1px #2c3037,0 20px 60px rgba(0,0,0,.7);padding:12px 14px;position:relative}
@@ -704,6 +714,87 @@ html.hc #navs{color:#fff}
 #p-hud #top.away{opacity:1}
 #p-hud #top.away #tr>*:not(#clock){display:none!important}
 #p-hud #top.away #tleft,#p-hud #top.away #tr{background:rgba(10,11,13,.55)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+/* ===== v36: iOS 27 look (docs/DESIGN-V36.md). Liquid Glass on controls and floating panels: blur, a dark outer edge and a
+   fixed top highlight, no drop shadows. Content sits on Apple's plain dark material. Real blur only where nothing animates
+   underneath every frame (map, sheets, settings), never on the Drive page. Corners are concentric. ===== */
+:root{--glass:rgba(30,30,34,.5);--glassd:rgba(28,28,32,.78);--hi:rgba(255,255,255,.26);--hair:rgba(255,255,255,.09);--edge:rgba(0,0,0,.5);--mat:#1c1c1e;--fill:rgba(118,118,128,.26)}
+#sheet,#follow,#setb,#toast,.shbox,#setov #inf{background:var(--glass)!important;-webkit-backdrop-filter:blur(26px) saturate(180%);backdrop-filter:blur(26px) saturate(180%);box-shadow:inset 0 1px 0 var(--hi),inset 0 0 0 1px var(--hair),0 0 0 1px var(--edge)!important}
+/* map panel */
+#sheet{border-radius:30px!important;padding:10px!important;column-gap:8px!important;row-gap:8px;width:280px;align-content:space-between!important}
+#sheet>div{border-bottom:0!important;border-radius:20px;background:rgba(255,255,255,.07)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.10)!important;padding:10px 12px!important;text-align:left!important;min-width:0}
+#sheet .navr{display:flex!important;align-items:center;gap:12px}
+.pin{width:40px;height:40px;border-radius:12px;background:var(--acc);display:grid;place-items:center;flex:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+.pin svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
+#sheet.noroute .pin{background:var(--fill);box-shadow:none}
+.nvt{min-width:0;flex:1}
+#navl,#nav-s{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#navl{font-size:12px;font-weight:600}#nav-s[hidden]{display:none}
+#sheet #nav{font-size:24px!important;font-weight:700;line-height:1.12!important;letter-spacing:-.01em}
+#sheet.noroute #nav{font-size:17px!important;font-weight:600}
+.npr{display:flex;align-items:center;gap:10px;min-width:0}
+.art{width:42px;height:42px;border-radius:10px;flex:none;display:grid;place-items:center;background:linear-gradient(135deg,#ff375f,#5e5ce6);box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
+.art svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.npt{min-width:0;flex:1}
+#np-t{font-size:16px;font-weight:600}
+#sheet .npb{justify-content:space-between;align-items:center;padding:0 4px;margin-top:6px}
+#sheet .npb button{background:transparent;width:44px;height:44px;flex:0 0 44px}
+#sheet .npb button svg{width:24px;height:24px}
+#sheet #np-play{width:52px;height:52px;flex-basis:52px;background:rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 0 0 1px rgba(255,255,255,.08)}
+#sheet .sh1 .v{font-size:22px!important;font-weight:700;white-space:nowrap}#sheet .sh1 small{font-size:13px;font-weight:600;color:var(--dim)}
+#carbox{position:relative}
+#setb2{position:absolute;top:0;right:0;width:36px;height:36px;padding:0;margin:0;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.10);box-shadow:inset 0 1px 0 rgba(255,255,255,.2),inset 0 0 0 1px rgba(255,255,255,.05);z-index:3}
+#setb2 svg{width:19px;height:19px;fill:none;stroke:#fff;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+#fsdr[hidden]{display:none}
+#sheet .mapsr{background:none!important;box-shadow:none!important;padding:0!important}
+#amap{display:flex;align-items:center;justify-content:center;gap:8px;height:44px;border-radius:999px;background:var(--acc);color:#fff;font-size:15px;box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+#amap svg{width:17px;height:17px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+#setb{position:absolute;z-index:600;left:calc(var(--sl) + 16px);top:calc(var(--st) + 12px);right:auto;width:40px;height:40px;border-radius:50%}
+#follow{left:calc(var(--sl) + 64px)!important;height:40px;color:#fff!important}
+/* car page: plain dark material for content, glass discs for controls, the tint colour fills a control that is on */
+#p-car .t{background:var(--mat)!important;box-shadow:inset 0 0 0 .5px rgba(255,255,255,.10)!important}
+#p-car .bat24{align-items:stretch!important;text-align:left!important;padding-left:18px!important;padding-right:18px!important}#p-car .bat24 .hd{justify-content:flex-start!important}
+#p-car .temps24{justify-content:flex-start!important;gap:28px!important;padding-left:18px!important}#p-car .temps24>div{display:flex;flex-direction:column;align-items:flex-start;text-align:left}#p-car .temps24 .hd{justify-content:flex-start!important}
+.cb .o{background:rgba(255,255,255,.10)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.2),inset 0 0 0 1px rgba(255,255,255,.05)!important}
+.cb.on .o{background:var(--c)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.42)!important}
+/* sheets: a glass card with a grabber and capsule buttons */
+.shbox{border-radius:34px!important;padding:12px 20px 16px!important}
+.shbox::before{content:"";display:block;width:36px;height:5px;border-radius:3px;background:rgba(255,255,255,.3);margin:0 auto 10px}
+.shbox .row button,.shbox .acts button{border-radius:999px;background:rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.14)}
+.shbox .pri{background:var(--acc)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.35)!important}
+.rb{background:rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.2)}
+.chip{border-radius:999px;background:rgba(255,255,255,.12)}.chip.on{background:var(--acc);color:#fff}
+#toast{border-radius:999px}
+/* settings: iOS Settings style grouped lists, switches, a segmented control */
+#setov{background:rgba(0,0,0,.45)!important}
+#setov #inf{display:flex!important;flex-direction:column;gap:4px;padding:12px 16px 14px!important;border-radius:30px!important;overflow:hidden}
+.sth{font-size:17px;font-weight:600;text-align:center;margin:2px 0 2px;line-height:30px}
+#setx{background:rgba(255,255,255,.12)!important;color:#fff!important;top:12px!important;right:14px!important}
+.cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;min-height:0;flex:1;overflow-y:auto;scrollbar-width:none}
+.cols::-webkit-scrollbar{display:none}
+#inf .grp>*{flex:none}
+#inf .grp{display:flex;flex-direction:column;gap:6px;min-width:0;min-height:0;overflow-y:auto;scrollbar-width:none}#inf .grp::-webkit-scrollbar{display:none}
+#inf .gh{text-align:left!important;font-size:13px;color:var(--dim);font-weight:600;padding:4px 14px 0}
+.lst{background:rgba(255,255,255,.07);border-radius:14px;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+#inf .rw{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:44px;padding:8px 14px;margin:0;width:100%;background:none;border-radius:0;text-align:left;font-size:15px;font-weight:400;color:var(--fg);position:relative}
+#inf .seg{width:auto;padding:2px;font-size:13px}
+#inf .rw[hidden]{display:none}
+.rw+.rw::before{content:"";position:absolute;left:14px;right:0;top:0;height:.5px;background:var(--sep)}
+.rw .k{flex:none}
+.rw .vv{color:var(--dim);text-align:right;min-width:2.5ch;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#inf .rw.lnk{color:var(--acc)}#inf .rw.dngr{color:var(--bad)}
+.tg{flex:none;width:51px;height:31px;border-radius:999px;background:var(--fill);position:relative;transition:background .25s ease}
+.tg::after{content:"";position:absolute;left:2px;top:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.3);transition:transform .25s cubic-bezier(.3,1.3,.5,1)}
+.sw.on .tg{background:var(--ok)}.sw.on .tg::after{transform:translateX(20px)}
+.seg{display:inline-flex;flex:none;width:auto;margin:0;padding:2px;border-radius:9px;background:var(--fill)}
+.seg span{padding:4px 12px;border-radius:7px;font-size:13px;font-weight:600;color:var(--fg)}
+.seg span:first-child,.seg.on span:last-child{background:rgba(255,255,255,.24);box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.seg.on span:first-child{background:none;box-shadow:none}
+.chev{flex:none;width:8px;height:8px;border-right:2px solid var(--dim2);border-top:2px solid var(--dim2);transform:rotate(45deg);margin-right:2px}
+.ft{font-size:12px;color:var(--dim);padding:0 14px;line-height:1.35}
+@media (prefers-reduced-motion:reduce){.tg,.tg::after{transition:none}}
+/* page dots and the Drive page's top pills: solid glass (no blur, so the dial keeps its frame rate) */
+#dots{gap:7px;padding:6px 9px;border-radius:999px;background:var(--glassd);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 0 0 .5px var(--edge)}
+#dots i{width:6px;height:6px}
+#tleft,#tr{background:var(--glassd)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 0 0 .5px var(--edge)!important;border-radius:17px!important}
 </style>
 </head>
 <body>
@@ -731,7 +822,7 @@ html.hc #navs{color:#fff}
     <div class="col">
      <div class="t bat24">
       <div class="hd"><svg class="ic" viewBox="0 0 24 24" style="color:var(--ok)"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span class="l">Battery</span></div>
-      <div class="b24big"><span id="soc2">-</span> %<small><span id="rng2">-</span> km</small></div>
+      <div class="b24big"><span id="soc2">-</span>%<small><span id="rng2">-</span> km</small></div>
       <div id="bbar" role="button" aria-label="Set the charge limit"><i id="bfill"></i><i id="blim" hidden></i></div>
       <div class="u" id="limt"></div>
       <div id="chline"></div>
@@ -805,6 +896,7 @@ html.hc #navs{color:#fff}
       <text class="tu pu" x="40" y="291" text-anchor="end">psi</text><text class="tu pu" x="280" y="291">psi</text>
      </svg>
      <div id="carsum">Waiting for the car</div>
+     <button id="setb2" aria-label="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
     </div>
     <div class="t ctl24"><button class="cb" id="c-climate" aria-label="Climate"><span class="o"><svg viewBox="0 0 24 24"><path d="M12 3v18M5.6 6.6l12.8 10.8M18.4 6.6 5.6 17.4"/><circle cx="12" cy="12" r="3"/></svg></span><b id="l-climate">Climate</b><span class="s" id="s-climate">-</span></button><button class="cb" id="c-lock" aria-label="Lock"><span class="o"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span><b id="l-lock">Lock</b><span class="s" id="s-lock">-</span></button><button class="cb" id="c-sentry" aria-label="Sentry"><span class="o"><svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span><b id="l-sentry">Sentry</b><span class="s" id="s-sentry">-</span></button><button class="cb" id="c-port" aria-label="Charge port"><span class="o"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="9" cy="10" r="1.3"/><circle cx="15" cy="10" r="1.3"/><circle cx="12" cy="15" r="1.3"/></svg></span><b id="l-port">Charge port</b><span class="s" id="s-port">-</span></button><button class="cb" id="c-vent" aria-label="Windows"><span class="o"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M4 9h16M8 13h8M8 16h8"/></svg></span><b id="l-vent">Windows</b><span class="s" id="s-vent">-</span></button><button class="cb" id="c-find" aria-label="Find car"><span class="o"><svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.8 1 1.5 1 2.5h6c0-1 .2-1.7 1-2.5A6 6 0 0 0 12 3z"/></svg></span><b id="l-find">Find car</b><span class="s" id="s-find">-</span></button></div>
    </div>
@@ -873,13 +965,14 @@ html.hc #navs{color:#fff}
     <div id="map"></div>
     <div id="nomap">Waiting for the car's location</div>
     <button id="follow" class="on" hidden><svg viewBox="0 0 24 24"><path d="M12 2 4 21l8-4 8 4z"/></svg><span id="followt">Following</span></button>
+    <button id="setb" aria-label="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
     <div id="sheet">
-      <button id="setb" aria-label="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
-      <div class="sw2"><div class="l" id="navl">Navigation</div><div class="v" id="nav">-</div></div>
+      <div class="sw2 navr"><div class="pin"><svg viewBox="0 0 24 24"><path d="M12 21s-6.5-6.1-6.5-11a6.5 6.5 0 0 1 13 0c0 4.9-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/></svg></div><div class="nvt"><div class="l" id="navl">Navigation</div><div class="v" id="nav">-</div><div class="u" id="nav-s"></div></div></div>
+      <div class="sw2" id="np" hidden><div class="npr"><div class="art"><svg viewBox="0 0 24 24"><path d="M9 17.5V6.2l10-2v11"/><circle cx="6.6" cy="17.6" r="2.6"/><circle cx="16.6" cy="15.4" r="2.6"/></svg></div><div class="npt"><div id="np-t">-</div><div class="u" id="np-s"></div></div></div><div class="npb"><button id="np-prev" aria-label="Previous track"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="2.6" height="14" rx="1"/><path d="M19 5.5v13L8.5 12z"/></svg></button><button id="np-play" aria-label="Play"><svg class="pl" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><svg class="pa" viewBox="0 0 24 24"><rect x="6.5" y="5" width="3.6" height="14" rx="1"/><rect x="13.9" y="5" width="3.6" height="14" rx="1"/></svg></button><button id="np-next" aria-label="Next track"><svg viewBox="0 0 24 24"><rect x="16.4" y="5" width="2.6" height="14" rx="1"/><path d="M5 5.5v13L15.5 12z"/></svg></button></div></div>
       <div class="sw2" hidden><div class="l">Last drive</div><div class="v" id="ldrive"></div></div>
+      <div class="sh1"><div class="l">Battery</div><div class="v"><span id="soc3">-</span>%<small> <span id="rng3">-</span> km</small></div></div>
       <div class="sh1"><div class="l">Outside</div><div class="v"><span id="tout">-</span> °C</div></div>
-      <div class="sh1"><div class="l">Self-driving</div><div class="v"><span id="fsd">-</span> km</div></div>
-      <div class="sw2"><a id="amap" href="#">Open in Maps</a></div>
+      <div class="sw2 mapsr"><a id="amap" href="#"><svg viewBox="0 0 24 24"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2zM9 4v14M15 6v14"/></svg>Open in Maps</a></div>
     </div>
   </section>
 
@@ -887,20 +980,38 @@ html.hc #navs{color:#fff}
  </div>
  <div id="setov" hidden>
    <div id="inf"><button id="setx" aria-label="Close">✕</button>
-    <div class="grp"><div class="gh">Car</div>
-     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M3 13l2-5a2 2 0 0 1 2-1.5h10a2 2 0 0 1 2 1.5l2 5v4H3zM6 17v2M18 17v2"/></svg><span class="l">Vehicle</span></div><div class="v">Model 3</div><div class="u" id="vehsub">Long Range · 2024</div></div>
-     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M8 3 5 21M16 3l3 18M12 5v3M12 11v3M12 17v3"/></svg><span class="l">Odometer</span></div><div class="v"><span id="odo">-</span> km</div></div>
-     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg><span class="l">Software</span></div><div class="v" id="sw">--</div><button id="ver" class="chip" hidden>Read version (up to 2 credits)</button></div>
-    </div>
-    <div class="grp"><div class="gh">Connection</div>
-     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0M5 13a10 10 0 0 1 14 0M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg><span class="l">Link</span></div><div class="v sm" id="conn">-</div><div class="u" id="ages"></div></div>
-     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg><span class="l">Status</span></div><p id="log">OK</p></div>
-     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M4 12h3l3-7 4 14 3-7h3"/></svg><span class="l">Commands this month</span></div><div class="v" id="cmdn">0</div><div class="u">Sent from this phone · 500 included</div></div>
-    </div>
-    <div class="grp"><div class="gh">App</div>
-     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg><span class="l">Update</span></div><button id="upd" class="pri">Check for update</button><span class="u" id="build"></span></div>
-     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span class="l">Display</span></div><div class="chips"><button id="thin" class="chip">Thin bars</button><button id="punit" class="chip">kPa</button><button id="hc" class="chip">High contrast</button><button id="paintc" class="chip">Paint: Auto</button></div></div>
-     <div class="t"><div class="hd"><svg class="ic" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="l">Token</span></div><button id="gear">Clear token</button></div>
+    <h2 class="sth">Settings</h2>
+    <div class="cols">
+     <div class="grp"><div class="gh">Model 3 Long Range · 2024</div>
+      <div class="lst">
+       <div class="rw"><span class="k">Odometer</span><span class="vv"><span id="odo">-</span> km</span></div>
+       <div class="rw" id="fsdr" hidden><span class="k">Self-driving</span><span class="vv"><span id="fsd">-</span> km</span></div>
+       <div class="rw"><span class="k">Software</span><span class="vv" id="sw">--</span></div>
+       <button id="ver" class="rw lnk" hidden>Read version (up to 2 credits)</button>
+      </div>
+      <div class="gh">App</div>
+      <div class="lst">
+       <div class="rw"><span class="k">Version</span><span class="vv" id="build"></span></div>
+       <button id="upd" class="rw lnk">Check for update</button>
+      </div>
+     </div>
+     <div class="grp"><div class="gh">Connection</div>
+      <div class="lst">
+       <div class="rw"><span class="k">Link</span><span class="vv" id="conn">-</span></div>
+       <div class="rw"><span class="k">Status</span><span class="vv" id="log">OK</span></div>
+       <div class="rw"><span class="k">Commands used</span><span class="vv" id="cmdn">0</span></div>
+      </div>
+      <div class="ft"><span id="ages"></span> Commands used this month from this phone. 500 a month are included.</div>
+      <div class="lst"><button id="gear" class="rw dngr">Clear token</button></div>
+     </div>
+     <div class="grp"><div class="gh">Display</div>
+      <div class="lst">
+       <button id="thin" class="rw sw"><span class="k">Thin bars</span><i class="tg"></i></button>
+       <button id="hc" class="rw sw"><span class="k">High contrast</span><i class="tg"></i></button>
+       <div class="rw"><span class="k">Tyres</span><button id="punit" class="seg" aria-label="Tyre pressure unit"><span>psi</span><span>kPa</span></button></div>
+       <button id="paintc" class="rw"><span class="k">Paint</span><span class="vv" id="paintv">Auto</span><i class="chev"></i></button>
+      </div>
+     </div>
     </div>
    </div>
  </div>
@@ -1050,7 +1161,7 @@ function paintFromCar(v) {
 function applyPaint() {
   const pick = store.get("paint") || "auto", car = paintFromCar(S.ExteriorColor), code = pick === "auto" ? (car || "StealthGrey") : pick;
   const c = $("car"); if (c && c.dataset.paint !== code) c.dataset.paint = code;
-  const lab = "Paint: " + (pick === "auto" ? "Auto (" + PAINT_NAMES[code] + ")" : PAINT_NAMES[code]); if ($("paintc") && $("paintc").textContent !== lab) $("paintc").textContent = lab;
+  const lab = pick === "auto" ? "Auto (" + PAINT_NAMES[code] + ")" : PAINT_NAMES[code]; if ($("paintv") && $("paintv").textContent !== lab) $("paintv").textContent = lab;
 }
 // The lamps flash on screen when the car confirms "flash lights".
 function flashCar() { const c = $("car"); if (!c) return; c.classList.remove("flash"); requestAnimationFrame(() => { c.classList.add("flash"); setTimeout(() => c.classList.remove("flash"), 1100); }); }
@@ -1069,7 +1180,7 @@ function render() {
   const pFresh = !liveMode || (fieldAt.PackCurrent && Date.now() - fieldAt.PackCurrent < 3000), brOn = truthy(S.BrakePedal);
   const regenF = pFresh ? (pw != null && pw < 0 ? Math.min(1, -pw / 60) : 0) : (!brOn && (acc == null || acc <= 1) && sp != null && sp > 5 && Date.now() - decelAt < 2500 && decel > 0.5 ? Math.min(1, decel / 7) : 0); /* about 7 km/h per s is full regen */
   { const r = regenF * 100; $("regb").setAttribute("stroke-dasharray", r + " 100"); $("regb").setAttribute("opacity", r > 0.5 ? 1 : 0); } // left half: regen in blue, about 60 kW at full
-  $("soc").textContent = fmt(num(S.BatteryLevel), 0); $("soc2").textContent = $("soc").textContent; $("tout2").textContent = fmt(num(S.OutsideTemp), 0);
+  $("soc").textContent = fmt(num(S.BatteryLevel), 0); $("soc2").textContent = $("soc3").textContent = $("soc").textContent; $("tout2").textContent = fmt(num(S.OutsideTemp), 0);
   TK.nd = acc != null ? Math.round(Math.max(0, Math.min(1, acc / 100)) * NB) : pw != null && pw > 0 ? Math.round(Math.min(1, pw / 250) * NB) : 0; TK.nr = Math.round(regenF * NB); /* right ticks follow the accelerator (1 s); power only arrives every 5 min */ paintTicks(performance.now()); // 60 ticks: 12 regen (blue) then 48 drive
   { const b = num(S.BatteryLevel) || 0, f = $("bfill"); f.style.width = Math.max(0, Math.min(100, b)) + "%"; f.style.backgroundColor = b < 15 ? "var(--bad)" : b < 30 ? "var(--warn)" : "var(--ok)"; } // the wide battery bar on the charging page
   { const bl = num(S.BatteryLevel), b = bl || 0; $("socb").style.width = Math.max(0, Math.min(100, b)) + "%"; $("socb").style.background = b < 10 ? "var(--bad)" : b < 20 ? "var(--warn)" : "var(--ok)"; const bt = $("soc").parentElement; bt.classList.toggle("lb", bl != null && bl < 10); bt.classList.toggle("lw", bl != null && bl >= 10 && bl < 20); }
@@ -1077,7 +1188,7 @@ function render() {
   { // Range: the car's own figure when it has sent one; until then an estimate from the battery level (2024 Model 3 Long Range, 629 km WLTP).
     const r = num(S.EstBatteryRange ?? S.RatedRange ?? S.IdealBatteryRange), bl = num(S.BatteryLevel), est = r == null && bl != null;
     const km = r != null ? r * MI : est ? bl * 6.29 : null;
-    $("rng").textContent = km == null ? "--" : km.toFixed(0); $("rng2").textContent = $("rng").textContent;
+    $("rng").textContent = km == null ? "--" : km.toFixed(0); $("rng2").textContent = $("rng3").textContent = $("rng").textContent;
     $("rng").parentElement.style.opacity = est || km == null ? ".55" : ""; $("rng2").parentElement.style.opacity = est || km == null ? ".6" : ""; }
   if (pw != null && sp != null) { effWin.push([pw, sp]); if (effWin.length > 10) effWin.shift(); }
   const effKm = effWin.reduce((a, x) => a + x[1], 0), effKw = effWin.reduce((a, x) => a + x[0], 0); // equal time steps, so sums give energy and distance
@@ -1087,7 +1198,7 @@ function render() {
   const cr = num(S.CruiseSetSpeed), crOn = cr != null && cr > 0 && /D$/.test(String(S.Gear ?? "")) && sp != null && sp > 5; $("cruise").textContent = crOn ? (cr * MI).toFixed(0) : "Off"; $("crt").hidden = !crOn;
   $("tout3").textContent = fmt(num(S.OutsideTemp), 0);
   $("tout").textContent = fmt(num(S.OutsideTemp), 0); $("tin").textContent = fmt(num(S.InsideTemp), 0);
-  const fsd = num(S.SelfDrivingMilesSinceReset); $("fsd").textContent = fsd == null ? "-" : (fsd * MI).toFixed(1); $("fsd").closest("#sheet>div").hidden = fsd == null; $("sheet").classList.toggle("nofsd", fsd == null); // hidden until the car reports it
+  const fsd = num(S.SelfDrivingMilesSinceReset); $("fsd").textContent = fsd == null ? "-" : (fsd * MI).toFixed(1); $("fsdr").hidden = fsd == null; // hidden until the car reports it
   const cs = S.DetailedChargeState ?? S.ChargeState, ck = num(S.DCChargingPower) || num(S.ACChargingPower);
   const csName = cs == null ? null : String(cs).replace(/^DetailedChargeState/, ""), CS = { Disconnected: "Not plugged in", NoPower: "No power", Starting: "Starting", Charging: "Charging", Complete: "Complete", Stopped: "Stopped", Calibrating: "Calibrating", Unknown: "-", Enabled: "Ready" };
   const chargingNow = /^(charging|starting)$/i.test(String(csName));
@@ -1108,15 +1219,14 @@ function render() {
   $("pv").textContent = fmt(num(S.PackVoltage), 0); { const pa = num(S.PackCurrent); $("pa").textContent = pa == null ? "--" : (Math.abs(pa) < 2 ? 0 : pa).toFixed(0); } // under 2 A is idle noise
   renderCar(); driveFx(sp, pw, acc, chargingNow, effKm >= 100 ? effKw * 1000 / effKm : null);
   { const lg = $("log"); if (!liveMode) { lg.textContent = "Sample mode"; lg.style.color = "var(--dim)"; } else lg.style.color = (streamOpen && /^(Connected|OK)/.test(lg.textContent)) ? "var(--ok)" : ""; } // green when live, dim in sample, orange for problems
-  { const qs = lastEvt ? Math.round((Date.now() - lastEvt) / 60000) : 0; $("navl").textContent = liveMode && qs >= 2 ? "Navigation · last seen " + qs + " min ago" : "Navigation"; }
   { const ago = lastEvt ? Math.round((Date.now() - lastEvt) / 1000) : null; $("lastdata").textContent = !liveMode ? "Sample" : ago == null ? "--" : ago < 2 ? "Just now" : ago < 90 ? ago + " s ago" : Math.round(ago / 60) + " min ago"; $("lastdata").classList.toggle("quiet", !liveMode || ago == null); }
   { const a = k => { const t = fieldAt[k]; if (!t) return null; const q = (Date.now() - t) / 1000; return q < 90 ? Math.round(q) + " s" : Math.round(q / 60) + " min"; }, parts = [];
     if (latEma != null) parts.push("Delay about " + (latEma / 1000).toFixed(1) + " s"); [["Pedal", "PedalPosition"], ["Speed", "VehicleSpeed"], ["Power", "PackCurrent"]].forEach(([l, k]) => { const x = a(k); if (x) parts.push(l + " " + x); });
     $("ages").textContent = liveMode ? parts.join(" · ") : ""; }
   const od = num(S.Odometer); $("odo").textContent = od == null ? "-" : (od * MI).toFixed(0); $("sw").textContent = S.Version || "--"; $("ver").hidden = !!S.Version || !liveMode;
   { const ago = lastEvt ? Math.round((Date.now() - lastEvt) / 1000) : null; $("conn").textContent = !liveMode ? "Sample data" : (DEFAULT_RELAY || store.get("base") ? "Via relay" : "Direct") + (ago == null ? " · no data yet" : " · data " + (ago < 2 ? "just now" : ago + " s ago")); }
-  const mi = num(S.MilesToArrival), mn = num(S.MinutesToArrival), asoc = num(S.ExpectedEnergyPercentAtTripArrival);
-  $("nav").textContent = (mn == null || /^invalid$/i.test(String(S.DestinationName))) ? "No route" : (S.DestinationName ? S.DestinationName + ": " : "") + (mi == null ? "" : (mi * MI).toFixed(0) + " km, ") + mn.toFixed(0) + " min" + (asoc == null ? "" : ", arrive " + asoc.toFixed(0) + "%");
+  { const np = nowPlaying(S), p = $("np-play"); $("np").hidden = !np.show; if (np.show) { $("np-t").textContent = np.title; $("np-s").textContent = np.sub; $("np-s").hidden = !np.sub; p.classList.toggle("playing", np.playing); p.setAttribute("aria-label", np.playing ? "Pause" : "Play"); } }
+  { const c = navCard(S, Date.now()), qs = lastEvt ? Math.round((Date.now() - lastEvt) / 60000) : 0; $("nav").textContent = c.main; $("nav-s").textContent = c.sub; $("nav-s").hidden = !c.sub; $("navl").textContent = c.title + (liveMode && qs >= 2 ? " · last seen " + qs + " min ago" : ""); $("sheet").classList.toggle("noroute", !c.route); }
   const p = loc(S.Location);
   if (p && liveMode) { const k = p[0].toFixed(2) + "," + p[1].toFixed(2); if (store.get("loc") !== k) store.set("loc", k); }
   if (p) {
@@ -1199,6 +1309,10 @@ async function sendCmd(name, body, label, woke) {
   } catch (e) { toast("Couldn't reach the car", true); return false; }
 }
 async function act(k, fn) { const b = $("c-" + k) || $(k); if (b && b.classList.contains("busy")) return; if (b) { b.classList.add("busy"); if ($("s-" + k)) $("s-" + k).textContent = "Sending..."; } try { await fn(); } finally { if (b) b.classList.remove("busy"); render(); } }
+/* what the Map page's now-playing card shows. Only free "event" fields: title, artist, station, status (MediaStatusStopped 1, Playing 2, Paused 3) */
+function nowPlaying(s) { const t = v => v == null ? "" : String(v).trim(), st = t(s.MediaPlaybackStatus).replace(/^MediaStatus/, ""), own = t(s.MediaNowPlayingTitle), title = own || t(s.MediaNowPlayingStation); if (!title || st === "Stopped" || st === "1") return { show: false }; return { show: true, title, sub: [t(s.MediaNowPlayingArtist), own ? t(s.MediaNowPlayingStation) : ""].filter(Boolean).join(" · "), playing: st === "Playing" || st === "2" }; }
+/* the Map page route card: minutes large, then arrival time, distance and battery left (v36) */
+function navCard(s, now) { const n = v => { const x = v != null && typeof v === "object" && "value" in v ? v.value : v; return x == null || x === "" || !isFinite(+x) ? null : +x; }, mn = n(s.MinutesToArrival), dest = s.DestinationName == null ? "" : String(s.DestinationName).trim(); if (mn == null || /^invalid$/i.test(dest)) return { route: false, title: "Navigation", main: "No route", sub: "" }; const m = Math.round(mn), t = new Date(now + m * 60000), h = t.getHours(), mi = n(s.MilesToArrival), a = n(s.ExpectedEnergyPercentAtTripArrival), km = mi == null ? null : mi * 1.609344; return { route: true, title: dest || "Navigation", main: m < 1 ? "Arriving" : m >= 60 ? Math.floor(m / 60) + " h" + (m % 60 ? " " + (m % 60) + " min" : "") : m + " min", sub: [(h % 12 || 12) + ":" + String(t.getMinutes()).padStart(2, "0") + (h < 12 ? " am" : " pm"), km == null ? "" : (km < 1 ? km.toFixed(1) : km.toFixed(0)) + " km", a == null ? "" : Math.round(a) + "% left"].filter(Boolean).join(" · ") }; }
 const rhdSeat = () => (S.RightHandDrive === false || S.RightHandDrive === "false") ? 0 : 1; /* front right is the driver's seat in a right-hand-drive car */
 // ---- sheets ----
 function sheetOpen(html, wire) { const e = $("sh"); e.innerHTML = '<div class="shbox">' + html + "</div>"; e.hidden = false; e.onclick = ev => { if (ev.target === e) sheetClose(); }; wire(e); }
@@ -1239,9 +1353,12 @@ function wireControls() {
     ["pointerup", "pointerleave", "pointercancel"].forEach(ev => b.addEventListener(ev, () => clearTimeout(tm)));
     b.addEventListener("contextmenu", ev => ev.preventDefault());
     b.onclick = () => { if (long) { long = false; return; } act("find", () => sendCmd("flash_lights", {}, "Lights flashed").then(ok => { if (ok) flashCar(); return ok; })); }; }
+  $("np-play").onclick = () => act("np-play", async () => { const was = nowPlaying(S).playing; if (await sendCmd("media_toggle_playback", {}, was ? "Paused" : "Playing")) S.MediaPlaybackStatus = was ? "MediaStatusPaused" : "MediaStatusPlaying"; });
+  $("np-prev").onclick = () => act("np-prev", () => sendCmd("media_prev_track", {}, "Previous track"));
+  $("np-next").onclick = () => act("np-next", () => sendCmd("media_next_track", {}, "Next track"));
   $("bbar").onclick = $("limt").onclick = openLimit;
   $("chbtn").onclick = () => { const on = $("chbtn").dataset.on === "1"; act("chbtn", async () => { if (await sendCmd(on ? "charge_stop" : "charge_start", {}, on ? "Charging stopped" : "Charging started")) S.DetailedChargeState = on ? "DetailedChargeStateStopped" : "DetailedChargeStateStarting"; }); };
-  $("setb").onclick = () => { $("setov").hidden = false; render(); }; $("setx").onclick = () => { $("setov").hidden = true; }; $("setov").onclick = ev => { if (ev.target === $("setov")) $("setov").hidden = true; };
+  $("setb").onclick = $("setb2").onclick = () => { $("setov").hidden = false; render(); }; $("setx").onclick = () => { $("setov").hidden = true; }; $("setov").onclick = ev => { if (ev.target === $("setov")) $("setov").hidden = true; };
 }
 // ---- drive screen effects (v8) ----
 const TK = { nd: 0, nr: 0, charging: false, soc: 0 };     // what the bars should show (30 bars a side)
@@ -1393,9 +1510,9 @@ function driveFx(sp, pw, acc, charging, eff) {
     if (inP && trip) { const km = trip.o0 != null && odo != null ? (odo - trip.o0) * MI : null, min = (now - trip.t0) / 60000; if ((km != null && km >= 0.5) || min >= 2) lastTrip = { km, min, used: trip.s0 != null && soc != null ? trip.s0 - soc : null }; trip = null; } }
   { const L = lastTrip, e = $("ldrive"); e.textContent = L ? (L.km != null ? L.km.toFixed(1) + " km · " : "") + Math.max(1, Math.round(L.min)) + " min" + (L.used > 0 ? " · " + Math.round(L.used) + "% battery" : "") : ""; e.parentElement.hidden = !L; }
   // 7 + 8: one line in the bottom band: the route while driving, the last drive once parked
-  { const ns = $("navs"), mn = num(S.MinutesToArrival), mi = num(S.MilesToArrival), asoc = num(S.ExpectedEnergyPercentAtTripArrival), route = mn != null && !/^invalid$/i.test(String(S.DestinationName));
+  { const ns = $("navs"), mn = num(S.MinutesToArrival), route = mn != null && !/^invalid$/i.test(String(S.DestinationName));
     let tx = "";
-    if (!inP && route) tx = Math.round(mn) + " min" + (mi != null ? " · " + (mi * MI).toFixed(0) + " km" : "") + (asoc != null ? " · arrive " + Math.round(asoc) + "%" : "");
+    if (!inP && route) { const c = navCard(S, Date.now()); tx = c.main + (c.sub ? " · " + c.sub : ""); } /* same wording as the Map page card */
     else if (inP && lastTrip) { const L = lastTrip, wh = L.km >= 1 && L.used > 0 ? L.used / 100 * 75000 / L.km : null; tx = "Last drive" + (L.km != null ? " · " + L.km.toFixed(1) + " km" : "") + " · " + Math.max(1, Math.round(L.min)) + " min" + (L.used > 0 ? " · " + Math.round(L.used) + "% battery" : "") + (wh ? " · about " + Math.round(wh) + " Wh/km" : ""); }
     if (ns.textContent !== tx) ns.textContent = tx; ns.hidden = !tx; ns.classList.toggle("trip", inP && !!lastTrip); }
   { const rg = $("roadg"), go = sp != null && sp > 1 && !REDUCED; rg.classList.toggle("go", go); if (go) { const d = Math.max(0.12, Math.min(3, 18 / sp)); if (!rg._d || Math.abs(d - rg._d) / rg._d > 0.08) { rg._d = d; rg.style.setProperty("--rd", d.toFixed(2) + "s"); } } } // road lines scroll faster as you go faster
@@ -1535,6 +1652,7 @@ async function connect() {
 function startDemo() {
   setChip("Sample data", "var(--dim)"); let t = 0;
   const base = [-37.8136, 144.9631];
+  Object.assign(S, { MediaNowPlayingTitle: "Sample track", MediaNowPlayingArtist: "Sample artist", MediaPlaybackStatus: "MediaStatusPlaying" });
   setInterval(() => {
     t++; const ph = t % 60; let v = ph < 5 ? 0 : ph < 12 ? (ph - 5) * 15 : ph < 30 ? 105 : ph < 36 ? 105 - (ph - 30) * 17 : 0; // mph-ish converted below
     const mph = v / MI, acc = ph >= 5 && ph < 12 ? 80 : ph < 30 && ph >= 12 ? 20 : 0, brk = ph >= 30 && ph < 36;
@@ -1581,7 +1699,7 @@ function startApp(demo) {
   demo ? startDemo() : connect();
 }
 $("save").onclick = () => { const t = $("tok").value.trim(); if (!t) return; store.set("tok", t); store.set("base", $("base").value.trim()); startApp(false); };
-const BUILD = "v34 · 24 Nov 2026"; $("build").textContent = BUILD;
+const BUILD = "v36 · 28 Nov 2026"; $("build").textContent = BUILD;
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {}); // opens with no signal; the network copy always wins when online
 $("upd").onclick = async () => { const b = $("upd"); b.disabled = true; b.textContent = "Checking...";
   try { const r = await fetch(location.pathname + "?check=" + Date.now(), { cache: "no-store" }), m = (await r.text()).match(/const BUILD = "([^"]+)"/);
